@@ -37,6 +37,7 @@ public class CC {
     public static final String MENU_BAR;
     public static final String CHAT_BAR;
     public static final String SB_BAR;
+    public static final String LINE = translate("&7&m-------------------------");
 
     static {
         MAP = new HashMap<>();
@@ -70,9 +71,9 @@ public class CC {
         DARK_PURPLE = ChatColor.DARK_PURPLE.toString();
         DARK_RED = ChatColor.DARK_RED.toString();
         PINK = ChatColor.LIGHT_PURPLE.toString();
-        MENU_BAR = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "------------------------";
-        CHAT_BAR = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "------------------------------------------------";
-        SB_BAR = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "----------------------";
+        MENU_BAR = ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "------------------------";
+        CHAT_BAR = ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "------------------------------------------------";
+        SB_BAR = ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "----------------------";
     }
 
     public static Set<String> getColorNames() {

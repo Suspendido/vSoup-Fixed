@@ -1,25 +1,43 @@
 package kami.gg.souppvp.command;
 
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Require;
-import com.jonahseguin.drink.annotation.Sender;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.command.Command;
+import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class FreeKitsCommand {
+import java.util.Arrays;
+import java.util.List;
 
-    @Command(name = "kits toggle", desc = "toggle free kits mode")
-    @Require("souppvp.freekits")
-    public void execute(@Sender CommandSender sender){
+public class FreeKitsCommand extends Command {
+
+    public FreeKitsCommand(CommandManager manager) {
+        super(
+                manager,
+                "togglekits"
+        );
+        this.setPermissible("souppvp.freekits");
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Arrays.asList("free", "freekits");
+    }
+
+    @Override
+    public List<String> usage() {
+        return null;
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         SoupPvP.setIsFreeKitsMode(!SoupPvP.getIsFreeKitsMode());
         SoupPvP.getInstance().getConfig().set("FREE-KITS", SoupPvP.getIsFreeKitsMode());
         SoupPvP.getInstance().saveConfig();
         SoupPvP.getInstance().reloadConfig();
-        String status = SoupPvP.getIsFreeKitsMode() ? "&aenabled" : "&cdisabled";
+        String status = SoupPvP.getIsFreeKitsMode() ? "&a&lenabled" : "&c&ldisabled";
         player.sendMessage(CC.translate("&aSuccessfully " + status + " &afree kits mode!"));
     }
-
 }

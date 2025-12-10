@@ -6,10 +6,7 @@ import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.timer.Timer;
-import kami.gg.souppvp.util.CC;
-import kami.gg.souppvp.util.DurationFormatter;
-import kami.gg.souppvp.util.ItemBuilder;
-import kami.gg.souppvp.util.XPBarTimer;
+import kami.gg.souppvp.util.*;
 import kami.gg.souppvp.util.projectile.TypedRunnable;
 import kami.gg.souppvp.util.projectile.event.CustomProjectileHitEvent;
 import kami.gg.souppvp.util.projectile.projectile.ItemProjectile;
@@ -29,6 +26,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class NinjaKit extends Kit {
+
+    private final String TIMER_NAME = "Shuriken";
+    private final int SHURIKEN_COOLDOWN = 10;
+    private final ItemStack SHURIKEN_ITEM =
+            new ItemBuilder(Material.NETHER_STAR).name(CC.translate("&bShuriken")).amount(4).build();
 
     @Override
     public String getName() {
@@ -52,35 +54,41 @@ public class NinjaKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Throwing shurikens, blinding your enemies as you attack.");
-        description.add("&7Gain +30 armor durability per kill!");
-        return description;
+        return List.of(
+                "&7Throw shurikens, blinding your enemies.",
+                "&7Gain +30 armor durability per kill!"
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build());
-        itemStacks.add(new ItemBuilder(Material.NETHER_STAR).name(CC.translate("&bShuriken")).amount(4).build());
-        return itemStacks;
+        List<ItemStack> items = new ArrayList<>();
+        items.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build());
+        items.add(SHURIKEN_ITEM.clone());
+        return items;
     }
 
     @Override
     public ItemStack[] getArmor() {
         return new ItemStack[]{
-                new ItemBuilder(Material.LEATHER_BOOTS).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_CHESTPLATE).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_HELMET).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build()
+                createArmorPiece(Material.LEATHER_BOOTS),
+                createArmorPiece(Material.LEATHER_LEGGINGS),
+                createArmorPiece(Material.LEATHER_CHESTPLATE),
+                createArmorPiece(Material.LEATHER_HELMET)
         };
+    }
+
+    private ItemStack createArmorPiece(Material type) {
+        return new ItemBuilder(type)
+                .color(Color.BLACK)
+                .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                .enchantment(Enchantment.DURABILITY, 10)
+                .build();
     }
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-        return potionEffects;
+        return List.of(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
     }
 
     @Override
@@ -90,27 +98,29 @@ public class NinjaKit extends Kit {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (event.getEntity().getKiller() == null) return;
         Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Ninja");
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit() == kit) {
-            for(ItemStack item : killer.getInventory().getArmorContents()) {
-                if(item != null) {
-                    item.setDurability((short) (Math.min(item.getType().getMaxDurability(), item.getDurability() - 30)));
-                }
+        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+
+        if (current != this || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+
+        for (ItemStack armor : killer.getInventory().getArmorContents()) {
+            if (armor != null) {
+                armor.setDurability((short) Math.max(0, armor.getDurability() - 30));
             }
-            for (ItemStack itemStack : killer.getInventory()) {
-                if(itemStack != null && itemStack.getType() == Material.NETHER_STAR) {
-                    itemStack.setAmount(Math.max(1, 4));
-                    break;
-                }
-            }
-            Bukkit.getScheduler().runTask(SoupPvP.getInstance(), killer::updateInventory);
-            killer.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "JUTSU! " + ChatColor.YELLOW + "You earned an extra shuriken star!");
-            killer.updateInventory();
         }
+
+        for (ItemStack content : killer.getInventory()) {
+            if (content != null && content.getType() == Material.NETHER_STAR) {
+                content.setAmount(4);
+                break;
+            }
+        }
+
+        killer.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "JUTSU! " + ChatColor.YELLOW + "You earned an extra shuriken star!");
+        killer.updateInventory();
     }
 
     @EventHandler
@@ -118,54 +128,58 @@ public class NinjaKit extends Kit {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Ninja");
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) {
+        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+
+        if (current != this) return;
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (item == null || !item.isSimilar(SHURIKEN_ITEM)) return;
+
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK))
+            return;
+
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
+            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
+            player.sendMessage(ChatColor.RED + "You can't use this for another "
+                    + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
             return;
         }
-        if (profile.getCurrentKit() == kit){
-            if((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item != null && item.isSimilar(this.getCombatEquipments().get(1))) {
-                if (profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                    player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
-                    return;
-                }
 
-                if(SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Shuriken", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Shuriken", true), true) + ChatColor.RED + ".");
-                    return;
-                }
+        // Launch shuriken
+        player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
 
-                player.getLocation().getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
+        ItemProjectile projectile = new ItemProjectile("SHURIKEN", player, new ItemStack(Material.NETHER_STAR), 2);
+        projectile.addTypedRunnable((TypedRunnable<ItemProjectile>) o ->
+                o.getEntity().getWorld().spigot().playEffect(o.getEntity().getLocation(), Effect.HAPPY_VILLAGER));
 
-                ItemProjectile projectile = new ItemProjectile("SHURIKEN", player, new ItemStack(Material.NETHER_STAR), 2);
-                projectile.addTypedRunnable((TypedRunnable<ItemProjectile>) o -> o.getEntity().getWorld().spigot().playEffect(o.getEntity().getLocation(), Effect.HAPPY_VILLAGER));
+        // Remove 1 shuriken
+        item.setAmount(item.getAmount() - 1);
+        if (item.getAmount() <= 0) player.setItemInHand(null);
 
-                if (player.getItemInHand().getAmount() == 1) player.setItemInHand(null);
-                player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+        // Cooldown
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                player.getUniqueId(),
+                new Timer(TIMER_NAME, TimeUnit.SECONDS.toMillis(SHURIKEN_COOLDOWN)),
+                true
+        );
 
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Shuriken", TimeUnit.SECONDS.toMillis(10)), true);
-                XPBarTimer.runXpBar(player, 10);
-                Bukkit.getScheduler().runTask(SoupPvP.getInstance(), player::updateInventory);
-            }
-        }
-
+        XPBarTimer.runXpBar(player, SHURIKEN_COOLDOWN);
+        player.updateInventory();
     }
 
     @EventHandler
-    public void onHit(CustomProjectileHitEvent event){
-        if (event.getHitType() == CustomProjectileHitEvent.HitType.ENTITY){
-            if (event.getProjectile().getProjectileName().equals("SHURIKEN") && event.getHitEntity() != event.getProjectile().getShooter()){
-                event.getHitEntity().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 3 * 20, 2));
-                event.getHitEntity().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 3 * 20, 2));
-                if (event.getHitEntity() instanceof Player){
-                    if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(event.getHitEntity())) return;
-                    Player found = (Player) event.getHitEntity();
-                    found.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 1)); // 5 seconds
-                    found.playSound(event.getProjectile().getShooter().getLocation(), Sound.ANVIL_LAND, 1f, 1f);
-                    found.playSound(found.getLocation(), Sound.ANVIL_LAND, 1f, 1f);
-                    found.damage(4, found);
-                }
-            }
-        }
-    }
+    public void onHit(CustomProjectileHitEvent event) {
+        if (!event.getProjectile().getProjectileName().equals("SHURIKEN")) return;
+        if (event.getHitType() != CustomProjectileHitEvent.HitType.ENTITY) return;
+        if (!(event.getHitEntity() instanceof Player target)) return;
+        if (target == event.getProjectile().getShooter()) return;
 
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(target)) return;
+
+        // Effects
+        target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+        target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 1));
+
+        target.damage(4.0);
+        target.playSound(target.getLocation(), Sound.ANVIL_LAND, 1f, 1f);
+    }
 }

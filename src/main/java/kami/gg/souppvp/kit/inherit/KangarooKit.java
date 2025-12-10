@@ -1,6 +1,6 @@
 package kami.gg.souppvp.kit.inherit;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
@@ -25,12 +25,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class KangarooKit extends Kit {
+
+    private final Set<UUID> jumpingUsers = Sets.newHashSet();
 
     @Override
     public String getName() {
@@ -54,18 +54,18 @@ public class KangarooKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Similarly to wild life kangaroos, use your kangaroo boost ability");
-        description.add("&7to jump over enemies and escape dangerous situations easily.");
-        return description;
+        return Arrays.asList(
+                "&7Similarly to wild life kangaroos, use your kangaroo boost ability",
+                "&7to jump over enemies and escape dangerous situations easily."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).build());
-        itemStacks.add(new ItemBuilder(Material.FIREWORK).name(CC.translate("&cKangaroo Boost")).build());
-        return itemStacks;
+        return Arrays.asList(
+                new ItemBuilder(Material.DIAMOND_SWORD).build(),
+                new ItemBuilder(Material.FIREWORK).name(CC.translate("&cKangaroo Boost")).build()
+        );
     }
 
     @Override
@@ -80,61 +80,79 @@ public class KangarooKit extends Kit {
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-        return potionEffects;
+        return Collections.singletonList(
+                new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1)
+        );
     }
 
     @Override
-    public void onSelect(Player player) {
-
-    }
-
-    private final List<UUID> jumpingUsers = Lists.newArrayList();
+    public void onSelect(Player player) { }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+
+        if (event.getTo().getBlockX() == event.getFrom().getBlockX()
+                && event.getTo().getBlockY() == event.getFrom().getBlockY()
+                && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) {
+            return;
+        }
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Kangaroo");
-        if (event.getTo().getBlockX() != event.getFrom().getBlockX() || event.getTo().getBlockY() != event.getFrom().getBlockY() || event.getTo().getBlockZ() != event.getFrom().getBlockZ()) {
-            if(profile.getCurrentKit() == kit && player.isOnGround() && this.jumpingUsers.contains(player.getUniqueId())) {
-                this.jumpingUsers.remove(player.getUniqueId());
-            }
+        if (profile == null || !this.equals(profile.getCurrentKit())) return;
+
+        if (player.isOnGround()) {
+            jumpingUsers.remove(player.getUniqueId());
         }
     }
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if(event.getEntity() instanceof Player
-                && event.getCause() == EntityDamageEvent.DamageCause.FALL
-                && this.jumpingUsers.contains(event.getEntity().getUniqueId())) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.FALL && jumpingUsers.contains(player.getUniqueId())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        Action action = event.getAction();
         Player player = event.getPlayer();
+        Action action = event.getAction();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Kangaroo");
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if ((action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)) && profile.getCurrentKit() == kit) {
-            ItemStack item = event.getItem();
-            if(item != null && item.isSimilar(this.getCombatEquipments().get(1))) {
-                event.setCancelled(true);
-                if(SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Kangaroo", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Kangaroo", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                player.setVelocity(player.getEyeLocation().getDirection().multiply(1.5).setY(1.25));
-                this.jumpingUsers.add(player.getUniqueId());
-                player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 1F);
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Kangaroo", TimeUnit.SECONDS.toMillis(10)), true);
-                XPBarTimer.runXpBar(player, 10);
-            }
-        }
-    }
 
+        if (profile == null || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN || !this.equals(profile.getCurrentKit())) {
+            return;
+        }
+
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+
+        ItemStack item = event.getItem();
+        ItemStack boostItem = getCombatEquipments().get(1);
+
+        if (item == null || !item.isSimilar(boostItem)) return;
+
+        event.setCancelled(true);
+
+        UUID uuid = player.getUniqueId();
+
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, "Kangaroo", true)) {
+            long remain = SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, "Kangaroo", true);
+            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remain, true) + "&c."));
+            return;
+        }
+
+        player.setVelocity(player.getEyeLocation().getDirection().multiply(1.5).setY(1.25));
+
+        jumpingUsers.add(uuid);
+        player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 1F);
+
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                uuid,
+                new Timer("Kangaroo", TimeUnit.SECONDS.toMillis(10)),
+                true
+        );
+
+        XPBarTimer.runXpBar(player, 10);
+    }
 }

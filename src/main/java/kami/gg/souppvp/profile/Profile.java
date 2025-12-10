@@ -5,7 +5,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlipState;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
-import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.storage.StorageType;
 import kami.gg.souppvp.tier.Tiers;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +23,9 @@ public class Profile {
     private UUID uuid;
     private String username;
     private Boolean loaded;
-    private Kit currentKit;
-    private Kit previousKit;
+
+    private String currentKit;
+    private String previousKit;
     private List<String> unlockedKits;
     private int kills;
     private int deaths;
@@ -55,62 +56,54 @@ public class Profile {
 
     private boolean juggernaut;
 
-    public Profile(UUID uuid){
+    public Profile(UUID uuid) {
+        if (uuid == null) {
+            throw new IllegalArgumentException("UUID cannot be null when creating Profile");
+        }
+
         this.uuid = uuid;
         this.username = Bukkit.getOfflinePlayer(uuid).getName();
-        this.loaded = false;
-        this.currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName("Default");
-        this.previousKit = null;
-        this.unlockedKits = new ArrayList<>();
-        this.unlockedKits.add("Default");
-        this.kills = 0;
-        this.deaths = 0;
-        this.credits = 0;
-        this.bounty = 0;
-        this.experiences = 0;
-        this.tier = Tiers.ZERO;
-        this.currentKillstreak = 0;
-        this.highestKillstreak = 0;
 
-        this.activePerks = new ArrayList<>();
-        this.activePerks.add("None");
-        this.activePerks.add("None");
-        this.activePerks.add("None");
-        this.unlockedPerks = new ArrayList<>();
+        if (this.username == null || this.username.isEmpty()) {
+            this.username = uuid.toString().substring(0, 8);
+            SoupPvP.getInstance().getLogger().warning("Could not get username for UUID: " + uuid);
+        }
 
-        this.totalWagerGames = 0;
-        this.wagersWon = 0;
-        this.wagersLost = 0;
-
-        this.enableKillDeathMessages = true;
-        this.enableParticleEffects = true;
-        this.enableKillstreakMessages = true;
-        this.enableScoreboard = true;
-
-        this.profileState = ProfileState.SPAWN;
-        this.coinFlipState = CoinFlipState.NONE;
-
-        this.sumoEvent = null;
-        this.eventsWon = 0;
-        this.juggernaut = false;
-
-        this.loadProfile();
+        initDefaults();
+        loadProfile();
     }
 
-    public Profile(String userName){
-        this.uuid = Bukkit.getOfflinePlayer(userName).getUniqueId();
-        this.username = userName;
+    public Profile(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+
+        this.username = username;
+        this.uuid = Bukkit.getOfflinePlayer(username).getUniqueId();
+
+        if (this.uuid == null) {
+            throw new IllegalArgumentException("Could not find UUID for username: " + username);
+        }
+
+        initDefaults();
+        loadProfile();
+    }
+
+    private void initDefaults() {
         this.loaded = false;
-        this.currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName("Default");
+        this.currentKit = "Default";
         this.previousKit = null;
+
         this.unlockedKits = new ArrayList<>();
         this.unlockedKits.add("Default");
+
         this.kills = 0;
         this.deaths = 0;
         this.credits = 0;
         this.bounty = 0;
         this.experiences = 0;
         this.tier = Tiers.ZERO;
+
         this.currentKillstreak = 0;
         this.highestKillstreak = 0;
 
@@ -118,6 +111,7 @@ public class Profile {
         this.activePerks.add("None");
         this.activePerks.add("None");
         this.activePerks.add("None");
+
         this.unlockedPerks = new ArrayList<>();
 
         this.totalWagerGames = 0;
@@ -136,111 +130,211 @@ public class Profile {
         this.eventsWon = 0;
 
         this.juggernaut = false;
-
-        this.loadProfile();
     }
 
-    public void loadProfile(){
-        Document document = SoupPvP.getInstance().getProfilesHandler().getMongoCollection().find(Filters.eq("uuid", getUuid().toString())).first();
-        if (document != null){
-            currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName(document.getString("currentKit"));
-            unlockedKits = SoupPvP.getGSON().fromJson(document.getString("unlockedKits"), SoupPvP.getLIST_STRING_TYPE());
-            kills = document.getInteger("kills");
-            deaths = document.getInteger("deaths");
-            credits = document.getInteger("credits");
-            bounty = document.getInteger("bounty");
-            currentKillstreak = document.getInteger("currentKillstreak");
-            highestKillstreak = document.getInteger("highestKillstreak");
-            experiences = document.getInteger("experiences");
-            tier = Tiers.getTierByNumber(document.getInteger("tier"));
+    public void loadProfile() {
+        StorageType storage = SoupPvP.getInstance().getStorageType();
 
-            activePerks = SoupPvP.getGSON().fromJson(document.getString("activePerks"), SoupPvP.getLIST_STRING_TYPE());
-            unlockedPerks = SoupPvP.getGSON().fromJson(document.getString("unlockedPerks"), SoupPvP.getLIST_STRING_TYPE());
+        switch (storage) {
+            case MONGODB:
+                loadMongo();
+                break;
 
-            Document wagersDocument = (Document) document.get("wagers");
-            totalWagerGames = wagersDocument.getInteger("totalWagersGames");
-            wagersWon = wagersDocument.getInteger("wagersWon");
-            wagersLost = wagersDocument.getInteger("wagersLost");
-
-            Document optionsDocument = (Document) document.get("options");
-            enableKillDeathMessages = optionsDocument.getBoolean("enableKillDeathMessages");
-            enableParticleEffects = optionsDocument.getBoolean("enableParticleEffects");
-            enableKillstreakMessages = optionsDocument.getBoolean("enableKillstreakMessages");
-            enableScoreboard = optionsDocument.getBoolean("enableScoreboard");
-
-            Document eventsStatisticsDocument = (Document) document.get("eventsStatistics");
-            eventsWon = eventsStatisticsDocument.getInteger("eventsWon");
+            case FLATFILE:
+                loadFlatFile();
+                break;
         }
         loaded = true;
     }
 
-    public void saveProfile(){
-        Document document = new Document();
-        document.append("uuid", uuid.toString());
-        document.append("username", username);
-        document.append("currentKit", currentKit.getName());
-        document.append("unlockedKits", unlockedKits.toString());
-        document.append("kills", kills);
-        document.append("deaths", deaths);
-        document.append("credits", credits);
-        document.append("bounty", bounty);
-        document.append("experiences", experiences);
-        document.append("tier", tier.getTierLevel());
-        document.append("currentKillstreak", currentKillstreak);
-        document.append("highestKillstreak", highestKillstreak);
+    private void loadMongo() {
+        var collection = SoupPvP.getInstance().getProfilesHandler().getMongoCollection();
+        if (collection == null) return;
 
-        document.append("activePerks", activePerks.toString());
-        document.append("unlockedPerks", unlockedPerks.toString());
+        Document doc = collection.find(Filters.eq("uuid", uuid.toString())).first();
+        if (doc == null) return;
 
-        Document wagersDocument = new Document();
-        wagersDocument.append("totalWagersGames", totalWagerGames);
-        wagersDocument.append("wagersWon", wagersWon);
-        wagersDocument.append("wagersLost", wagersLost);
-        document.append("wagers", wagersDocument);
+        this.currentKit = doc.getString("currentKit");
+        this.previousKit = doc.getString("previousKit");
 
-        Document optionsDocument = new Document();
-        optionsDocument.append("enableKillDeathMessages", enableKillDeathMessages);
-        optionsDocument.append("enableParticleEffects", enableParticleEffects);
-        optionsDocument.append("enableKillstreakMessages", enableKillstreakMessages);
-        optionsDocument.append("enableScoreboard", enableScoreboard);
-        document.append("options", optionsDocument);
+        this.unlockedKits = SoupPvP.getGSON().fromJson(doc.getString("unlockedKits"), SoupPvP.getLIST_STRING_TYPE());
 
-        Document eventsStatistics = new Document();
-        eventsStatistics.append("eventsWon", eventsWon);
-        document.append("eventsStatistics", eventsStatistics);
+        this.kills = doc.getInteger("kills", 0);
+        this.deaths = doc.getInteger("deaths", 0);
+        this.credits = doc.getInteger("credits", 0);
+        this.bounty = doc.getInteger("bounty", 0);
+        this.experiences = doc.getInteger("experiences", 0);
 
-        SoupPvP.getInstance().getProfilesHandler().getMongoCollection().replaceOne(Filters.eq("uuid", uuid.toString()), document, new ReplaceOptions().upsert(true));
+        this.tier = Tiers.getTierByNumber(doc.getInteger("tier", 0));
+
+        this.currentKillstreak = doc.getInteger("currentKillstreak", 0);
+        this.highestKillstreak = doc.getInteger("highestKillstreak", 0);
+
+        this.activePerks = SoupPvP.getGSON().fromJson(doc.getString("activePerks"), SoupPvP.getLIST_STRING_TYPE());
+        this.unlockedPerks = SoupPvP.getGSON().fromJson(doc.getString("unlockedPerks"), SoupPvP.getLIST_STRING_TYPE());
+
+        Document wagers = (Document) doc.get("wagers");
+        if (wagers != null) {
+            this.totalWagerGames = wagers.getInteger("totalWagersGames", 0);
+            this.wagersWon = wagers.getInteger("wagersWon", 0);
+            this.wagersLost = wagers.getInteger("wagersLost", 0);
+        }
+
+        Document options = (Document) doc.get("options");
+        if (options != null) {
+            this.enableKillDeathMessages = options.getBoolean("enableKillDeathMessages", true);
+            this.enableParticleEffects = options.getBoolean("enableParticleEffects", true);
+            this.enableKillstreakMessages = options.getBoolean("enableKillstreakMessages", true);
+            this.enableScoreboard = options.getBoolean("enableScoreboard", true);
+        }
+
+        Document events = (Document) doc.get("eventsStatistics");
+        if (events != null) {
+            this.eventsWon = events.getInteger("eventsWon", 0);
+        }
     }
 
-    public Boolean isInEvent(){
-        return this.getSumoEvent() != null;
+    private void saveMongo() {
+        var collection = SoupPvP.getInstance().getProfilesHandler().getMongoCollection();
+        if (collection == null) return;
+
+        Document doc = new Document();
+        doc.put("uuid", uuid.toString());
+        doc.put("username", username);
+
+        doc.put("currentKit", currentKit);
+        doc.put("previousKit", previousKit);
+
+        doc.put("unlockedKits", SoupPvP.getGSON().toJson(unlockedKits));
+
+        doc.put("kills", kills);
+        doc.put("deaths", deaths);
+        doc.put("credits", credits);
+        doc.put("bounty", bounty);
+        doc.put("experiences", experiences);
+        doc.put("tier", tier.getTierLevel());
+
+        doc.put("currentKillstreak", currentKillstreak);
+        doc.put("highestKillstreak", highestKillstreak);
+
+        doc.put("activePerks", SoupPvP.getGSON().toJson(activePerks));
+        doc.put("unlockedPerks", SoupPvP.getGSON().toJson(unlockedPerks));
+
+        Document wagers = new Document();
+        wagers.put("totalWagersGames", totalWagerGames);
+        wagers.put("wagersWon", wagersWon);
+        wagers.put("wagersLost", wagersLost);
+        doc.put("wagers", wagers);
+
+        Document options = new Document();
+        options.put("enableKillDeathMessages", enableKillDeathMessages);
+        options.put("enableParticleEffects", enableParticleEffects);
+        options.put("enableKillstreakMessages", enableKillstreakMessages);
+        options.put("enableScoreboard", enableScoreboard);
+        doc.put("options", options);
+
+        Document events = new Document();
+        events.put("eventsWon", eventsWon);
+        doc.put("eventsStatistics", events);
+
+        collection.replaceOne(Filters.eq("uuid", uuid.toString()), doc, new ReplaceOptions().upsert(true));
     }
 
-    public void addSpawnTeleportation(){
-        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().put(uuid, System.currentTimeMillis() + (6*1000));
+    private void loadFlatFile() {
+        var flat = SoupPvP.getInstance().getFlatFileHandler();
+        if (flat == null) return;
+
+        Profile fromFile = flat.loadProfile(uuid);
+        if (fromFile == null) {
+            this.loaded = true;
+            return;
+        }
+
+        if (fromFile.getUsername() != null && !fromFile.getUsername().isEmpty()) {
+            this.username = fromFile.getUsername();
+        }
+
+        this.currentKit = fromFile.getCurrentKit();
+        this.previousKit = fromFile.getPreviousKit();
+        this.unlockedKits = new ArrayList<>(fromFile.getUnlockedKits());
+
+        this.kills = fromFile.getKills();
+        this.deaths = fromFile.getDeaths();
+        this.credits = fromFile.getCredits();
+        this.bounty = fromFile.getBounty();
+        this.experiences = fromFile.getExperiences();
+        this.tier = fromFile.getTier();
+
+        this.currentKillstreak = fromFile.getCurrentKillstreak();
+        this.highestKillstreak = fromFile.getHighestKillstreak();
+
+        this.activePerks = new ArrayList<>(fromFile.getActivePerks());
+        this.unlockedPerks = new ArrayList<>(fromFile.getUnlockedPerks());
+
+        this.totalWagerGames = fromFile.getTotalWagerGames();
+        this.wagersWon = fromFile.getWagersWon();
+        this.wagersLost = fromFile.getWagersLost();
+
+        this.enableKillDeathMessages = fromFile.getEnableKillDeathMessages();
+        this.enableParticleEffects = fromFile.getEnableParticleEffects();
+        this.enableKillstreakMessages = fromFile.getEnableKillstreakMessages();
+        this.enableScoreboard = fromFile.getEnableScoreboard();
+
+        this.eventsWon = fromFile.getEventsWon();
+
+        this.loaded = true;
     }
 
-    public void removeSpawnTeleportation(){
+    private void saveFlatFile() {
+        var flat = SoupPvP.getInstance().getFlatFileHandler();
+        if (flat == null) return;
+
+        flat.saveProfile(this);
+    }
+
+    public void saveProfile() {
+        StorageType storage = SoupPvP.getInstance().getStorageType();
+
+        switch (storage) {
+            case MONGODB:
+                saveMongo();
+                break;
+
+            case FLATFILE:
+                saveFlatFile();
+                break;
+        }
+        loaded = true;
+    }
+
+    public boolean isInEvent() {
+        return this.sumoEvent != null;
+    }
+
+    public void addSpawnTeleportation() {
+        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().put(uuid, System.currentTimeMillis() + (6 * 1000));
+    }
+
+    public void removeSpawnTeleportation() {
         SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(uuid);
     }
 
-    public Boolean isTeleportingToSpawn(){
+    public boolean isTeleportingToSpawn() {
         return SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().containsKey(uuid);
     }
 
-    public void addCombatTag(){
+    public void addCombatTag() {
         SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().put(uuid, System.currentTimeMillis() + (15 * 1000));
     }
 
-    public Boolean isCombatTagged(){
-        return SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().containsKey(uuid) && SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().get(uuid) - System.currentTimeMillis() > 0;
+    public boolean isCombatTagged() {
+        Long t = SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().get(uuid);
+        return t != null && t - System.currentTimeMillis() > 0;
     }
 
     public double getWinPercent() {
-        if (this.wagersWon + this.wagersLost == 0 || this.wagersWon == 0) {
-            return 0;
-        }
-        return Double.parseDouble(new DecimalFormat("##").format(this.wagersWon * 100L / (this.wagersWon + this.wagersLost)));
-    }
+        if (wagersWon + wagersLost == 0 || wagersWon == 0) return 0;
 
+        return Double.parseDouble(new DecimalFormat("##").format(wagersWon * 100L / (wagersWon + wagersLost)));
+    }
 }

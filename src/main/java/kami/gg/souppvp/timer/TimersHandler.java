@@ -4,6 +4,7 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
  * @date 24/06/2023
  */
 
+@Getter @Setter
 public class TimersHandler {
 
     @Getter public HashMap<UUID, Timer> primaryAbilitiesHashMap;

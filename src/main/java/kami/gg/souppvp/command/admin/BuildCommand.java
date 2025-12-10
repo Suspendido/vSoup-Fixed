@@ -1,28 +1,47 @@
 package kami.gg.souppvp.command.admin;
 
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Sender;
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.coinflip.menu.CoinFlipMenu;
-import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.command.Command;
+import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author hieu
  * @date 28/09/2023
  */
 
-public class BuildCommand {
+public class BuildCommand extends Command {
 
-    @Command(name = "", desc = "enter build mode")
-    public void execute(@Sender CommandSender sender){
+    public BuildCommand(CommandManager manager) {
+        super(
+                manager,
+                "build"
+        );
+        this.setPermissible("souppvp.build");
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> usage() {
+        return null;
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (player.hasMetadata("build")){
+
+        if (player.hasMetadata("build")) {
             player.removeMetadata("build", SoupPvP.getInstance());
             player.sendMessage(CC.translate("&cYou are no longer in builder mode."));
         } else {
@@ -31,5 +50,4 @@ public class BuildCommand {
             player.setGameMode(GameMode.CREATIVE);
         }
     }
-
 }

@@ -18,46 +18,57 @@ import java.util.List;
 
 public class SelectPreviousKitButton extends Button {
 
-    private Profile profile;
+    private final Profile profile;
 
-    public SelectPreviousKitButton(Profile profile){
+    public SelectPreviousKitButton(Profile profile) {
         this.profile = profile;
     }
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        Kit previousKit = profile.getPreviousKit();
-        Kit currentKit = profile.getCurrentKit();
+        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+        Kit previous = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getPreviousKit());
+
         List<String> lore = new ArrayList<>();
         lore.add(CC.translate("&7Receive your previous kit!"));
         lore.add("");
-        if (profile.getPreviousKit() == null){
-            lore.add(CC.translate("&fPrevious Kit: &cNone"));
-        } else {
-            lore.add(CC.translate("&fPrevious Kit: &r" + previousKit.getRarityType().getColor() + previousKit.getName()));
-        }
-        lore.add(CC.translate("&fCurrent Kit: &r" + currentKit.getRarityType().getColor() + currentKit.getName()));
+
+        lore.add(previous == null ? CC.translate("&fPrevious Kit: &cNone") : CC.translate("&fPrevious Kit: &r" + previous.getRarityType().getColor() + previous.getName()));
+
+        lore.add(CC.translate("&fCurrent Kit: &r" + current.getRarityType().getColor() + current.getName()));
         lore.add("");
         lore.add(CC.translate("&eClick to receive!"));
-        return new ItemBuilder(Material.WATCH).name(CC.translate("&bSelect Previous Kit")).lore(lore).build();
+
+        return new ItemBuilder(Material.WATCH)
+                .name(CC.translate("&bSelect Previous Kit"))
+                .lore(lore)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            Kit previousKit = profile.getPreviousKit();
-            Kit currentKit = profile.getCurrentKit();
-            if (previousKit == null){
-                playFail(player);
-                player.sendMessage(CC.translate("&cYou don't have a previous kit."));
-                return;
-            }
-            PlayerUtil.playSound(player, Sound.CLICK);
-            profile.setCurrentKit(previousKit);
-            profile.setPreviousKit(currentKit);
-            player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + previousKit.getRarityType().getColor() + previousKit.getName() + "&a kit."));
-        }
-    }
+        if (!clickType.isLeftClick()) return;
 
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        Kit previous = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getPreviousKit());
+
+        if (previous == null) {
+            playFail(player);
+            player.sendMessage(CC.translate("&cYou don't have a previous kit."));
+            return;
+        }
+
+        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+
+        PlayerUtil.playSound(player, Sound.CLICK);
+
+        // swap
+        profile.setCurrentKit(previous.getName());
+        profile.setPreviousKit(current.getName());
+
+        player.sendMessage(CC.translate("&aSuccessfully equipped the &r"
+                + previous.getRarityType().getColor()
+                + previous.getName()
+                + "&a kit."));
+    }
 }

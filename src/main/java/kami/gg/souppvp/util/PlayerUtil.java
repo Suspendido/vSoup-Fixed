@@ -2,7 +2,6 @@ package kami.gg.souppvp.util;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
-import kami.gg.souppvp.listener.LunarClientListener;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import org.bukkit.*;
@@ -74,8 +73,7 @@ public class PlayerUtil {
         }
     }
 
-    public static void resetPlayer(Player player){
-
+    public static void resetPlayer(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         profile.setProfileState(ProfileState.SPAWN);
@@ -85,7 +83,7 @@ public class PlayerUtil {
         player.setFoodLevel(20);
         player.setGameMode(GameMode.SURVIVAL);
 
-        Location spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
+        Location spawn = Bukkit.getWorlds().getFirst().getSpawnLocation();
         spawn.add(0.5, 0, 0.5);
         player.teleport(spawn);
 
@@ -106,10 +104,12 @@ public class PlayerUtil {
         player.setFireTicks(0);
 
         player.setMetadata("noFall", new FixedMetadataValue(SoupPvP.getInstance(), "noFall"));
-        if (profile.getCurrentKit() == SoupPvP.getInstance().getKitsHandler().getKitByName("CopyCat")){
+        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+
+        if (current == SoupPvP.getInstance().getKitsHandler().getKitByName("CopyCat")) {
             player.removeMetadata("CopyCat", SoupPvP.getInstance());
         }
-        if (profile.isJuggernaut()){
+        if (profile.isJuggernaut()) {
             profile.setJuggernaut(false);
         }
 
@@ -123,19 +123,15 @@ public class PlayerUtil {
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
         SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(player.getUniqueId());
 
-        LunarClientListener.updateNametag(player);
-
     }
 
     public static void repairPlayer(Player player) {
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = profile.getCurrentKit();
-        for(ItemStack items : player.getEquipment().getArmorContents()) {
+        for (ItemStack items : player.getEquipment().getArmorContents()) {
             if (items != null){
                 items.setDurability((short)0);
             }
         }
-        for (ItemStack items : player.getInventory().getContents()){
+        for (ItemStack items : player.getInventory().getContents()) {
             if (items != null){
                 items.setDurability((short) 0);
             }

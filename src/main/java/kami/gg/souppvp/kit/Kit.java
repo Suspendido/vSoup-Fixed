@@ -33,7 +33,7 @@ public abstract class Kit implements Listener {
 
     }
 
-    public void equipKit(Player player){
+    public void equipKit(Player player) {
         XPBarTimer.remove(player.getPlayer());
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         profile.setProfileState(ProfileState.COMBAT);

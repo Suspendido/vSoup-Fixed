@@ -44,33 +44,46 @@ public class FiremanKit extends Kit {
     @Override
     public List<String> getDescription() {
         List<String> description = new ArrayList<>();
-        description.add("&7Become immune whenever coming into contact with fire however,");
+        description.add("&7Become immune whenever coming into contact with fire, however");
         description.add("&7when coming into contact with water, there are consequences.");
         return description;
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build());
-        return itemStacks;
+        List<ItemStack> list = new ArrayList<>();
+        list.add(new ItemBuilder(Material.DIAMOND_SWORD)
+                .enchantment(Enchantment.DAMAGE_ALL, 1)
+                .build());
+        return list;
     }
 
     @Override
     public ItemStack[] getArmor() {
         return new ItemStack[]{
-                new ItemBuilder(Material.LEATHER_BOOTS).color(Color.RED).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).enchantment(Enchantment.DURABILITY, 3).build(),
-                new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.RED).build(),
-                new ItemBuilder(Material.IRON_CHESTPLATE).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
-                new ItemBuilder(Material.LEATHER_HELMET).color(Color.RED).enchantment(Enchantment.DURABILITY, 3).build()
+                new ItemBuilder(Material.LEATHER_BOOTS)
+                        .color(Color.RED)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+                new ItemBuilder(Material.LEATHER_LEGGINGS)
+                        .color(Color.RED)
+                        .build(),
+                new ItemBuilder(Material.IRON_CHESTPLATE)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
+                        .build(),
+                new ItemBuilder(Material.LEATHER_HELMET)
+                        .color(Color.RED)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build()
         };
     }
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
-        return potionEffects;
+        List<PotionEffect> effects = new ArrayList<>();
+        effects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+        return effects;
     }
 
     @Override
@@ -79,17 +92,21 @@ public class FiremanKit extends Kit {
     }
 
     @EventHandler
-    public void EntityDamageEvent(EntityDamageEvent event){
-        if (event.getEntity() instanceof Player){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getUniqueId());
-            Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Fireman");
-            if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-            if (event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK){
-                if (profile.getCurrentKit() == kit){
-                    event.setCancelled(true);
-                }
-            }
+    public void onEntityDamage(EntityDamageEvent event) {
+
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
+
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+
+        EntityDamageEvent.DamageCause cause = event.getCause();
+
+        if (cause != EntityDamageEvent.DamageCause.FIRE && cause != EntityDamageEvent.DamageCause.LAVA && cause != EntityDamageEvent.DamageCause.FIRE_TICK) return;
+
+        if (this.equals(profile.getCurrentKit())) {
+            event.setCancelled(true);
         }
     }
-
 }

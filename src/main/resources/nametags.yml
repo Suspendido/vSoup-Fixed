@@ -1,0 +1,17 @@
+NAMETAGS:
+  FORMAT:
+    BOUNTY:
+      - "&aBounty: &e%bounty%"
+      - "&a%player%"
+      - "&f%health% &4❤"
+    JUGGERNAUT:
+      - "&4&lJuggernaut"
+      - "&a%player%"
+      - "&f%health% &4❤"
+    TRICKSTER:
+      - "&aBounty: &e%bounty%"
+      - "&a%player%"
+      - "&f%health% &4❤"
+    NORMAL:
+      - "&a%player%a"
+      - "&f%health% &4❤"

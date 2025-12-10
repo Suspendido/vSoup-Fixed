@@ -14,7 +14,7 @@ import java.util.List;
 
 public class YourStatisticsButton extends Button {
 
-    private Profile profile;
+    private final Profile profile;
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
     public YourStatisticsButton(Profile profile){
@@ -43,6 +43,6 @@ public class YourStatisticsButton extends Button {
             lore.add(CC.translate(" &fBounty: &b" + profile.getBounty()));
         }
         lore.add(CC.MENU_BAR);
-        return new ItemBuilder(Material.SKULL_ITEM).name(" ").lore(lore).durability(3).build();
+        return new ItemBuilder(Material.SKULL_ITEM).durability(3).name(" ").lore(lore).build();
     }
 }

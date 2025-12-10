@@ -21,110 +21,136 @@ import org.bukkit.inventory.ItemStack;
 
 public class PvPListeners implements Listener {
 
+    private final SoupPvP plugin = SoupPvP.getInstance();
+
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (profile.isTeleportingToSpawn()) {
-                profile.removeSpawnTeleportation();
-                player.sendMessage(CC.translate("&cYour spawn teleportation has been cancelled as you have been combat-tagged."));
-            }
-            if (profile.getProfileState() == ProfileState.SPAWN) return;
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) return;
-            profile.addCombatTag();
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        // Cancel spawn teleport if damaged
+        if (profile.isTeleportingToSpawn()) {
+            profile.removeSpawnTeleportation();
+            player.sendMessage(CC.translate("&cYour spawn teleportation was cancelled because you were combat-tagged."));
         }
+
+        // No tag if player is in spawn
+        if (profile.getProfileState() == ProfileState.SPAWN) return;
+        if (plugin.getSpawnHandler().getCuboid().contains(player)) return;
+
+        profile.addCombatTag();
     }
 
     @EventHandler
-    public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event){
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player){
-            Player damagedPlayer = (Player) event.getEntity();
-            Player damager = (Player) event.getDamager();
-            Profile damagedProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damagedPlayer.getUniqueId());
-            Profile damagerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damager.getUniqueId());
-            if (damagerProfile.getProfileState() == ProfileState.SPAWN || damagedProfile.getProfileState() == ProfileState.SPAWN) return;
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damager) || SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damagedPlayer)) return;
-            damagerProfile.addCombatTag();
-            damagedProfile.addCombatTag();
-        }
+    public void onPlayerDamageByPlayer(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player damaged) || !(event.getDamager() instanceof Player damager)) return;
+
+        Profile damagedProfile = plugin.getProfilesHandler().getProfileByUUID(damaged.getUniqueId());
+        Profile damagerProfile = plugin.getProfilesHandler().getProfileByUUID(damager.getUniqueId());
+
+        // Prevent combat in spawn
+        if (damagerProfile.getProfileState() == ProfileState.SPAWN || damagedProfile.getProfileState() == ProfileState.SPAWN) return;
+        if (plugin.getSpawnHandler().getCuboid().contains(damager) || plugin.getSpawnHandler().getCuboid().contains(damaged)) return;
+
+        damagerProfile.addCombatTag();
+        damagedProfile.addCombatTag();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerDeathEvent(PlayerDeathEvent event) {
+    public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (event.getEntity().getKiller() != null && event.getEntity().getKiller() != event.getEntity()) {
-            Profile killerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getKiller().getUniqueId());
-            if (killerProfile.isJuggernaut()) return;
-            killerProfile.setKills(killerProfile.getKills() + 1);
-            killerProfile.setCurrentKillstreak(killerProfile.getCurrentKillstreak() + 1);
-            if (killerProfile.getCurrentKillstreak() > killerProfile.getHighestKillstreak()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aHighest Killstreak! &fYou are on a new highest killstreak of &a" + killerProfile.getCurrentKillstreak() + "&f."));
-                killerProfile.setHighestKillstreak(killerProfile.getCurrentKillstreak());
-            }
-            killerProfile.setCredits(killerProfile.getCredits() + 17);
-            killerProfile.setExperiences(killerProfile.getExperiences() + 3);
-            if (killerProfile.getEnableKillDeathMessages()){
-                if (killerProfile.getCurrentKit().getName().equals("Pro")){
-                    event.getEntity().getKiller().getPlayer().sendMessage(CC.translate("&9You have killed &a" + event.getEntity().getName() + " &9for &a34 &9credits and &a3 &9xp."));
-                } else {
-                    event.getEntity().getKiller().getPlayer().sendMessage(CC.translate("&9You have killed &a" + event.getEntity().getName() + " &9for &a17 &9credits and &a3 &9xp."));
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        Player killer = player.getKiller();
+        boolean killedByPlayer = killer != null && killer != player;
+
+        if (killedByPlayer) {
+            Profile killerProfile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+
+            if (!killerProfile.isJuggernaut()) {
+
+                // Stats update
+                killerProfile.setKills(killerProfile.getKills() + 1);
+                killerProfile.setCurrentKillstreak(killerProfile.getCurrentKillstreak() + 1);
+
+                if (killerProfile.getCurrentKillstreak() > killerProfile.getHighestKillstreak()) {
+                    killer.sendMessage(CC.translate("&aNew Highest Killstreak! &fYou're now at &a" + killerProfile.getCurrentKillstreak()));
+                    killerProfile.setHighestKillstreak(killerProfile.getCurrentKillstreak());
                 }
-            }
-            if (profile.getEnableKillDeathMessages()){
-                event.getEntity().sendMessage(CC.translate("&cYou have been killed by &a" + event.getEntity().getKiller().getName() + "&c."));
-            }
-            if (profile.getCurrentKillstreak() >= 10){
-                for (Profile profile1 : SoupPvP.getInstance().getProfilesHandler().getProfiles()){
-                    if (profile1.getEnableKillDeathMessages()){
-                        Bukkit.getPlayer(profile1.getUuid()).sendMessage(CC.translate("&e" + profile.getUsername() + " &adied with a &e" + profile.getCurrentKillstreak() + " &akillstreak!"));
-                    }
+
+                killerProfile.setCredits(killerProfile.getCredits() + 17);
+                killerProfile.setExperiences(killerProfile.getExperiences() + 3);
+
+                // Kill messages
+                if (killerProfile.getEnableKillDeathMessages()) {
+                    boolean proKit = killerProfile.getCurrentKit().equals("Pro");
+                    killer.sendMessage(CC.translate("&9You killed &a" + player.getName() + "&9 for &a" + (proKit ? 34 : 17) + " &9credits and &a3 XP."));
                 }
-            } else {
-                for (Profile profile1 : SoupPvP.getInstance().getProfilesHandler().getProfiles()){
-                    if (profile1.getEnableKillDeathMessages()){
-                        Bukkit.getPlayer(profile1.getUuid()).sendMessage(CC.translate("&e" + killerProfile.getUsername() + " &ahas killed &e" + event.getEntity().getName() + "&a!"));
+
+                if (profile.getEnableKillDeathMessages()) {
+                    player.sendMessage(CC.translate("&cYou were killed by &a" + killer.getName()));
+                }
+
+                // Broadcasts
+                for (Profile p : plugin.getProfilesHandler().getProfiles()) {
+                    if (!p.getEnableKillDeathMessages()) continue;
+
+                    Player online = Bukkit.getPlayer(p.getUuid());
+                    if (online == null) continue;
+
+                    if (profile.getCurrentKillstreak() >= 10) {
+                        online.sendMessage(CC.translate("&e" + profile.getUsername() + " &adied with a &e" + profile.getCurrentKillstreak() + " &akillstreak!"));
+                    } else {
+                        online.sendMessage(CC.translate("&e" + killerProfile.getUsername() + " &ahas killed &e" + player.getName() + "&a!"));
                     }
                 }
             }
         } else {
-            for (Profile profile1 : SoupPvP.getInstance().getProfilesHandler().getProfiles()){
-                if (profile1.getEnableKillDeathMessages()){
-                    Bukkit.getPlayer(profile1.getUuid()).sendMessage(CC.translate("&e" + event.getEntity().getName() + " &adied."));
-                    if (profile1.equals(profile)){
-                        Bukkit.getPlayer(profile1.getUuid()).sendMessage(CC.translate("&cYou died."));
-                    }
+            // Death by environment
+            for (Profile p : plugin.getProfilesHandler().getProfiles()) {
+                if (!p.getEnableKillDeathMessages()) continue;
+
+                Player online = Bukkit.getPlayer(p.getUuid());
+                if (online == null) continue;
+
+                online.sendMessage(CC.translate("&e" + player.getName() + " &adied."));
+                if (p.equals(profile)) {
+                    online.sendMessage(CC.translate("&cYou died."));
                 }
             }
         }
+
         profile.setCurrentKillstreak(0);
         profile.setDeaths(profile.getDeaths() + 1);
-        LunarClientListener.updateNametag(event.getEntity());
     }
 
     @EventHandler
     public void onSoupRefillSign(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            if (event.getClickedBlock().getType().equals(Material.SIGN) || event.getClickedBlock().getType().equals(Material.SIGN_POST) || event.getClickedBlock().getType().equals(Material.WALL_SIGN)) {
-                Sign refillSign = (Sign) event.getClickedBlock().getState();
-                if (refillSign.getLine(0).contains("Free") && refillSign.getLine(1).contains("Soup")) {
-                    if (profile.isJuggernaut()){
-                        player.sendMessage(CC.translate("&cYou may not refill soups whilst in Juggernaut."));
-                        return;
-                    }
-                    Inventory inventory = Bukkit.createInventory(null, 54, "Refill station");
-                    for (int i = 0; i < inventory.getSize(); i++) {
-                        if (inventory.getItem(i) == null) {
-                            inventory.setItem(i, new ItemStack(Material.MUSHROOM_SOUP));
-                        }
-                    }
-                    player.openInventory(inventory);
-                }
-            }
-        }
-    }
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getClickedBlock() == null) return;
 
+        Material type = event.getClickedBlock().getType();
+
+        if (type != Material.SIGN && type != Material.SIGN_POST && type != Material.WALL_SIGN) return;
+
+        Player player = event.getPlayer();
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        Sign sign = (Sign) event.getClickedBlock().getState();
+
+        if (!sign.getLine(0).contains("Free") || !sign.getLine(1).contains("Soup")) return;
+
+        if (profile.isJuggernaut()) {
+            player.sendMessage(CC.translate("&cYou cannot refill soups while in Juggernaut."));
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 54, "Refill station");
+
+        ItemStack soup = new ItemStack(Material.MUSHROOM_SOUP);
+        for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, soup.clone());
+
+        player.openInventory(inv);
+    }
 }

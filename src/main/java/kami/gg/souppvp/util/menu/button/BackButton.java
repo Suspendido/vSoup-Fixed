@@ -20,10 +20,10 @@ public class BackButton extends Button {
 	@Override
 	public ItemStack getButtonItem(Player player) {
 		return new ItemBuilder(Material.REDSTONE)
-				.name(CC.RED + CC.BOLD + "Back")
+				.name("&c&lBack")
 				.lore(Arrays.asList(
-						CC.RED + "Click here to return to",
-						CC.RED + "the previous menu.")
+						"&cClick here to return to",
+						"&cthe previous menu.")
 				)
 				.build();
 	}

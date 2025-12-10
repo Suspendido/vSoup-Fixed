@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 public class SpawnTeleportationHandler {
 
-    private HashMap<UUID, Long> spawnTeleporataion;
+    private final HashMap<UUID, Long> spawnTeleporataion;
 
     public SpawnTeleportationHandler(){
         spawnTeleporataion = new HashMap<>();

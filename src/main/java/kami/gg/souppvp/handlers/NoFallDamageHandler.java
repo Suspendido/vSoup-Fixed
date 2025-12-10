@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 public class NoFallDamageHandler {
 
-    private List<UUID> noFallDamage;
+    private final List<UUID> noFallDamage;
 
     public NoFallDamageHandler(){
         noFallDamage = new ArrayList<>();

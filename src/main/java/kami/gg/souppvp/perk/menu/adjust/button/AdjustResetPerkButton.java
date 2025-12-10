@@ -1,7 +1,6 @@
 package kami.gg.souppvp.perk.menu.adjust.button;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.listener.LunarClientListener;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
@@ -17,7 +16,7 @@ import java.util.List;
 
 public class AdjustResetPerkButton extends Button {
 
-    private int tier;
+    private final int tier;
 
     public AdjustResetPerkButton(int tier){
         this.tier = tier;
@@ -47,7 +46,6 @@ public class AdjustResetPerkButton extends Button {
             }
             profile.getActivePerks().set(tier-1, "None");
             playNeutral(player);
-            LunarClientListener.updateNametag(player);
         }
     }
 }

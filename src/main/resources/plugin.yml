@@ -2,4 +2,11 @@ name: SoupPvP
 version: gg6ks9w
 author: hieu
 main: kami.gg.souppvp.SoupPvP
-depend: [drink]
+depend:
+  - ProtocolLib
+soft-depend:
+  - PlaceholderAPI
+  - LuckPerms
+  - AquaCore
+  - Apollo-Bukkit
+  - CheatBreakerAPI

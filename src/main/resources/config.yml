@@ -1,16 +1,20 @@
+# Storage Configuration
+STORAGE:
+  TYPE: FLATFILE # Options: MONGODB, FLATFILE
+
 MONGO:
   URI:
     ENABLED: false
-    CONNECTION: ''
-    DATABASE: SoupPvP
-  HOST: localhost
+    CONNECTION: 'mongodb://localhost:27017'
+    DATABASE: 'souppvp'
+  HOST: 'localhost'
   PORT: 27017
-  DATABASE: SoupPvP
+  DATABASE: 'souppvp'
   AUTHENTICATION:
     ENABLED: false
-    USERNAME: ''
-    PASSWORD: ''
-    AUTHENTICATION-DATABASE: admin
+    USERNAME: 'admin'
+    PASSWORD: 'password'
+    AUTHENTICATION-DATABASE: 'admin'
 
 SPAWN:
   LOCATION-A: world:30:91:30

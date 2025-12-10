@@ -1,15 +1,36 @@
 package kami.gg.souppvp.command.bounty;
 
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Sender;
 import kami.gg.souppvp.bounty.BountyMenu;
+import kami.gg.souppvp.util.command.Command;
+import kami.gg.souppvp.util.command.CommandManager;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BountyListCommand {
+import java.util.Collections;
+import java.util.List;
 
-    @Command(name = "list", desc = "View all online bounties")
-    public void execute(@Sender Player player){
-        new BountyMenu().openMenu(player);
+public class BountyListCommand extends Command {
+
+    public BountyListCommand(CommandManager manager) {
+        super(
+                manager,
+                "listbounty"
+        );
     }
 
+    @Override
+    public List<String> aliases() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> usage() {
+        return null;
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        new BountyMenu().openMenu(player);
+    }
 }

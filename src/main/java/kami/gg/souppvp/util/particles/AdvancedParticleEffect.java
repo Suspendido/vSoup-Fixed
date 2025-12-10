@@ -1,12 +1,14 @@
 package kami.gg.souppvp.util.particles;
 
 import kami.gg.souppvp.util.ReflectionUtils;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -66,8 +68,11 @@ public enum AdvancedParticleEffect {
 
     private static final Map<String, AdvancedParticleEffect> NAME_MAP;
     private static final Map<Integer, AdvancedParticleEffect> ID_MAP;
+    @Getter
     private final String name;
+    @Getter
     private final int id;
+    @Getter
     private final int requiredVersion;
     private final List<ParticleProperty> properties;
 
@@ -76,18 +81,6 @@ public enum AdvancedParticleEffect {
         this.id = id;
         this.requiredVersion = requiredVersion;
         this.properties = Arrays.asList(properties);
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public int getRequiredVersion() {
-        return this.requiredVersion;
     }
 
     public boolean hasProperty(final ParticleProperty property) {
@@ -312,6 +305,7 @@ public enum AdvancedParticleEffect {
         COLORABLE
     }
 
+    @Getter
     public abstract static class ParticleData {
         private final Material material;
         private final byte data;
@@ -321,18 +315,6 @@ public enum AdvancedParticleEffect {
             this.material = material;
             this.data = data;
             this.packetData = new int[]{material.getId(), data};
-        }
-
-        public Material getMaterial() {
-            return this.material;
-        }
-
-        public byte getData() {
-            return this.data;
-        }
-
-        public int[] getPacketData() {
-            return this.packetData;
         }
 
         public String getPacketDataString() {
@@ -355,6 +337,7 @@ public enum AdvancedParticleEffect {
         }
     }
 
+    @Getter
     public static final class OrdinaryColor extends ParticleColor {
         private final int red;
         private final int green;
@@ -382,18 +365,6 @@ public enum AdvancedParticleEffect {
                 throw new IllegalArgumentException("The blue value is higher than 255");
             }
             this.blue = blue;
-        }
-
-        public int getRed() {
-            return this.red;
-        }
-
-        public int getGreen() {
-            return this.green;
-        }
-
-        public int getBlue() {
-            return this.blue;
         }
 
         @Override
@@ -442,21 +413,21 @@ public enum AdvancedParticleEffect {
     }
 
     private static final class ParticleDataException extends RuntimeException {
-        private static final long serialVersionUID = 3203085387160737484L;
+        @Serial private static final long serialVersionUID = 3203085387160737484L;
 
         public ParticleDataException(final String message) {
         }
     }
 
     private static final class ParticleColorException extends RuntimeException {
-        private static final long serialVersionUID = 3203085387160737484L;
+        @Serial private static final long serialVersionUID = 3203085387160737484L;
 
         public ParticleColorException(final String message) {
         }
     }
 
     private static final class ParticleVersionException extends RuntimeException {
-        private static final long serialVersionUID = 3203085387160737484L;
+        @Serial private static final long serialVersionUID = 3203085387160737484L;
 
         public ParticleVersionException(final String message) {
         }
@@ -604,7 +575,7 @@ public enum AdvancedParticleEffect {
         }
 
         private static final class VersionIncompatibleException extends RuntimeException {
-            private static final long serialVersionUID = 3203085387160737484L;
+            @Serial private static final long serialVersionUID = 3203085387160737484L;
 
             public VersionIncompatibleException(final String message, final Throwable cause) {
                 super(cause);
@@ -612,7 +583,7 @@ public enum AdvancedParticleEffect {
         }
 
         private static final class PacketInstantiationException extends RuntimeException {
-            private static final long serialVersionUID = 3203085387160737484L;
+            @Serial private static final long serialVersionUID = 3203085387160737484L;
 
             public PacketInstantiationException(final String message, final Throwable cause) {
                 super(cause);
@@ -620,7 +591,7 @@ public enum AdvancedParticleEffect {
         }
 
         private static final class PacketSendingException extends RuntimeException {
-            private static final long serialVersionUID = 3203085387160737484L;
+            @Serial private static final long serialVersionUID = 3203085387160737484L;
 
             public PacketSendingException(final String message, final Throwable cause) {
                 super(cause);

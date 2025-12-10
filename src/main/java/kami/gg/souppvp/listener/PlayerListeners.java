@@ -53,12 +53,12 @@ public class PlayerListeners implements Listener {
                 player.sendMessage(CC.translate("&7You no longer have spawn protection!"));
                 profile.setProfileState(ProfileState.COMBAT);
                 TaskUtil.runLater(() -> {
-                    if (player.hasMetadata("noFall")){
+                    if (player.hasMetadata("noFall")) {
                         player.removeMetadata("noFall", SoupPvP.getInstance());
                     }
                 }, 20L);
                 if (profile.isJuggernaut()) return;
-                Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit().getName());
+                Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
                 kit.equipKit(player);
             }
         }

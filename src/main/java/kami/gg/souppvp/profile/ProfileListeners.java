@@ -16,8 +16,8 @@ public class ProfileListeners implements Listener {
         Player player = Bukkit.getPlayer(event.getUniqueId());
         if (player != null && player.isOnline()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(CC.RED + "You tried to login too quickly after disconnecting.\nTry again in a few seconds.");
-            SoupPvP.getInstance().getServer().getScheduler().runTask(SoupPvP.getInstance(), () -> player.kickPlayer(CC.RED + "You tried to login too quickly after disconnecting.\nTry again in a few seconds."));
+            event.setKickMessage(CC.translate("&cYou tried to login too quickly after disconnecting.\nTry again in a few seconds."));
+            SoupPvP.getInstance().getServer().getScheduler().runTask(SoupPvP.getInstance(), () -> player.kickPlayer(CC.translate("&cYou tried to login too quickly after disconnecting.\nTry again in a few seconds.")));
             return;
         }
         Profile profile = null;

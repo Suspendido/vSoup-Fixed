@@ -18,7 +18,7 @@ public class ConfirmMenu extends Menu {
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        HashMap<Integer, Button> buttons = new HashMap<Integer, Button>();
+        HashMap<Integer, Button> buttons = new HashMap<>();
         buttons.put(11, new BooleanButton(true, this.response));
         buttons.put(15, new BooleanButton(false, this.response));
         for (int i = 0; i < 27; ++i) {

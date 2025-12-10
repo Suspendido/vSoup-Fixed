@@ -1,0 +1,17 @@
+# ========================================
+# TABLIST FEATURES:
+# ========================================
+# Customize the tab player name format
+# Example formats:
+#   "%player_name%" - Just the player name
+#   "%vault_rank_prefix%%player_name%" - Vault rank prefix
+#   "&8[&7%player_name%&8]" - Colored brackets
+tablist:
+  enabled: true
+  sorting-types:
+    - GROUPS:owner,executive,manager,developer,admin,mod,trial-mod,helper,builder,youtuber,media,nexo,pulse,flux,core,default
+  tab-name-format: "%player_name%"
+  header:
+    - '&b&lLunar Network &7┃ &f%online% &7/&f %max_online%'
+  footer:
+    - '&fCurrently playing on &blunar.gg'

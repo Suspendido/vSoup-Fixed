@@ -1,24 +1,53 @@
 package kami.gg.souppvp.command.credit;
 
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Require;
-import com.jonahseguin.drink.annotation.Sender;
+import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.command.Command;
+import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
 
-public class CreditsAddCommand {
+import java.util.Collections;
+import java.util.List;
 
-    @Command(name = "add", desc = "add credits to player", usage = "<profile> <amount>")
-    @Require("souppvp.credits")
-    public void execute(@Sender CommandSender sender, Profile targetProfile, int amount){
-        if (targetProfile == null){
+public class CreditsAddCommand extends Command {
+
+    public CreditsAddCommand(CommandManager manager) {
+        super(
+                manager,
+                "addcredits"
+        );
+        this.setPermissible("souppvp.credits");
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> usage() {
+        return Collections.singletonList(CC.translate("&cUsage: /addcredits <player> <int>"));
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sendUsage(sender);
+            return;
+        }
+
+        String s = args[0];
+        Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
+
+        if (targetProfile == null) {
             sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
             return;
         }
+
+        int amount = Integer.parseInt(args[1]);
         targetProfile.setCredits(targetProfile.getCredits() + amount);
         targetProfile.saveProfile();
         sender.sendMessage(CC.translate("&aSuccessfully add &e" + amount + "&a credits to &e" + targetProfile.getUsername() + "'s &abalance."));
     }
-
 }

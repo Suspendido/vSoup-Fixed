@@ -8,16 +8,21 @@ import lombok.Setter;
  * @date 24/06/2023
  */
 
-@Getter
-@Setter
+@Getter @Setter
 public class Timer {
-
-    private String abilityName;
+    private final String abilityName;
     private long cooldown;
 
-    public Timer(String abilityName, long cooldown){
+    public Timer(String abilityName, long cooldown) {
         this.abilityName = abilityName;
         this.cooldown = System.currentTimeMillis() + cooldown;
     }
 
+    public boolean isActive() {
+        return System.currentTimeMillis() < cooldown;
+    }
+
+    public long getRemaining() {
+        return cooldown - System.currentTimeMillis();
+    }
 }

@@ -1,22 +1,51 @@
 package kami.gg.souppvp.command.credit;
 
-import com.jonahseguin.drink.annotation.Command;
-import com.jonahseguin.drink.annotation.Sender;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.command.Command;
+import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CreditsPayCommand {
+import java.util.Collections;
+import java.util.List;
 
-    @Command(name = "", desc = "pay a player", usage = "<player> <amount>")
-    public void execute(@Sender Player sender, Profile targetProfile, int amount) {
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(sender.getUniqueId());
-        if (targetProfile == null){
+public class CreditsPayCommand extends Command {
+
+    public CreditsPayCommand(CommandManager manager) {
+        super(manager, "paycredits");
+    }
+
+    @Override
+    public List<String> aliases() {
+        return Collections.singletonList("pay");
+    }
+
+    @Override
+    public List<String> usage() {
+        return Collections.singletonList(CC.translate("&cUsage: /paycredits <player> <int>"));
+    }
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sendUsage(sender);
+            return;
+        }
+
+        String s = args[0];
+        Player player = (Player) sender;
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
+        int amount = Integer.parseInt(args[1]);
+
+        if (targetProfile == null) {
             sender.sendMessage(CC.translate("Couldn't resolve that player's name."));
             return;
         }
+
         if (profile == targetProfile){
             sender.sendMessage(CC.translate("&cYou can't send credits to yourself."));
         } else {
@@ -36,5 +65,4 @@ public class CreditsPayCommand {
             }
         }
     }
-
 }

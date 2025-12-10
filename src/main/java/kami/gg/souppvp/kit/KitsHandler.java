@@ -2,6 +2,7 @@ package kami.gg.souppvp.kit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.inherit.*;
+import kami.gg.souppvp.kit.kits.*;
 import lombok.Getter;
 
 import java.util.ArrayList;

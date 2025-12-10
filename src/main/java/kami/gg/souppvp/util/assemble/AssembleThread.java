@@ -7,10 +7,12 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AssembleThread extends Thread {
 
     private final Assemble assemble;
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
     /**
      * Assemble Thread.
@@ -19,19 +21,29 @@ public class AssembleThread extends Thread {
      */
     AssembleThread(Assemble assemble) {
         this.assemble = assemble;
+        this.setName("Assemble-Thread");
         this.start();
     }
 
     @Override
     public void run() {
-        while(true) {
+        while(running.get() && !isInterrupted()) {
             try {
                 tick();
                 sleep(assemble.getTicks() * 50);
+            } catch (InterruptedException e) {
+                break;
             } catch (Exception e) {
-                e.printStackTrace();
+                if (assemble.isDebugMode()) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    public void stopThread() {
+        running.set(false);
+        this.interrupt();
     }
 
     /**
@@ -118,8 +130,10 @@ public class AssembleThread extends Thread {
                     player.setScoreboard(scoreboard);
                 }
             } catch(Exception e) {
-                e.printStackTrace();
-                throw new AssembleException("There was an error updating " + player.getName() + "'s scoreboard.");
+                if (assemble.isDebugMode()) {
+                    e.printStackTrace();
+                    throw new AssembleException("There was an error updating " + player.getName() + "'s scoreboard.");
+                }
             }
         }
     }

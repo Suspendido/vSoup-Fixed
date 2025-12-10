@@ -2,40 +2,31 @@ package kami.gg.souppvp;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.jonahseguin.drink.CommandService;
-import com.jonahseguin.drink.Drink;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import kami.gg.souppvp.coinflip.listener.CoinFlipListener;
 import kami.gg.souppvp.coinflip.listener.WagerCustomEventListeners;
-import kami.gg.souppvp.command.*;
-import kami.gg.souppvp.command.admin.BuildCommand;
-import kami.gg.souppvp.command.admin.CuboidSetCommand;
-import kami.gg.souppvp.command.admin.statistics.*;
-import kami.gg.souppvp.command.bounty.BountyCommand;
-import kami.gg.souppvp.command.bounty.BountyListCommand;
-import kami.gg.souppvp.command.credit.CreditsAddCommand;
-import kami.gg.souppvp.command.credit.CreditsPayCommand;
-import kami.gg.souppvp.command.credit.CreditsSetCommand;
-import kami.gg.souppvp.command.leave.LeaveCommand;
-import kami.gg.souppvp.command.leave.OPLeaveCommand;
-import kami.gg.souppvp.command.shop.RepairCommand;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
 import kami.gg.souppvp.events.impl.sumo.SumoListener;
-import kami.gg.souppvp.events.impl.sumo.command.*;
 import kami.gg.souppvp.handlers.*;
+import kami.gg.souppvp.hooks.clients.ClientHook;
+import kami.gg.souppvp.hooks.ranks.RankHook;
 import kami.gg.souppvp.juggernaut.JuggernautListener;
 import kami.gg.souppvp.killstreak.KillstreaksHandler;
 import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.listener.*;
+import kami.gg.souppvp.nametag.NametagManager;
+import kami.gg.souppvp.nametag.NametagListener;
 import kami.gg.souppvp.perk.PerksHandler;
-import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.profile.ProfileTypeAdapter;
 import kami.gg.souppvp.scoreboard.ScoreboardAdapter;
+import kami.gg.souppvp.scoreboard.ScoreboardManager;
+import kami.gg.souppvp.storage.FlatFileHandler;
+import kami.gg.souppvp.storage.StorageType;
+import kami.gg.souppvp.tablist.TablistManager;
+import kami.gg.souppvp.tablist.TablistListener;
 import kami.gg.souppvp.tasks.CanaPerkAndFiremanKitTask;
 import kami.gg.souppvp.tasks.ClearDropsTask;
 import kami.gg.souppvp.tasks.ClearTimerCacheTask;
@@ -45,10 +36,10 @@ import kami.gg.souppvp.tier.TiersListener;
 import kami.gg.souppvp.timer.TimersHandler;
 import kami.gg.souppvp.timer.TimersListener;
 import kami.gg.souppvp.util.assemble.Assemble;
+import kami.gg.souppvp.util.command.CommandManager;
 import kami.gg.souppvp.util.menu.MenuListener;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -65,8 +56,14 @@ public class SoupPvP extends JavaPlugin {
     @Getter public static final Type LIST_STRING_TYPE = new TypeToken<List<String>>() {}.getType();
     @Getter @Setter public static Boolean isFreeKitsMode;
     @Getter public static SoupPvP instance;
+
+    // Storage
+    private StorageType storageType;
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
+    private FlatFileHandler flatFileHandler;
+
+    // Handlers
     private KitsHandler kitsHandler;
     private ProfilesHandler profilesHandler;
     private CombatTagsHandler combatTagsHandler;
@@ -82,7 +79,12 @@ public class SoupPvP extends JavaPlugin {
     private PerksHandler perksHandler;
     private KillstreaksHandler killstreaksHandler;
     private TimersHandler timersHandler;
-    private CommandService drink;
+    private TablistManager tablistManager;
+    private ScoreboardManager scoreboardManager;
+    private Assemble assemble;
+    private NametagManager nametagManager;
+    private RankHook rankHook;
+    private ClientHook clientHook;
 
     @Override
     public void onEnable(){
@@ -94,7 +96,11 @@ public class SoupPvP extends JavaPlugin {
             world.setGameRuleValue("doMobSpawning", "false");
             world.setTime(6000L);
         }
-        setupDatabase();
+
+        setupStorage();
+        tablistManager = new TablistManager();
+        nametagManager = new NametagManager();
+        scoreboardManager = new ScoreboardManager(this);
         kitsHandler = new KitsHandler();
         profilesHandler = new ProfilesHandler();
         combatTagsHandler = new CombatTagsHandler();
@@ -110,11 +116,16 @@ public class SoupPvP extends JavaPlugin {
         saveProfilesTask = new SaveProfilesTask();
         clearTimerCacheTask = new ClearTimerCacheTask();
         canaPerkAndFiremanKitTask = new CanaPerkAndFiremanKitTask();
+        rankHook = new RankHook();
+        clientHook = new ClientHook();
         (new PacketBorderHandler()).start();
-        drink = Drink.get(this);
-        registerScoreboard();
-        registerCommands();
+
+        setupAssemble();
+        assemble.setTicks(2);
+
         registerListeners();
+        new CommandManager(this);
+
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (!(entity instanceof Player || entity instanceof Minecart || entity instanceof Wither || entity instanceof ItemFrame || entity instanceof EnderDragon)) {
@@ -122,15 +133,66 @@ public class SoupPvP extends JavaPlugin {
                 }
             }
         }
+
+        getLogger().info("Storage type: " + storageType.name());
     }
 
     @Override
-    public void onDisable(){
-        SoupPvP.getInstance().getProfilesHandler().saveProfiles();
+    public void onDisable() {
+        if (assemble != null) {
+            assemble.cleanup();
+        }
+
+        if (storageType == StorageType.FLATFILE) {
+            flatFileHandler.saveAllProfiles();
+            getLogger().info("Saved all profiles to flat file.");
+        } else {
+            SoupPvP.getInstance().getProfilesHandler().saveProfiles();
+        }
+
+        tablistManager.cleanup();
+        scoreboardManager.cleanup();
+        assemble.cleanup();
+
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
+    }
+
+    public void setupAssemble() {
+        if (assemble != null) {
+            assemble.cleanup();
+        }
+
+        assemble = new Assemble(this, new ScoreboardAdapter());
+    }
+
+    private void setupStorage() {
+        String storageTypeString = getConfig().getString("STORAGE.TYPE", "MONGODB").toUpperCase();
+
+        try {
+            storageType = StorageType.valueOf(storageTypeString);
+        } catch (IllegalArgumentException e) {
+            getLogger().warning("Invalid storage type '" + storageTypeString + "', defaulting to MONGODB");
+            storageType = StorageType.MONGODB;
+        }
+
+        switch (storageType) {
+            case FLATFILE:
+                flatFileHandler = new FlatFileHandler(this);
+                flatFileHandler.loadAllProfiles();
+                getLogger().info("Flat file storage initialized.");
+                break;
+
+            case MONGODB:
+                setupDatabase();
+                getLogger().info("MongoDB storage initialized.");
+                break;
+        }
     }
 
     private void setupDatabase() {
-        if (getConfig().getBoolean("MONGO.URI.ENABLED")){
+        if (getConfig().getBoolean("MONGO.URI.ENABLED")) {
             MongoClientURI mongoClientURI = new MongoClientURI(getConfig().getString("MONGO.URI.CONNECTION"));
             mongoClient = new MongoClient(mongoClientURI);
             mongoDatabase = mongoClient.getDatabase(getConfig().getString("MONGO.URI.DATABASE"));
@@ -145,54 +207,16 @@ public class SoupPvP extends JavaPlugin {
                         ));
                 mongoDatabase = mongoClient.getDatabase(getConfig().getString("MONGO.AUTHENTICATION.AUTHENTICATION-DATABASE"));
             } else {
-                mongoClient = new MongoClient(new ServerAddress(getConfig().getString("MONGO.HOST"), getConfig().getInt("MONGO.PORT")));
+                mongoClient = new MongoClient(new ServerAddress(getConfig().getString("MONGO.HOST"),
+                        getConfig().getInt("MONGO.PORT")));
                 mongoDatabase = mongoClient.getDatabase(getConfig().getString("MONGO.DATABASE"));
             }
         }
     }
 
-    private void registerScoreboard(){
-        Assemble assemble = new Assemble(this, new ScoreboardAdapter());
-        assemble.setTicks(2);
-    }
-
-    public void registerCommands(){
-        drink.bind(Profile.class).toProvider(new ProfileTypeAdapter());
-        drink.register(new SetStatisticsBountyCommand(), "setstatistics", "")
-                .registerSub(new SetStatisticsKillstreakCommand())
-                .registerSub(new SetStatisticsDeathsCommand())
-                .registerSub(new SetStatisticsKillsCommand())
-                .registerSub(new SetStatisticsKillstreakCommand());
-        drink.register(new CuboidSetCommand(), "cuboid", "");
-        drink.register(new BountyCommand(), "bounty", "")
-                .registerSub(new BountyListCommand());
-        drink.register(new CreditsAddCommand(), "credits", "credit")
-                .registerSub(new CreditsSetCommand());
-        drink.register(new CreditsPayCommand(), "pay", "");
-        drink.register(new LeaveCommand(), "leave", "spawn");
-        drink.register(new OPLeaveCommand(), "opleave", "opspawn");
-        drink.register(new RepairCommand(), "repair", "fix");
-        drink.register(new CoinflipCommand(), "coinflip", "wager", "cf");
-        drink.register(new FreeKitsCommand(), "free", "");
-        drink.register(new HostCommand(), "host", "");
-        drink.register(new JuggernautCommand(), "juggernaut", "");
-        drink.register(new KillstreakCommand(), "killstreak", "killstreak", "ks");
-        drink.register(new OptionsCommand(), "option", "options", "setting", "settings");
-        drink.register(new PerksCommand(), "perks", "perk");
-        drink.register(new ShopCommand(), "shop", "");
-        drink.register(new StatisticsCommand(), "statistics", "statistic", "stats", "stat");
-        drink.register(new TiersCommand(), "tiers", "tier");
-        drink.register(new SumoCancelCommand(), "sumo", "")
-                .registerSub(new SumoHostCommand())
-                .registerSub(new SumoJoinCommand())
-                .registerSub(new SumoLeaveCommand())
-                .registerSub(new SumoSetSpawnCommand())
-                .registerSub(new SumoTpCommand());
-        drink.register(new BuildCommand(), "build");
-        drink.registerCommands();
-    }
-
-    private void registerListeners(){
+    private void registerListeners() {
+        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new NametagListener(), this);
+        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TablistListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new MenuListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new ChatListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new GeneralListeners(), this);
@@ -206,7 +230,6 @@ public class SoupPvP extends JavaPlugin {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TiersListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new KillStreakAnnouncerListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new BountyListener(), this);
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new LunarClientListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new NoFallDamageListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new CoinFlipListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new WagerCustomEventListeners(), this);
@@ -215,5 +238,4 @@ public class SoupPvP extends JavaPlugin {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StrengthAndInstantHarmNerfListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TimersListener(), this);
     }
-
 }

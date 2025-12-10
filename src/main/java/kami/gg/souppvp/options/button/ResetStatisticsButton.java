@@ -15,77 +15,95 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ResetStatisticsButton extends Button {
 
-    private Integer price;
+    private final int price;
 
-    public ResetStatisticsButton(Integer price){
+    private static final List<String> DEFAULT_KITS = Collections.singletonList("Default");
+    private static final List<String> DEFAULT_PERKS = Arrays.asList("None", "None", "None");
+
+    public ResetStatisticsButton(int price) {
         this.price = price;
     }
 
     @Override
     public ItemStack getButtonItem(Player player) {
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7This procedure will reset every soup pvp statistics related."));
-        lore.add(CC.translate("&7Hence, this will not affect your network rank, punishments, etc."));
-        lore.add("");
-        lore.add(CC.translate("&fPrice: &b" + price));
-        lore.add("");
-        if (profile.getCredits() >= price){
-            lore.add(CC.translate("&eClick to reset!"));
-        } else {
-            lore.add(CC.translate("&cInsufficient Credits!"));
-        }
-        return new ItemBuilder(Material.REDSTONE_COMPARATOR).name(CC.translate("&bReset Statistics")).lore(lore).build();
+        boolean affordable = profile.getCredits() >= price;
+
+        return new ItemBuilder(Material.REDSTONE_COMPARATOR)
+                .name(CC.translate("&bReset Statistics"))
+                .lore(
+                        CC.translate("&7This procedure will reset all SoupPvP statistics."),
+                        CC.translate("&7This does NOT affect your network rank or punishments."),
+                        "",
+                        CC.translate("&fPrice: &b" + price),
+                        "",
+                        affordable ? CC.translate("&eClick to reset!") : CC.translate("&cInsufficient Credits!")
+                )
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-                if (profile.getCredits() >= price){
-                    playNeutral(player);
-                    new ConfirmMenu("Select a procedure action", data -> {
-                        if (data){
-                            List<String> unlockedKits = new ArrayList<>();
-                            unlockedKits.add("Default");
-                            TaskUtil.runLater(player::closeInventory, 1L);
-                            PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                            profile.setCurrentKit(SoupPvP.getInstance().getKitsHandler().getKitByName("Default"));
-                            profile.setPreviousKit(SoupPvP.getInstance().getKitsHandler().getKitByName("Default"));
-                            profile.setUnlockedKits(unlockedKits);
-                            profile.setKills(0);
-                            profile.setDeaths(0);
-                            profile.setCredits(0);
-                            profile.setExperiences(0);
-                            profile.setTier(Tiers.ZERO);
-                            profile.setCurrentKillstreak(0);
-                            profile.setHighestKillstreak(0);
-                            List<String> activePerks = new ArrayList<>();
-                            activePerks.add("None");
-                            activePerks.add("None");
-                            activePerks.add("None");
-                            profile.setActivePerks(activePerks);
-                            List<String> unlockedPerks = new ArrayList<>();
-                            profile.setUnlockedPerks(unlockedPerks);
-                            profile.setTotalWagerGames(0);
-                            profile.setWagersWon(0);
-                            profile.setWagersLost(0);
-                            player.sendMessage(CC.translate("&aSuccessfully reset your statistics."));
-                        }
-                    }).openMenu(player);
-                } else {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                }
-            } else {
-                player.sendMessage(CC.translate("&cYou can only do this in spawn."));
-            }
-        }
-    }
+        if (!clickType.isLeftClick()) return;
 
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        SoupPvP instance = SoupPvP.getInstance();
+
+        // Must be in spawn
+        if (!instance.getSpawnHandler().getCuboid().contains(player)) {
+            player.sendMessage(CC.translate("&cYou can only do this in spawn."));
+            return;
+        }
+
+        // Must have money
+        if (profile.getCredits() < price) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            return;
+        }
+
+        playNeutral(player);
+
+        new ConfirmMenu("Select a procedure action", confirmed -> {
+
+            if (!confirmed) return;
+
+            TaskUtil.runLater(player::closeInventory, 1L);
+            PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+
+            // Reset kit
+            profile.setCurrentKit(instance.getKitsHandler().getKitByName("Default").getName());
+            profile.setPreviousKit(profile.getCurrentKit());
+
+            // Reset unlocked kits
+            profile.setUnlockedKits(DEFAULT_KITS);
+
+            // Reset stats
+            profile.setKills(0);
+            profile.setDeaths(0);
+            profile.setCredits(0);
+            profile.setExperiences(0);
+            profile.setTier(Tiers.ZERO);
+
+            profile.setCurrentKillstreak(0);
+            profile.setHighestKillstreak(0);
+
+            // Perks
+            profile.setActivePerks(DEFAULT_PERKS);
+            profile.setUnlockedPerks(Collections.emptyList());
+
+            // Wagers
+            profile.setTotalWagerGames(0);
+            profile.setWagersWon(0);
+            profile.setWagersLost(0);
+
+            player.sendMessage(CC.translate("&aSuccessfully reset your statistics."));
+        }).openMenu(player);
+    }
 }

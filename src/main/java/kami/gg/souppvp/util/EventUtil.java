@@ -1,7 +1,6 @@
 package kami.gg.souppvp.util;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.listener.LunarClientListener;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import org.bukkit.GameMode;
@@ -48,8 +47,6 @@ public class EventUtil {
         SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().remove(player.getUniqueId());
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
         SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(player.getUniqueId());
-
-        LunarClientListener.updateNametag(player);
 
     }
 

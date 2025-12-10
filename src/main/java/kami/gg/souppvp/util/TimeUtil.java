@@ -1,5 +1,7 @@
 package kami.gg.souppvp.util;
 
+import kami.gg.souppvp.SoupPvP;
+
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -52,8 +54,7 @@ public class TimeUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        return new SimpleDateFormat("MMM dd yyyy " + (secondaryColor == null ? "" : secondaryColor) +
-                "(hh:mm aa zz)").format(date);
+        return new SimpleDateFormat("MMM dd yyyy " + (secondaryColor == null ? "" : secondaryColor) + "(hh:mm aa zz)").format(date);
     }
 
     public static Timestamp addDuration(long duration) {
@@ -151,6 +152,16 @@ public class TimeUtil {
         }
 
         return !found ? -1 : totalTime * 1000;
+    }
+
+    public static String formatScoreboardDate(Date date) {
+        String format = "dd/MM/yy";
+
+        try {
+            format = SoupPvP.getInstance().getScoreboardManager().getScoreboardConfig().getString("SCOREBOARD_INFO.DATE_FORMAT", "dd/MM/yy");
+        } catch (Exception ignored) {}
+
+        return new SimpleDateFormat(format).format(date);
     }
 
 }

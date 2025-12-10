@@ -1,0 +1,87 @@
+SCOREBOARD_INFO:
+  STATIC_TITLE: '&b&lSoupPvP &7┃ &fSeason 1' # If frames empty, this will be used
+  LINES: '&7&m--------------------' # Cannot be empty. If you want it blank make it &7
+  LINES_ENABLED: true
+  LAST_LINE_ENABLED: true
+  SHOW_DATE_BELOW_TITLE: true
+  DATE_LINE: '             &7&o%date%          '
+  DATE_FORMAT: 'dd/MM/YY'
+
+TITLE:
+  FRAMES:
+    - "&b&lSoupPvP"
+    - "&f&lS&b&loupPvP"
+    - "&b&lS&f&lo&b&lupPvP"
+    - "&b&lSo&f&lu&b&lpPvP"
+    - "&b&lSou&f&lp&b&lPvP"
+    - "&b&lSoup&f&lP&b&lvP"
+    - "&b&lSoupP&f&lv&b&lP"
+    - "&b&lSoupPv&f&lP"
+    - "&b&lSoupPvP"
+    - "&f&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&f&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&f&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&b&lSoupPvP"
+    - "&b&lSoupPvP"
+    # Intervalo entre frames (en ticks, 20 = 1 segundo)
+  INTERVAL: 5
+
+FOOTER:
+  ENABLED: true
+  LINES:
+    - "&blunar.gg"
+
+LOADING:
+  FORMAT:
+    - "&c&lLoading Your Profile:"
+    - "&cWe are currently loading"
+    - "&cyour profile. This should"
+    - "&clast for a few seconds only."
+
+STATS:
+  FORMAT:
+    - "&fKills: &b%kills%"
+    - "&fKillstreak: &b%killstreak%" # Solo se muestra si killstreak > 0
+    - "&fDeaths: &b%deaths%"
+    - "&fCredits: &b%credits%"
+    - "&fBounty: &b%bounty%" # Solo se muestra si bounty > 0
+    - ""
+
+SPAWN:
+  ENABLED: true
+  FORMAT:
+    - "&fTier Level: &b%tier%✫"
+    - "&fCurrent Kit: %kit_color%%kit%"
+    - ""
+
+SUMO_EVENT:
+  WAITING_EVENT:
+    ENABLED: true
+    LINES:
+      - "&fEvent: &bSumo"
+      - "&fPlayers: &b%sumo_players%/%sumo_max%"
+      - "&fState: &b%sumo_state%"
+      - ""
+
+  STARTED_EVENT:
+    ENABLED: true
+    LINES:
+      - "&fEvent: &bSumo"
+      - "&fRemaining: &b%sumo_remaining%/%sumo_total%"
+      - "&fDuration: &b%sumo_duration%"
+      - ""
+      - "&b%sumo_player_a% &f(%sumo_ping_a%ms)"
+      - "&fvs"
+      - "&b%sumo_player_b% &f(%sumo_ping_b%ms)"
+      - ""
+
+TIMERS:
+  ENABLED: true
+  SPAWN: "&aSpawn: &f%time%"
+  COMBAT: "&cCombat Tag: &f%time%"

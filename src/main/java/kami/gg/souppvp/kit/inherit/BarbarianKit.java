@@ -10,32 +10,38 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.XPBarTimer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Silverfish;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class BarbarianKit extends Kit {
+
+    private static final String TIMER_NAME = "Silverfish Swarm";
+    private static final int SILVERFISH_AMOUNT = 4;
+    private static final int RADIUS = 10;
+
+    private final ItemStack swarmItem =
+            new ItemBuilder(Material.INK_SACK)
+                    .name(CC.translate("&9Silverfish Swarm"))
+                    .durability(6)
+                    .build();
+
+    private final ItemStack sword =
+            new ItemBuilder(Material.STONE_SWORD)
+                    .enchantment(Enchantment.DAMAGE_ALL, 2)
+                    .enchantment(Enchantment.DURABILITY, 10)
+                    .build();
 
     @Override
     public String getName() {
@@ -59,19 +65,19 @@ public class BarbarianKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Although you may be seen as vulnerable without");
-        description.add("&7armour, spawn swarms on silverfish to torture enemies");
-        description.add("&7and deal large heaps of damage.");
-        return description;
+        return Arrays.asList(
+                "&7Although you may be seen as vulnerable without",
+                "&7armour, spawn swarms of silverfish to torture enemies",
+                "&7and deal large heaps of damage."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.STONE_SWORD).enchantment(Enchantment.DAMAGE_ALL, 2).enchantment(Enchantment.DURABILITY, 10).build());
-        itemStacks.add(new ItemBuilder(Material.INK_SACK).name(CC.translate("&9Silverfish Swarm")).durability((short) 6).build());
-        return itemStacks;
+        return Arrays.asList(
+                sword,
+                swarmItem
+        );
     }
 
     @Override
@@ -81,111 +87,110 @@ public class BarbarianKit extends Kit {
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 2));
-        return potionEffects;
+        return Collections.singletonList(
+                new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 2)
+        );
     }
 
     @Override
-    public void onSelect(Player player) {
-
-    }
+    public void onSelect(Player player) {}
 
     @EventHandler
-    public void onPlayerInteract (PlayerInteractEvent event) {
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Barbarian");
+
+        if (item == null) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) {
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+
+        // Must be Barbarian and right-clicking the swarm item
+        if (!item.isSimilar(swarmItem)) return;
+        if (!profile.getCurrentKit().equals(getName())) return;
+
+        // Spawn check
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+            player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
             return;
         }
-        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (item != null && item.isSimilar(this.getCombatEquipments().get(1)) && profile.getCurrentKit() != null && profile.getCurrentKit().equals(kit)) {
-                if (profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                    player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
-                    return;
-                }
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Silverfish Swarm", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Silverfish Swarm", true), true) + ChatColor.RED + ".");
-                    return;
-                }
 
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 6, 0), true);
+        // Cooldown check
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
+            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
+            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+            return;
+        }
 
-                Player closest = null;
-                double lastDistance = 0;
+        // Slow effect
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 6, 0), true);
 
-                for(Entity entity : player.getNearbyEntities(10, 10, 10)) {
-                    if(!(entity instanceof Player)) {
-                        continue;
-                    }
+        // Find closest target
+        Player closest = null;
+        double closestDistance = Double.MAX_VALUE;
 
-                    Player possiblePlayer = (Player) entity;
+        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+            if (!(entity instanceof Player p)) continue;
 
-                    Profile profile1 = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId());
-                    if(player.getUniqueId().equals(possiblePlayer.getUniqueId()) || profile1.getProfileState() == ProfileState.SPAWN) {
-                        continue;
-                    }
+            if (p.getUniqueId().equals(player.getUniqueId())) continue;
 
-                    double possibleNewDistance = player.getLocation().distance(possiblePlayer.getLocation());
+            Profile pProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(p.getUniqueId());
+            if (pProfile.getProfileState() == ProfileState.SPAWN) continue;
 
-                    if(closest == null) {
-                        closest = possiblePlayer;
-                        lastDistance = possibleNewDistance;
-                        continue;
-                    }
-
-                    if(possibleNewDistance < lastDistance) {
-                        closest = possiblePlayer;
-                        lastDistance = possibleNewDistance;
-                    }
-                }
-
-                for(int i = 0; i < 4; i++) {
-                    Entity entity = player.getWorld().spawnEntity(player.getLocation(), EntityType.SILVERFISH);
-                    entity.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), player.getUniqueId().toString()));
-                    ((Silverfish) entity).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 10, 3));
-                    if(closest != null) {
-                        ((Silverfish) entity).setTarget(closest);
-                    }
-
-                    Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
-                        if(entity.isValid()) {
-                            entity.remove();
-                        }
-                    }, 20L * 10); // remove after 5 seconds
-                }
-
-                player.playSound(player.getLocation(), Sound.SLIME_WALK2, 1F, 1F);
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Silverfish Swarm", TimeUnit.SECONDS.toMillis(35)), true);
-                XPBarTimer.runXpBar(player, 35);
+            double distance = player.getLocation().distance(p.getLocation());
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = p;
             }
         }
+
+        // Spawn silverfish swarm
+        for (int i = 0; i < SILVERFISH_AMOUNT; i++) {
+            Silverfish sf = (Silverfish) player.getWorld().spawnEntity(player.getLocation(), EntityType.SILVERFISH);
+
+            sf.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), player.getUniqueId().toString()));
+            sf.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 10, 3));
+
+            if (closest != null) sf.setTarget(closest);
+
+            // Remove after 10 seconds
+            Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
+                if (sf.isValid()) sf.remove();
+            }, 20L * 10);
+        }
+
+        player.playSound(player.getLocation(), Sound.SLIME_WALK2, 1F, 1F);
+
+        // Add cooldown
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                player.getUniqueId(),
+                new Timer(TIMER_NAME, TimeUnit.SECONDS.toMillis(35)),
+                true
+        );
+
+        XPBarTimer.runXpBar(player, 35);
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof Silverfish && event.getDamager() instanceof Player) {
-            Silverfish silverfish = (Silverfish) event.getEntity();
-            Player player = (Player) event.getDamager();
+        Entity damager = event.getDamager();
+        Entity victim = event.getEntity();
 
-            if(silverfish.hasMetadata("owner") && UUID.fromString(silverfish.getMetadata("owner").get(0).asString()).equals(player.getUniqueId())) {
+        if (victim instanceof Silverfish sf && damager instanceof Player player) {
+            if (sf.hasMetadata("owner") && UUID.fromString(sf.getMetadata("owner").getFirst().asString()).equals(player.getUniqueId())) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You cannot damage your own silverfish.");
             }
-        } else if(event.getEntity() instanceof Player && event.getDamager() instanceof Silverfish) {
-            Player player = (Player) event.getEntity();
-            Silverfish silverfish = (Silverfish) event.getDamager();
+            return;
+        }
 
+        if (victim instanceof Player damaged && damager instanceof Silverfish sf) {
             event.setCancelled(true);
-
-            if(silverfish.hasMetadata("owner")) {
-                Player owner = Bukkit.getPlayer(UUID.fromString(silverfish.getMetadata("owner").get(0).asString()));
-
-                if(owner != null) {
-                    player.damage(4, owner);
-                }
+            if (sf.hasMetadata("owner")) {
+                Player owner = Bukkit.getPlayer(UUID.fromString(sf.getMetadata("owner").getFirst().asString()));
+                if (owner != null) damaged.damage(4, owner);
             }
         }
     }
@@ -197,12 +202,8 @@ public class BarbarianKit extends Kit {
 
     @EventHandler
     public void onEntityTarget(EntityTargetEvent event) {
-        if(event.getEntity() instanceof Silverfish
-                && event.getTarget() instanceof Player
-                && event.getEntity().hasMetadata("owner")
-                && UUID.fromString(event.getEntity().getMetadata("owner").get(0).asString()).equals(event.getTarget().getUniqueId())) {
+        if (event.getEntity() instanceof Silverfish && event.getTarget() instanceof Player && event.getEntity().hasMetadata("owner") && UUID.fromString(event.getEntity().getMetadata("owner").getFirst().asString()).equals(event.getTarget().getUniqueId())) {
             event.setCancelled(true);
         }
     }
-
 }

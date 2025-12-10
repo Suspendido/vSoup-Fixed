@@ -42,85 +42,97 @@ public class FiftyKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.TNT)
                 .name(CC.translate("&a" + getName()))
-                .lore(Arrays.asList(CC.MENU_BAR, CC.translate("&7Will start a 10 second timer and upon finish,"), CC.translate("&7it will decimate all enemies in a 25 block radius."), CC.MENU_BAR, "", CC.translate("&fKillstreak Required: &d" + getRequired()), "")).build();
+                .lore(Arrays.asList(
+                        CC.MENU_BAR,
+                        "&7Will start a 10 second timer and upon finish,",
+                        "&7it will decimate all enemies in a 25 block radius.",
+                        CC.MENU_BAR,
+                        "",
+                        "&fKillstreak Required: &d" + getRequired(),
+                        ""
+                )).build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        if (event.getEntity().getKiller() == null) return;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardlinePerk){
-            if (profile.getCurrentKillstreak() == getRequired()-1){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                CountdownBuilder countdownBuilder = new CountdownBuilder(10);
-                List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-                countdownBuilder.setMessageFilter(players);
-                countdownBuilder.withMessage("&eTactical Nuke Incoming! &c{time}...");
-                for (int i=0; i<11; i++){
-                    countdownBuilder.broadcastAt(i, TimeUnit.SECONDS);
-                }
-                countdownBuilder.onBroadcast(() -> {
-                    event.getEntity().getKiller().getWorld().spigot().playEffect(event.getEntity().getKiller().getLocation().add(new Vector(0, 3, 0)), Effect.HAPPY_VILLAGER, 26, 0, 0.1F, 0.5F, 0.1F, 0.2F, 2, 50);
-                    for (Player player : Bukkit.getOnlinePlayers()){
-                        PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP);
-                    }
-                });
-                countdownBuilder.onFinish(() -> {
-                    int nukedCount = 0;
-                    for (Player player : Bukkit.getOnlinePlayers()){
-                        Profile profile1 = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-                        if (!(SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile1.getProfileState().equals(ProfileState.SPAWN))){
-                            if (player.getLocation().distance(event.getEntity().getKiller().getLocation()) <= 25){
-                                if (player != event.getEntity().getKiller()){
-                                    player.damage(100, event.getEntity().getKiller());
-                                    nukedCount++;
-                                }
-                            }
-                            String context = nukedCount == 1 ? "player" : "players";
-                            Bukkit.broadcastMessage(CC.translate("&eThe nuke eliminated a total of &c" + nukedCount + " &e" + context + "."));
-                        }
-                    }
-                });
-                countdownBuilder.start();
-                Bukkit.broadcastMessage(CC.translate("&a" + event.getEntity().getKiller().getName() + " &ehas unlocked a &cNuke&e!"));
-            }
-        } else {
-            if (profile.getCurrentKillstreak() == getRequired()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                CountdownBuilder countdownBuilder = new CountdownBuilder(10);
-                List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-                countdownBuilder.setMessageFilter(players);
-                countdownBuilder.withMessage("&eTactical Nuke Incoming! &c{time}...");
-                for (int i=0; i<11; i++){
-                    countdownBuilder.broadcastAt(i, TimeUnit.SECONDS);
-                }
-                countdownBuilder.onBroadcast(() -> {
-                    event.getEntity().getKiller().getWorld().spigot().playEffect(event.getEntity().getKiller().getLocation().add(new Vector(0, 3, 0)), Effect.HAPPY_VILLAGER, 26, 0, 0.1F, 0.5F, 0.1F, 0.2F, 2, 50);
-                    for (Player player : Bukkit.getOnlinePlayers()){
-                        PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP);
-                    }
-                });
-                countdownBuilder.onFinish(() -> {
-                    int nukedCount = 0;
-                    for (Player player : Bukkit.getOnlinePlayers()){
-                        Profile profile1 = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-                        if (!(SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile1.getProfileState().equals(ProfileState.SPAWN))){
-                            if (player.getLocation().distance(event.getEntity().getKiller().getLocation()) <= 25){
-                                if (player != event.getEntity().getKiller()){
-                                    player.damage(100, event.getEntity().getKiller());
-                                    nukedCount++;
-                                }
-                            }
-                            String context = nukedCount == 1 ? "player" : "players";
-                            Bukkit.broadcastMessage(CC.translate("&eThe nuke eliminated a total of &c" + nukedCount + " &e" + context + "."));
-                        }
-                    }
-                });
-                countdownBuilder.start();
-                Bukkit.broadcastMessage(CC.translate("&a" + event.getEntity().getKiller().getName() + " &ehas unlocked a &cNuke&e!"));
-            }
-        }
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+        if (profile == null) return;
+
+        boolean hasHardline = hasHardline(profile);
+
+        int neededKS = hasHardline ? getRequired() - 1 : getRequired();
+        if (profile.getCurrentKillstreak() != neededKS) return;
+
+        giveNuke(killer);
     }
 
+    private void giveNuke(Player killer) {
+        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
+        Bukkit.broadcastMessage(CC.translate("&a" + killer.getName() + " &ehas unlocked a &cNuke&e!"));
+        startNukeCountdown(killer);
+    }
+
+    private void startNukeCountdown(Player killer) {
+        CountdownBuilder countdown = new CountdownBuilder(10);
+        countdown.setMessageFilter(new ArrayList<>(Bukkit.getOnlinePlayers()));
+        countdown.withMessage("&eTactical Nuke Incoming! &c{time}...");
+
+        for (int i = 0; i <= 10; i++) {
+            countdown.broadcastAt(i, TimeUnit.SECONDS);
+        }
+
+        countdown.onBroadcast(() -> {
+            killer.getWorld().spigot().playEffect(
+                    killer.getLocation().add(new Vector(0, 3, 0)),
+                    Effect.HAPPY_VILLAGER,
+                    26, 0,
+                    0.1F, 0.5F, 0.1F,
+                    0.2F, 2, 50
+            );
+
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                PlayerUtil.playSound(p, Sound.CHICKEN_EGG_POP);
+            }
+        });
+
+        countdown.onFinish(() -> applyNukeDamage(killer));
+        countdown.start();
+    }
+
+    private void applyNukeDamage(Player killer) {
+        int nuked = 0;
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+
+            if (p.equals(killer)) continue;
+
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(p.getUniqueId());
+            if (profile == null) continue;
+
+            boolean inSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(p) && profile.getProfileState() == ProfileState.SPAWN;
+
+            if (inSpawn) continue;
+
+            if (p.getLocation().distance(killer.getLocation()) <= 25) {
+                p.damage(100.0, killer);
+                nuked++;
+            }
+        }
+
+        String context = nuked == 1 ? "player" : "players";
+        Bukkit.broadcastMessage(CC.translate("&eThe nuke eliminated a total of &c" + nuked + " &e" + context + "."));
+    }
+
+    private boolean hasHardline(Profile profile) {
+        List<String> perks = profile.getActivePerks();
+        if (perks == null || perks.isEmpty()) return false;
+
+        Perk hardline = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
+        if (hardline == null) return false;
+
+        return perks.stream().anyMatch(name -> hardline.equals(SoupPvP.getInstance().getPerksHandler().getPerkByName(name)));
+    }
 }

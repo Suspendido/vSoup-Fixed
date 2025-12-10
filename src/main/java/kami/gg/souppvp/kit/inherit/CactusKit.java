@@ -16,11 +16,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class CactusKit extends Kit {
+
+    private static final Random RANDOM = new Random();
+    private static final double REFLECT_CHANCE = 0.25;
+    private static final double REFLECT_PERCENTAGE = 0.25;
 
     @Override
     public String getName() {
@@ -44,35 +46,35 @@ public class CactusKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Become a cactus and reflect a percentage of the");
-        description.add("&7damage from enemies back to themselves.");
-        return description;
+        return Arrays.asList(
+                "&7Become a cactus and reflect a percentage of the",
+                "&7damage from enemies back to themselves."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build());
-        return itemStacks;
+        return Collections.singletonList(new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build()
+        );
     }
 
     @Override
     public ItemStack[] getArmor() {
         return new ItemStack[]{
-                new ItemBuilder(Material.LEATHER_BOOTS).color(Color.GREEN).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.GREEN).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_CHESTPLATE).color(Color.GREEN).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_HELMET).color(Color.GREEN).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build()
+                armorPiece(Material.LEATHER_BOOTS),
+                armorPiece(Material.LEATHER_LEGGINGS),
+                armorPiece(Material.LEATHER_CHESTPLATE),
+                armorPiece(Material.LEATHER_HELMET)
         };
+    }
+
+    private ItemStack armorPiece(Material material) {
+        return new ItemBuilder(material).color(Color.GREEN).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build();
     }
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
-        potionEffects.add(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
-        return potionEffects;
+        return Arrays.asList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
     }
 
     @Override
@@ -82,23 +84,22 @@ public class CactusKit extends Kit {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Cactus");
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) {
-                return;
-            }
-            if (!(SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player))){
-                if (profile.getCurrentKit() == kit) {
-                    if (new Random().nextDouble() <= 0.25) {
-                        ((Player) event.getDamager()).damage(event.getDamage() * 0.25);
-                    }
-                }
-            } else {
-                event.setCancelled(true);
-            }
+        if (!(event.getEntity() instanceof Player target)) return;
+        if (!(event.getDamager() instanceof Player damager)) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(target)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (!this.equals(profile.getCurrentKit())) return;
+
+        if (RANDOM.nextDouble() <= REFLECT_CHANCE) {
+            double reflected = event.getDamage() * REFLECT_PERCENTAGE;
+            damager.damage(reflected);
         }
     }
-
 }

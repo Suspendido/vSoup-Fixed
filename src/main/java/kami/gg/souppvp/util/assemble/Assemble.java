@@ -58,7 +58,7 @@ public class Assemble {
 
 		// Ensure that the thread has stopped running.
 		if (this.thread != null) {
-			this.thread.stop();
+			this.thread.stopThread();
 			this.thread = null;
 		}
 
@@ -88,7 +88,7 @@ public class Assemble {
 	public void cleanup() {
 		// Stop thread.
 		if (this.thread != null) {
-			this.thread.stop();
+			this.thread.stopThread();
 			this.thread = null;
 		}
 

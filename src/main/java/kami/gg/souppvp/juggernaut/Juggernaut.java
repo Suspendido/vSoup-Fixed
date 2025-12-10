@@ -1,7 +1,6 @@
 package kami.gg.souppvp.juggernaut;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.listener.LunarClientListener;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
@@ -26,32 +25,31 @@ public class Juggernaut {
         profile.setBounty(profile.getBounty() + 5000);
         player.getInventory().clear();
         player.getInventory().setArmorContents(getArmor);
-        player.getInventory().setItem(0, new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 5).enchantment(Enchantment.DURABILITY, 10).enchantment(Enchantment.FIRE_ASPECT, 2).build());
+        player.getInventory().setItem(0, new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 5).enchantment(Enchantment.DURABILITY, 10).build());
         player.getInventory().setItem(1, new ItemBuilder(Material.ENDER_PEARL).amount(32).build());
         player.getInventory().setItem(2, new ItemBuilder(Material.STICK).enchantment(Enchantment.KNOCKBACK, 5).build());
         player.getInventory().setItem(8, new ItemBuilder(Material.GOLDEN_APPLE).amount(32).build());
         PlayerUtil.giveSoup(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
         Bukkit.broadcastMessage(CC.translate("&a" + player.getName() + " &eis now a Juggernaut, kill them to receive their bounty of &a" + profile.getBounty() + " &ecredits!"));
-        LunarClientListener.updateNametag(player);
     }
 
-    private static ItemStack[] getArmor = new ItemStack[]{
+    private static final ItemStack[] getArmor = new ItemStack[]{
             new ItemBuilder(Material.DIAMOND_BOOTS)
-                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15)
+                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 5)
                     .enchantment(Enchantment.DURABILITY, 10)
                     .enchantment(Enchantment.PROTECTION_FALL, 20)
                     .build(),
             new ItemBuilder(Material.DIAMOND_LEGGINGS)
-                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15)
+                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 5)
                     .enchantment(Enchantment.DURABILITY, 10)
                     .build(),
             new ItemBuilder(Material.DIAMOND_CHESTPLATE)
-                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15)
+                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 5)
                     .enchantment(Enchantment.DURABILITY, 10)
                     .build(),
             new ItemBuilder(Material.DIAMOND_HELMET)
-                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15)
+                    .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 5)
                     .enchantment(Enchantment.DURABILITY, 10)
                     .build()
 

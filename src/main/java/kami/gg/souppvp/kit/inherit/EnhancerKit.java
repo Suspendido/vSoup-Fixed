@@ -22,7 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,82 +50,110 @@ public class EnhancerKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Gain access to a portable effects enhancer to gain advantages");
-        description.add("&7above other players through effects like strength, regeneration, etc.");
-        return description;
+        return Arrays.asList(
+                "&7Gain access to a portable effects enhancer to gain advantages",
+                "&7above other players through effects like strength, regeneration, etc."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 3).build());
-        itemStacks.add(new ItemBuilder(Material.BREWING_STAND_ITEM).name(CC.translate("&dStim Beacon")).build());
-        return itemStacks;
+        return Arrays.asList(
+                new ItemBuilder(Material.IRON_SWORD)
+                        .enchantment(Enchantment.DAMAGE_ALL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+
+                new ItemBuilder(Material.BREWING_STAND_ITEM)
+                        .name("&dStim Beacon")
+                        .build()
+        );
     }
 
     @Override
     public ItemStack[] getArmor() {
         return new ItemStack[]{
-                new ItemBuilder(Material.GOLD_BOOTS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 3).build(),
-                new ItemBuilder(Material.LEATHER_CHESTPLATE).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 3).build(),
+                new ItemBuilder(Material.GOLD_BOOTS)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
+                        .enchantment(Enchantment.DURABILITY, 10)
+                        .build(),
+
+                new ItemBuilder(Material.LEATHER_LEGGINGS)
+                        .color(Color.BLACK)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+
+                new ItemBuilder(Material.LEATHER_CHESTPLATE)
+                        .color(Color.BLACK)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+
                 null
         };
     }
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
-        return potionEffects;
+        return Arrays.asList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
     }
 
     @Override
-    public void onSelect(Player player) {
-
-    }
+    public void onSelect(Player player) {}
 
     @EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event){
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Enhancer");
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
-            if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-                event.setCancelled(true);
-                player.updateInventory();
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Stim Beacon", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Stim Beacon", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Stim Beacon", TimeUnit.SECONDS.toMillis(60)), true);
-                XPBarTimer.runXpBar(player, 60);
-                PlayerUtil.playSound(player, Sound.CLICK);
-                BlockUtil.generateTemporaryStimBeacon(event.getClickedBlock().getLocation().add(0, 1, 0));
-                new BukkitRunnable() {
-                    public void run() {
-                        for (Entity entity : player.getWorld().getEntities()){
-                            if (entity instanceof Player){
-                                if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(entity)) continue;
-                                if (event.getClickedBlock().getLocation().distance(entity.getLocation()) < 5){
-                                    Player entityPlayer = (Player) entity;
-                                    Profile entityProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(entityPlayer.getUniqueId());
-                                    if (entityProfile.getCurrentKit().getName().equals(EnhancerKit.this.getName())){
-                                        entityPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 2));
-                                        entityPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 10 * 20, 0));
-                                        entityPlayer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 10 * 20, 0));
-                                        entityPlayer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 0));
-                                    }
-                                }
-                            }
-                        }
-                        this.cancel();
-                    }
-                }.runTaskTimer(SoupPvP.getInstance(), 2L, 5*20L);
-            }
-        }
-    }
+        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (current != this) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        ItemStack hand = player.getItemInHand();
+        if (hand == null || hand.getType() != Material.BREWING_STAND_ITEM) return;
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() == null) return;
+
+        event.setCancelled(true);
+        player.updateInventory();
+
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Stim Beacon", true)) {
+            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Stim Beacon", true);
+            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW +
+                    DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+            return;
+        }
+
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                player.getUniqueId(),
+                new Timer("Stim Beacon", TimeUnit.SECONDS.toMillis(60)),
+                true
+        );
+        XPBarTimer.runXpBar(player, 60);
+        PlayerUtil.playSound(player, Sound.CLICK);
+        BlockUtil.generateTemporaryStimBeacon(event.getClickedBlock().getLocation().add(0, 1, 0));
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                for (Entity entity : player.getNearbyEntities(5, 5, 5)) {
+                    if (!(entity instanceof Player nearby)) continue;
+
+                    Profile nearbyProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(nearby.getUniqueId());
+                    Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(nearbyProfile.getUsername());
+
+                    if (current != EnhancerKit.this) continue;
+                    if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(nearby)) continue;
+
+                    nearby.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));
+                    nearby.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 200, 0));
+                    nearby.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 200, 0));
+                    nearby.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 0));
+                }
+            }
+        }.runTaskLater(SoupPvP.getInstance(), 20L);
+    }
 }

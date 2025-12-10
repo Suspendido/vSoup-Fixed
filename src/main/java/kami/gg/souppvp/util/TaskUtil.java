@@ -1,12 +1,17 @@
 package kami.gg.souppvp.util;
 
 import kami.gg.souppvp.SoupPvP;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class TaskUtil {
 
     public static void run(Runnable runnable) {
         SoupPvP.getInstance().getServer().getScheduler().runTask(SoupPvP.getInstance(), runnable);
+    }
+
+    public static void executeAsync(Runnable runnable) {
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(SoupPvP.getInstance(), runnable);
     }
 
     public static void runTimer(Runnable runnable, long delay, long timer) {

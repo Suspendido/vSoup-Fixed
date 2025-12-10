@@ -15,8 +15,8 @@ public enum Events {
         this.material = material;
     }
 
-    private Object object;
-    private String title;
-    private Material material;
+    private final Object object;
+    private final String title;
+    private final Material material;
 
 }

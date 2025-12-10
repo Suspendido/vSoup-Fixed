@@ -1,9 +1,6 @@
 package kami.gg.souppvp.listener;
 
-import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.killstreak.KillstreakReward;
-import kami.gg.souppvp.kit.Kit;
-import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.TaskUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -13,45 +10,58 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class SoupListeners implements Listener {
 
+    private static final double SOUP_HEAL = 7.0;
+    private static final double MAX_HEALTH = 20.0;
+    private static final double CONSUME_THRESHOLD = 19.5;
+
     @EventHandler
     public void onSoupConsumption(PlayerInteractEvent event) {
+        Action action = event.getAction();
+
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
         Player player = event.getPlayer();
-        if (player.getItemInHand().isSimilar(KillstreakReward.GRANDMA_SOUP) && player.getHealth() < 19.5 && ((event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)))) {
-            player.setHealth(player.getMaxHealth());
-            player.getItemInHand().setType(Material.BOWL);
-            player.updateInventory();
-            TaskUtil.runLater(() -> {
-                LunarClientListener.updateNametag(player);
-            }, 1L);
+        ItemStack item = player.getItemInHand();
+
+        if (item == null || item.getType() == Material.AIR) return;
+        if (player.getHealth() >= CONSUME_THRESHOLD) return;
+
+        if (item.isSimilar(KillstreakReward.GRANDMA_SOUP)) {
+            consumeSoup(player, MAX_HEALTH);
+            return;
         }
-        if (player.getItemInHand().getType() == Material.MUSHROOM_SOUP && player.getHealth() < 19.5 && ((event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)))) {
-            player.setHealth(Math.min(player.getHealth() + 7.0, 20.0));
-            player.getItemInHand().setType(Material.BOWL);
-            player.updateInventory();
-            TaskUtil.runLater(() -> {
-                LunarClientListener.updateNametag(player);
-            }, 1L);
+
+        if (item.getType() == Material.MUSHROOM_SOUP) {
+            consumeSoup(player, Math.min(player.getHealth() + SOUP_HEAL, MAX_HEALTH));
         }
+    }
+
+    private void consumeSoup(Player player, double newHealth) {
+        player.setHealth(newHealth);
+        player.getItemInHand().setType(Material.BOWL);
+        player.updateInventory();
     }
 
     @EventHandler
     public void onBowlDrop(PlayerDropItemEvent event) {
-        if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)){
-            Material drop = event.getItemDrop().getItemStack().getType();
-            Player player = event.getPlayer();
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit().getName());
-            if (drop.name().contains("SWORD") || drop.name().contains("AXE") || event.getItemDrop().getItemStack().hasItemMeta()) {
-                event.setCancelled(true);
-                player.updateInventory();
-            }
-            if (drop == Material.BOWL) {
-                event.getItemDrop().remove();
-            }
+        Player player = event.getPlayer();
+
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+
+        ItemStack dropped = event.getItemDrop().getItemStack();
+        Material type = dropped.getType();
+
+        if (type.name().contains("SWORD") || type.name().contains("AXE") || dropped.hasItemMeta()) {
+            event.setCancelled(true);
+            player.updateInventory();
+            return;
+        }
+
+        if (type == Material.BOWL) {
+            event.getItemDrop().remove();
         }
     }
-
 }

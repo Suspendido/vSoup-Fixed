@@ -21,7 +21,6 @@ public class BountyListener implements Listener {
                     Bukkit.getServer().broadcastMessage(CC.translate("&a" + event.getEntity().getKiller().getName() + "&e has claimed the &a" + victimProfile.getBounty() + "&e credit bounty from &a" + event.getEntity().getName() + "&e."));
                     killerProfile.setCredits(killerProfile.getCredits() + victimProfile.getBounty());
                     victimProfile.setBounty(0);
-                    LunarClientListener.updateNametag(event.getEntity());
                 }
             }
         }

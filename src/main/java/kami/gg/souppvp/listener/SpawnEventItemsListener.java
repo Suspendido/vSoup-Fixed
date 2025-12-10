@@ -65,16 +65,18 @@ public class SpawnEventItemsListener implements Listener {
                 player.sendMessage(CC.translate(StringUtils.repeat("&7&m-", 53)));
                 return;
             }
-            if (event.getItem().isSimilar(SpawnItems.PREVIOUS_KIT)){
+            if (event.getItem().isSimilar(SpawnItems.PREVIOUS_KIT)) {
                 if (profile.getPreviousKit() == null){
                     player.sendMessage(CC.translate("&cYou don't have a previous kit."));
                     return;
                 }
-                player.sendMessage(CC.translate("&aSuccessfully given you your previous kit &r" + profile.getPreviousKit().getRarityType().getColor() + profile.getPreviousKit().getName() + "&a"));
-                Kit currentKit = profile.getCurrentKit();
-                Kit previousKit = profile.getPreviousKit();
-                profile.setCurrentKit(previousKit);
-                profile.setPreviousKit(currentKit);
+                Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+                Kit previous = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getPreviousKit());
+
+                profile.setCurrentKit(previous.getName());
+                profile.setPreviousKit(current.getName());
+
+                player.sendMessage(CC.translate("&aSuccessfully given you your previous kit &r" + previous.getRarityType().getColor() + profile.getPreviousKit() + "&a"));
                 return;
             }
             if (event.getItem().isSimilar(SpawnItems.YOUR_OPTIONS)){
@@ -108,5 +110,4 @@ public class SpawnEventItemsListener implements Listener {
             }
         }
     }
-
 }
