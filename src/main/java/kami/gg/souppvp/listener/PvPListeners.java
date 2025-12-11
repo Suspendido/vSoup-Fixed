@@ -101,8 +101,6 @@ public class PvPListeners implements Listener {
 
                     if (profile.getCurrentKillstreak() >= 10) {
                         online.sendMessage(CC.translate("&e" + profile.getUsername() + " &adied with a &e" + profile.getCurrentKillstreak() + " &akillstreak!"));
-                    } else {
-                        online.sendMessage(CC.translate("&e" + killerProfile.getUsername() + " &ahas killed &e" + player.getName() + "&a!"));
                     }
                 }
             }
