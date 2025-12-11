@@ -11,27 +11,27 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class SpawnListeners implements Listener {
 
+    private final SoupPvP plugin = SoupPvP.getInstance();
+
     @EventHandler
     public void onEntityDamageEvent(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) || profile.getProfileState() == ProfileState.SPAWN) {
-                event.setCancelled(true);
-            }
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        if (profile.getProfileState() == ProfileState.SPAWN || plugin.getSpawnHandler().getCuboid().contains(player)) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onPlayerMoveItem(InventoryClickEvent event) {
-        if (event.getClickedInventory() == null) return;
-        if (event.getWhoClicked() instanceof Player) {
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getWhoClicked().getUniqueId());
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(event.getWhoClicked()) || profile.getProfileState() == ProfileState.SPAWN){
-                event.setCancelled(true);
-            }
+        if (event.getClickedInventory() == null || !(event.getWhoClicked() instanceof Player)) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(event.getWhoClicked().getUniqueId());
+
+        if (profile.getProfileState() == ProfileState.SPAWN || plugin.getSpawnHandler().getCuboid().contains(event.getWhoClicked())) {
+            event.setCancelled(true);
         }
     }
-
 }
-
