@@ -9,6 +9,7 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.NameThreadFactory;
 import lombok.Getter;
+import me.activated.core.plugin.AquaCoreAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -73,6 +74,7 @@ public class NametagManager {
         if (!nametags.containsKey(viewer.getUniqueId())) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
+        boolean staff = AquaCoreAPI.INSTANCE.getPlayerData(target.getUniqueId()).isInStaffMode();
         List<String> lines = new ArrayList<>();
 
         if (profile == null) {
@@ -83,7 +85,20 @@ public class NametagManager {
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
                 );
             }
-            handleLunar(target, viewer, lines);
+            handleLunar(target, viewer, CC.translate(lines));
+            return;
+        }
+
+        if (staff) {
+            for (String s : nametagConfig.getStringList("NAMETAGS.FORMAT.STAFF")) {
+                lines.add(s
+                        .replace("%player%", target.getName())
+                        .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                        .replace("%rank%", SoupPvP.getInstance().getRankHook().getRankColor(target) + SoupPvP.getInstance().getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", SoupPvP.getInstance().getRankHook().getRankPrefix(target))
+                );
+            }
+            handleLunar(target, viewer, CC.translate(lines));
             return;
         }
 

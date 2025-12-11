@@ -1,5 +1,8 @@
 NAMETAGS:
   FORMAT:
+    STAFF:
+      - "&7[Mod Mode]"
+      - "%rank-prefix%%player%"
     BOUNTY:
       - "&aBounty: &e%bounty%"
       - "&a%player%"
