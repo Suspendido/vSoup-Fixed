@@ -9,6 +9,7 @@ import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.TimeUtil;
 import kami.gg.souppvp.util.assemble.AssembleAdapter;
+import me.activated.core.plugin.AquaCoreAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -29,6 +30,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final List<String> spawnLines;
     private final List<String> statsLines;
     private final List<String> loadingLines;
+    private final List<String> noModMode;
+    private final List<String> modMode;
 
     private final String line;
     private final String dateLine;
@@ -40,6 +43,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final boolean waiting_sumoEnabled;
     private final boolean started_sumoEnabled;
     private final boolean spawnEnabled;
+    private final boolean staffEnabled;
 
     public ScoreboardAdapter() {
         this.plugin = SoupPvP.getInstance();
@@ -51,11 +55,14 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.spawnLines = getStringList("SPAWN.FORMAT");
         this.statsLines = getStringList("STATS.FORMAT");
         this.loadingLines = getStringList("LOADING.FORMAT");
+        this.noModMode = getStringList("STAFF_MODE.VANISH_NO_MODMODE");
+        this.modMode = getStringList("STAFF_MODE.MOD_MODE");
 
         this.line = getString("SCOREBOARD_INFO.LINES");
         this.dateLine = getString("SCOREBOARD_INFO.DATE_LINE");
 
         this.linesEnabled = getBoolean("SCOREBOARD_INFO.LINES_ENABLED");
+        this.staffEnabled = getBoolean("STAFF_MODE.ENABLED");
         this.footerEnabled = getBoolean("FOOTER.ENABLED");
         this.lastLineEnabled = getBoolean("SCOREBOARD_INFO.LAST_LINE_ENABLED");
         this.showDateBelowTitle = getBoolean("SCOREBOARD_INFO.SHOW_DATE_BELOW_TITLE");
@@ -127,6 +134,24 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 if (linesEnabled && lastLineEnabled) lines.add(line);
 
                 return CC.translate(lines);
+            }
+        }
+
+        if (staffEnabled) {
+            boolean staff = AquaCoreAPI.INSTANCE.getPlayerData(player.getUniqueId()).isInStaffMode();
+            boolean vanish = AquaCoreAPI.INSTANCE.getPlayerData(player.getUniqueId()).isVanished();
+
+            if (vanish && !staff) {
+                for (String s : noModMode) {
+                    lines.add(s.replace("%vanished%", "&a✔"));
+                }
+            } else if (staff) {
+                for (String s : modMode) {
+                    lines.add(s
+                            .replace("%vanished%", (vanish ? "&a✔" : "&c✖"))
+                            .replace("%players%", String.valueOf(Bukkit.getOnlinePlayers().size()))
+                    );
+                }
             }
         }
 

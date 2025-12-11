@@ -81,6 +81,18 @@ SUMO_EVENT:
       - "&b%sumo_player_b% &f(%sumo_ping_b%ms)"
       - ""
 
+STAFF_MODE:
+  ENABLED: true
+  VANISH_NO_MODMODE: # They are vanished but not in staff mode.
+    - '&4&lStaff Mode'
+    - '&cVanished&7: &7%vanished%'
+    - '&7&m--------------------'
+  MOD_MODE:
+    - '&4&lStaff Mode'
+    - '&cVanished&7: &7%vanished%'
+    - '&cPlayers&7: &7%players% &7(%staff%)'
+    - '&7&m--------------------'
+
 TIMERS:
   ENABLED: true
   SPAWN: "&aSpawn: &f%time%"
