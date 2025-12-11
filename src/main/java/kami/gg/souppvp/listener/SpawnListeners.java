@@ -3,6 +3,7 @@ package kami.gg.souppvp.listener;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +30,8 @@ public class SpawnListeners implements Listener {
         if (event.getClickedInventory() == null || !(event.getWhoClicked() instanceof Player)) return;
 
         Profile profile = plugin.getProfilesHandler().getProfileByUUID(event.getWhoClicked().getUniqueId());
+
+        if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) return;
 
         if (profile.getProfileState() == ProfileState.SPAWN || plugin.getSpawnHandler().getCuboid().contains(event.getWhoClicked())) {
             event.setCancelled(true);
