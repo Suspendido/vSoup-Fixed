@@ -1,5 +1,7 @@
 NAMETAGS:
   FORMAT:
+    SPAWN:
+      - "%rank-prefix%%player%"
     STAFF:
       - "&7[Mod Mode]"
       - "%rank-prefix%%player%"

@@ -6,6 +6,7 @@ import kami.gg.souppvp.nametag.adapter.NametagColor;
 import kami.gg.souppvp.nametag.task.NametagTask;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.NameThreadFactory;
 import lombok.Getter;
@@ -75,6 +76,7 @@ public class NametagManager {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
         boolean staff = AquaCoreAPI.INSTANCE.getPlayerData(target.getUniqueId()).isInStaffMode();
+        boolean isInSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(target) && profile.getProfileState() == ProfileState.SPAWN;
         List<String> lines = new ArrayList<>();
 
         if (profile == null) {
@@ -110,6 +112,19 @@ public class NametagManager {
                 isTrickster = (currentPerk != null && currentPerk.equals(tricksterPerk));
             }
         } catch (Exception ignored) {}
+
+        if (isInSpawn) {
+            int bountyValue = isTrickster ? RNG.nextInt(1001) : profile.getBounty();
+            for (String s : nametagConfig.getStringList("NAMETAGS.FORMAT.SPAWN")) {
+                lines.add(s
+                        .replace("%player%", target.getName())
+                        .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                        .replace("%rank%", SoupPvP.getInstance().getRankHook().getRankColor(target) + SoupPvP.getInstance().getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", SoupPvP.getInstance().getRankHook().getRankPrefix(target))
+                        .replace("%bounty%", String.valueOf(bountyValue))
+                );
+            }
+        }
 
         String formatKey;
         if (profile.getBounty() > 0) {
