@@ -124,6 +124,8 @@ public class NametagManager {
                         .replace("%bounty%", String.valueOf(bountyValue))
                 );
             }
+            handleLunar(target, viewer, CC.translate(lines));
+            return;
         }
 
         String formatKey;
