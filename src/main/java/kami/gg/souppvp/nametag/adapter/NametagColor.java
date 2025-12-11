@@ -11,7 +11,9 @@ public class NametagColor implements NametagAdapter {
     @Override
     public String getAndUpdate(Player player, Player target) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(target.getDisplayName());
-        if (profile.getBounty() > 0) {
+        if (profile == null) {
+            return createTeam(player, target, "", "", "");
+        } else if (profile.getBounty() > 0) {
             return createTeam(player, target, "bounty", "", "&e");
         } else if (profile.isJuggernaut()) {
             return createTeam(player, target, "juggernaut", "", "&4&l");
