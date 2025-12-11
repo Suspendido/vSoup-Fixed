@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;

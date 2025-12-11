@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
@@ -21,11 +21,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CopyCatKit extends Kit {
-
-    private final Kit copyCatKit = this;
 
     @Override
     public String getName() {
@@ -57,7 +56,12 @@ public class CopyCatKit extends Kit {
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        return Arrays.asList(new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 3).build());
+        return Collections.singletonList(
+                new ItemBuilder(Material.DIAMOND_SWORD)
+                        .enchantment(Enchantment.DAMAGE_ALL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build()
+        );
     }
 
     @Override
@@ -72,7 +76,7 @@ public class CopyCatKit extends Kit {
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        return Arrays.asList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+        return List.of(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
     }
 
     @Override
@@ -82,7 +86,6 @@ public class CopyCatKit extends Kit {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
@@ -93,22 +96,25 @@ public class CopyCatKit extends Kit {
         Profile killerProfile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());
         Profile victimProfile = plugin.getProfilesHandler().getProfileByUUID(victim.getUniqueId());
 
+        if (killerProfile == null || victimProfile == null) return;
         if (killerProfile.isInEvent() || killerProfile.getProfileState() == ProfileState.SPAWN) return;
-        if (!copyCatKit.equals(killerProfile.getCurrentKit())) return;
 
-        Kit victimKit = SoupPvP.getInstance().getKitsHandler().getKitByName(victimProfile.getCurrentKit());
+        if (!killerProfile.getCurrentKit().equalsIgnoreCase(this.getName())) return;
+        Kit victimKit = plugin.getKitsHandler().getKitByName(victimProfile.getCurrentKit());
 
-        if (!killerProfile.getUnlockedKits().contains(victimKit)) {
-            killer.sendMessage(CC.translate("&cFailed to CopyCat " + victim.getName() + "'s &f" + victimKit.getName() + " &ckit."));
+        if (victimKit == null) {
+            killer.sendMessage(CC.translate("&cFailed to CopyCat " + victim.getName() + "'s kit (invalid kit)."));
             killer.playSound(killer.getLocation(), Sound.DIG_GRASS, 1F, 1F);
             return;
         }
 
-        killer.getInventory().clear();
-        killerProfile.setPreviousKit(copyCatKit.getName());
-        killerProfile.setCurrentKit(victimKit.getName());
+        if (!isKitUnlocked(killerProfile, victimKit)) {
+            killer.sendMessage(CC.translate("&cYou don't have " + victim.getName() + "'s &f" + victimKit.getName() + " &ckit unlocked!"));
+            killer.playSound(killer.getLocation(), Sound.DIG_GRASS, 1F, 1F);
+            return;
+        }
 
-        victimKit.equipKit(killer);
+        copyVictimKit(killer, killerProfile, victimKit);
         killer.playSound(killer.getLocation(), Sound.CAT_MEOW, 1F, 1F);
 
         Bukkit.getScheduler().runTaskLater(plugin, killerProfile::saveProfile, 10L);
@@ -116,5 +122,26 @@ public class CopyCatKit extends Kit {
         if (victim.hasMetadata("CopyCat")) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> victim.playSound(victim.getLocation(), Sound.CAT_HISS, 1F, 1F), 40L);
         }
+    }
+
+    private boolean isKitUnlocked(Profile killerProfile, Kit victimKit) {
+        List<String> unlockedKits = killerProfile.getUnlockedKits();
+        if (unlockedKits == null) return false;
+
+        for (String unlockedKit : unlockedKits) {
+            if (unlockedKit.equalsIgnoreCase(victimKit.getName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void copyVictimKit(Player killer, Profile killerProfile, Kit victimKit) {
+        killer.getInventory().clear();
+        killer.getInventory().setArmorContents(null);
+        killerProfile.setPreviousKit(this.getName());
+        killerProfile.setCurrentKit(victimKit.getName());
+        victimKit.equipKit(killer);
     }
 }

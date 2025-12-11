@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
@@ -95,7 +95,7 @@ public class CactusKit extends Kit {
             return;
         }
 
-        if (!this.equals(profile.getCurrentKit())) return;
+        if (!profile.getCurrentKit().equals(getName())) return;
 
         if (RANDOM.nextDouble() <= REFLECT_CHANCE) {
             double reflected = event.getDamage() * REFLECT_PERCENTAGE;

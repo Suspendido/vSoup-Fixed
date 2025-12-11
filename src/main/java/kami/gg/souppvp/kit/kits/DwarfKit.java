@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
@@ -28,6 +28,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class DwarfKit extends Kit {
+
+    @Getter
+    private static final Map<UUID, Float> chargeUp = new HashMap<>();
+    private static final Map<UUID, Boolean> fullChargeNotified = new HashMap<>();
 
     @Override
     public String getName() {
@@ -86,63 +90,61 @@ public class DwarfKit extends Kit {
     }
 
     @Override
-    public void onSelect(Player player) { }
-
-    @Getter
-    private static final Map<UUID, Float> chargeUp = new HashMap<>();
+    public void onSelect(Player player) {
+        chargeUp.put(player.getUniqueId(), 0F);
+        fullChargeNotified.put(player.getUniqueId(), false);
+    }
 
     @Override
     public void setup() {
         new BukkitRunnable() {
             @Override
             public void run() {
-                Kit dwarf = SoupPvP.getInstance().getKitsHandler().getKitByName("Dwarf");
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
                     if (profile == null) continue;
+                    if (!profile.getCurrentKit().equals(getName())) continue;
 
-                    Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-
-                    if (current != dwarf) continue;
                     if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) continue;
                     if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Charged Up", true)) continue;
 
                     float charge = chargeUp.getOrDefault(player.getUniqueId(), 0F);
+                    boolean wasFullyCharged = charge >= 1.0F;
 
                     if (player.isSneaking()) {
                         charge = Math.min(1.0F, charge + 0.1F);
 
-                        if (charge >= 1.0F && !chargeUp.containsKey(player.getUniqueId())) {
+                        if (charge >= 1.0F && !wasFullyCharged) {
                             player.sendMessage(CC.translate("&6&lYou are fully Charged Up!"));
+                            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1f);
+                            fullChargeNotified.put(player.getUniqueId(), true);
+                        } else if (charge < 1.0F) {
+                            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, charge + 0.5f);
                         }
-
-                        player.playSound(player.getLocation(), Sound.NOTE_PIANO, 1f, 1f);
 
                     } else {
                         charge = Math.max(0F, charge - 0.1F);
+
+                        if (charge < 1.0F) {
+                            fullChargeNotified.put(player.getUniqueId(), false);
+                        }
                     }
 
                     chargeUp.put(player.getUniqueId(), charge);
                     player.setExp(charge);
                 }
             }
-
-        }.runTaskTimerAsynchronously(SoupPvP.getInstance(), 0L, 20L);
+        }.runTaskTimer(SoupPvP.getInstance(), 0L, 10L);
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-
-        if (!(event.getEntity() instanceof Player victim) || !(event.getDamager() instanceof Player damager))
-            return;
+        if (!(event.getEntity() instanceof Player victim)) return;
+        if (!(event.getDamager() instanceof Player damager)) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damager.getUniqueId());
         if (profile == null) return;
-
-        Kit dwarf = SoupPvP.getInstance().getKitsHandler().getKitByName("Dwarf");
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-
-        if (current != dwarf) return;
+        if (!profile.getCurrentKit().equalsIgnoreCase(this.getName())) return;
 
         if (chargeUp.getOrDefault(damager.getUniqueId(), 0F) < 1.0F) return;
 
@@ -158,18 +160,19 @@ public class DwarfKit extends Kit {
 
         Vector velocity = victim.getLocation().toVector()
                 .subtract(damager.getLocation().toVector())
-                .multiply(0.8)
-                .setY(1.9);
+                .normalize()
+                .multiply(1.2)
+                .setY(1.0);
 
-        Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
-
-            damager.setExp(0);
+        Bukkit.getScheduler().runTask(SoupPvP.getInstance(), () -> {
+            damager.setExp(0F);
             damager.setLevel(0);
 
             victim.setVelocity(velocity);
 
             victim.getWorld().playEffect(victim.getLocation(), Effect.EXPLOSION_HUGE, 1, 10);
             victim.playSound(victim.getLocation(), Sound.EXPLODE, 1f, 1f);
+            damager.playSound(damager.getLocation(), Sound.EXPLODE, 1f, 0.8f);
 
             SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
                     damager.getUniqueId(),
@@ -179,22 +182,17 @@ public class DwarfKit extends Kit {
             XPBarTimer.runXpBar(damager, 10);
 
             chargeUp.put(damager.getUniqueId(), 0F);
-
-        }, 3L);
+            fullChargeNotified.put(damager.getUniqueId(), false);
+        });
     }
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-
         if (!(event.getEntity() instanceof Player player)) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null) return;
-
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-        Kit dwarf = SoupPvP.getInstance().getKitsHandler().getKitByName("Dwarf");
-
-        if (current != dwarf) return;
+        if (!profile.getCurrentKit().equalsIgnoreCase(this.getName())) return;
 
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             event.setDamage(event.getDamage() / 3.0);
@@ -203,11 +201,15 @@ public class DwarfKit extends Kit {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        chargeUp.remove(event.getEntity().getUniqueId());
+        UUID uuid = event.getEntity().getUniqueId();
+        chargeUp.remove(uuid);
+        fullChargeNotified.remove(uuid);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        chargeUp.remove(event.getPlayer().getUniqueId());
+        UUID uuid = event.getPlayer().getUniqueId();
+        chargeUp.remove(uuid);
+        fullChargeNotified.remove(uuid);
     }
 }
