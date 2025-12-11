@@ -121,7 +121,10 @@ public class NametagManager {
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
                         .replace("%rank%", SoupPvP.getInstance().getRankHook().getRankColor(target) + SoupPvP.getInstance().getRankHook().getRankName(target))
                         .replace("%rank-prefix%", SoupPvP.getInstance().getRankHook().getRankPrefix(target))
+                        .replace("%rank_color%", SoupPvP.getInstance().getRankHook().getRankColor(target.getPlayer()))
+                        .replace("%rank_suffix%", SoupPvP.getInstance().getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%bounty%", String.valueOf(bountyValue))
+
                 );
             }
             handleLunar(target, viewer, CC.translate(lines));
