@@ -1,13 +1,11 @@
 package kami.gg.souppvp.listener;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.handlers.SpawnHandler;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.*;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -22,93 +20,84 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class GeneralListeners implements Listener {
 
+    private static final Random RANDOM = new Random();
+    private final SoupPvP plugin = SoupPvP.getInstance();
+
     @EventHandler
-    public void onPlayerItemDamageEvent(PlayerItemDamageEvent event) {
-        Random random = new Random();
-        if (50 < random.nextInt(100)) {
+    public void onPlayerItemDamage(PlayerItemDamageEvent event) {
+        if (RANDOM.nextInt(100) < 50) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+
         event.setDeathMessage(null);
         event.getDrops().clear();
         event.setDroppedExp(0);
-        for (Player player : Bukkit.getOnlinePlayers()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        }
 
-        Profile playerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getUniqueId());
-        Perk profilePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName(playerProfile.getActivePerks().get(2));
-        Perk conartistPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Conartist");
-        if (profilePerk == conartistPerk){
-            if (new Random().nextInt(101) <= 50) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(SoupPvP.getInstance(), () -> event.getEntity().spigot().respawn(), 2L);
+        Profile playerProfile = plugin.getProfilesHandler().getProfileByUUID(victim.getUniqueId());
+
+        // Conartist perk check
+        if (playerProfile != null && !playerProfile.getActivePerks().isEmpty() && playerProfile.getActivePerks().size() > 2) {
+            Perk profilePerk = plugin.getPerksHandler().getPerkByName(playerProfile.getActivePerks().get(2));
+            Perk conartistPerk = plugin.getPerksHandler().getPerkByName("Conartist");
+
+            if (profilePerk != null && profilePerk.equals(conartistPerk) && RANDOM.nextInt(101) <= 50) {
+                Bukkit.getScheduler().runTaskLater(plugin, () -> victim.spigot().respawn(), 2L);
                 return;
             }
         }
+
+        // Drop mushroom soup
+        Location deathLocation = victim.getLocation();
+        World world = victim.getWorld();
         ItemStack mushroom = new ItemStack(Material.MUSHROOM_SOUP);
-        for (int i=0; i<9; i++){
-            event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), mushroom);
+
+        for (int i = 0; i < 9; i++) {
+            world.dropItemNaturally(deathLocation, mushroom);
         }
-        Location deathLocation = event.getEntity().getLocation();
-        TaskUtil.runLater(() -> {
-            for (Entity entity : Bukkit.getServer().getWorld("world").getEntities()) {
-                if (entity.getLocation().distance(deathLocation) > 5){
-                    return;
-                }
-                if (entity.getType().equals(EntityType.DROPPED_ITEM)) {
+
+        // Remove dropped items after 3 seconds
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Entity entity : world.getNearbyEntities(deathLocation, 5, 5, 5)) {
+                if (entity.getType() == EntityType.DROPPED_ITEM) {
                     entity.remove();
                 }
             }
         }, 60L);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(SoupPvP.getInstance(), () -> event.getEntity().spigot().respawn(), 2L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> victim.spigot().respawn(), 2L);
     }
 
     @EventHandler
-    public void onPlayerAutoRespawnEvent(PlayerRespawnEvent event){
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
+        Location spawn = Bukkit.getWorlds().getFirst().getSpawnLocation().add(0.5, 0, 0.5);
 
-        Location spawn = Bukkit.getWorlds().get(0).getSpawnLocation();
-        spawn.add(0.5, 0, 0.5);
         player.teleport(spawn);
-
         PlayerUtil.resetPlayer(player);
     }
 
-    /*@EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)){
-            Player player = event.getPlayer();
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK && player.getGameMode() != GameMode.CREATIVE) {
-                if (event.getClickedBlock() != null && (event.getClickedBlock().getType() == Material.ENDER_CHEST || event.getClickedBlock().getType() == Material.CHEST)) {
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }*/
-
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getPlayer().hasMetadata("build")){
+        Player player = event.getPlayer();
+
+        if (player.hasMetadata("build")) {
             event.setCancelled(false);
             event.setUseItemInHand(Event.Result.DEFAULT);
-        } else {
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(event.getPlayer())){
-                event.setCancelled(true);
-            }
+        } else if (plugin.getSpawnHandler().getCuboid().contains(player)) {
+            event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority= EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onBlockIgnite(BlockIgniteEvent event) {
         if (event.getCause() == BlockIgniteEvent.IgniteCause.SPREAD) {
             event.setCancelled(true);
@@ -116,88 +105,96 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    public void onBlockPlaceEvent(BlockPlaceEvent event) {
-        if (!event.getPlayer().hasMetadata("build")){
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onBlockBreakEvent(BlockBreakEvent event) {
+    public void onBlockPlace(BlockPlaceEvent event) {
         if (!event.getPlayer().hasMetadata("build")) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onFoodLevelChangeEvent(FoodLevelChangeEvent event) {
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!event.getPlayer().hasMetadata("build")) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onExplosionPrimeEvent(ExplosionPrimeEvent event) {
+    public void onExplosionPrime(ExplosionPrimeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
-    public void onEntityExplodeEvent(EntityExplodeEvent event) {
+    public void onEntityExplode(EntityExplodeEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if (player.getGameMode() == GameMode.SURVIVAL){
-            ItemStack itemStack = event.getItemDrop().getItemStack();
-            Material itemType = itemStack.getType();
-            String itemTypeName = itemType.name().toLowerCase();
-            if (itemTypeName.contains("sword") || itemTypeName.contains("axe") || itemType == Material.BOW) {
-                player.sendMessage(CC.translate("&cYou can't drop your attacking weapon."));
-                event.setCancelled(true);
-            }
-            if (itemTypeName.contains("helmet") || itemTypeName.contains("chestplate") || itemTypeName.contains("leggings") || itemTypeName.contains("boots")) {
-                player.sendMessage(CC.translate("&cYou can't drop your armor."));
-                event.setCancelled(true);
-            }
-            if (itemType == Material.BOWL) {
-                event.getItemDrop().remove();
-            } else {
-                TasksUtility.runTaskLater(() -> {
-                    event.getItemDrop().remove();
-                }, 5 * 20);
-            }
+
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+
+        ItemStack item = event.getItemDrop().getItemStack();
+        Material type = item.getType();
+        String typeName = type.name().toLowerCase();
+
+        // Prevent dropping weapons
+        if (typeName.contains("sword") || typeName.contains("axe") || type == Material.BOW) {
+            player.sendMessage(CC.translate("&cYou can't drop your attacking weapon."));
+            event.setCancelled(true);
+            return;
+        }
+
+        // Prevent dropping armor
+        if (typeName.contains("helmet") || typeName.contains("chestplate") || typeName.contains("leggings") || typeName.contains("boots")) {
+            player.sendMessage(CC.translate("&cYou can't drop your armor."));
+            event.setCancelled(true);
+            return;
+        }
+
+        // Remove bowls instantly, other items after 5 seconds
+        if (type == Material.BOWL) {
+            event.getItemDrop().remove();
+        } else {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> event.getItemDrop().remove(), 100L);
         }
     }
 
     @EventHandler
-    public void onPlayerPickupItemEvent(PlayerPickupItemEvent event){
-        if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)) {
-            Player player = event.getPlayer();
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (profile.getProfileState() == ProfileState.SPAWN){
-                event.setCancelled(true);
-            }
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId());
+
+        if (profile != null && profile.getProfileState() == ProfileState.SPAWN) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onPluginEnableEvent(PluginEnableEvent event) {
-        World lobbyWorld = Bukkit.getWorld("world");
-        lobbyWorld.setGameRuleValue("doDaylightCycle", "false");
-        lobbyWorld.setTime(6000);
-        lobbyWorld.setStorm(false);
-        lobbyWorld.setWeatherDuration(0);
-        lobbyWorld.setAnimalSpawnLimit(0);
-        lobbyWorld.setAmbientSpawnLimit(0);
-        lobbyWorld.setMonsterSpawnLimit(0);
-        lobbyWorld.setWaterAnimalSpawnLimit(0);
-        lobbyWorld.setDifficulty(Difficulty.HARD);
+    public void onPluginEnable(PluginEnableEvent event) {
+        World world = Bukkit.getWorld("world");
+        if (world == null) return;
+
+        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setTime(6000);
+        world.setStorm(false);
+        world.setWeatherDuration(0);
+        world.setAnimalSpawnLimit(0);
+        world.setAmbientSpawnLimit(0);
+        world.setMonsterSpawnLimit(0);
+        world.setWaterAnimalSpawnLimit(0);
+        world.setDifficulty(Difficulty.HARD);
     }
 
     @EventHandler
     public void onSignCreate(SignChangeEvent event) {
-        Player player = event.getPlayer();
-        if (player.getGameMode().equals(GameMode.CREATIVE)) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             String[] lines = event.getLines();
             for (int i = 0; i < lines.length; i++) {
                 event.setLine(i, CC.translate(lines[i]));
@@ -211,12 +208,12 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoinEvent(PlayerJoinEvent event){
+    public void onPlayerJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
     }
 
     @EventHandler
-    public void onPlayerQuitEvent(PlayerQuitEvent event){
+    public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
     }
 
@@ -230,33 +227,22 @@ public class GeneralListeners implements Listener {
         event.setCancelled(true);
     }
 
-    public void onBlockSpreadEvent(BlockSpreadEvent event){
+    @EventHandler
+    public void onBlockSpread(BlockSpreadEvent event) {
         if (event.getNewState().getType() == Material.FIRE) {
             event.setCancelled(true);
         }
     }
 
-    /*@EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event) {
-        if (!(SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId()).getProfileState().equals(ProfileState.COMBAT))){
-            event.setCancelled(true);
-        }
-    }*/
-
     @EventHandler
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() instanceof Arrow) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    event.getEntity().remove();
-                }
-            }.runTaskLater(SoupPvP.getInstance(), 15 * 10);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> event.getEntity().remove(), 150L);
         }
     }
 
     @EventHandler
-    public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.EGG) {
             event.setCancelled(true);
         }
@@ -265,49 +251,54 @@ public class GeneralListeners implements Listener {
     @EventHandler
     public void onBlockFromTo(BlockFromToEvent event) {
         int id = event.getBlock().getTypeId();
-        if(id == 8 || id == 9) {
+        if (id == 8 || id == 9) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler (priority = EventPriority.LOW)
-    public void enderPearlThrown(PlayerTeleportEvent event) {
+    @EventHandler(priority = EventPriority.LOW)
+    public void onEnderPearlThrow(PlayerTeleportEvent event) {
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) return;
+
         Player player = event.getPlayer();
-        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(event.getTo())){
-                player.sendMessage(CC.translate("&cYou may not pearl into spawn."));
-                event.setCancelled(true);
-            }
+
+        if (plugin.getSpawnHandler().getCuboid().contains(event.getTo())) {
+            player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL));
+            player.sendMessage(CC.translate("&cYou may not pearl into spawn."));
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onPlayerMoveEvent(PlayerMoveEvent event){
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) return;
         Player player = event.getPlayer();
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile.getProfileState() == ProfileState.COMBAT){
-            if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) return;
-            player.teleport(findNearestLocationNearSpawnCuboid(player.getLocation().getBlock()).add(0.5, 0, 0.5));
-        }
-    }
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-    private static Location findNearestLocationNearSpawnCuboid(Block block){
-        ArrayList<Location> placingLocation = new ArrayList<>();
-        placingLocation.add(block.getLocation().add(0, 0, 0));
-        placingLocation.add(block.getLocation().add(1, 0, 0));
-        placingLocation.add(block.getLocation().add(1, 0, 1));
-        placingLocation.add(block.getLocation().add(0, 0, 1));
-        placingLocation.add(block.getLocation().add(-1, 0, 1));
-        placingLocation.add(block.getLocation().add(-1, 0, 0));
-        placingLocation.add(block.getLocation().add(-1, 0, -1));
-        placingLocation.add(block.getLocation().add(0, 0, -1));
-        placingLocation.add(block.getLocation().add(1, 0, -1));
-        for (Location location : placingLocation){
-            if (!SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(location)){
-                return location;
+        if (profile == null || profile.getProfileState() != ProfileState.COMBAT) return;
+        if (!plugin.getSpawnHandler().getCuboid().contains(player)) return;
+
+        // Find nearest safe location
+        Location current = player.getLocation();
+        Location safe = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                Location check = current.clone().add(x, 0, z);
+
+                if (!plugin.getSpawnHandler().getCuboid().contains(check)) {
+                    double distance = check.distanceSquared(current);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        safe = check;
+                    }
+                }
             }
         }
-        return null;
-    }
 
+        if (safe != null) {
+            player.teleport(safe.add(0.5, 0, 0.5));
+        }
+    }
 }
