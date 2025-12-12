@@ -11,7 +11,7 @@ import java.util.List;
 
 public class HelmetButton extends Button {
 
-    private Kit kit;
+    private final Kit kit;
 
     public HelmetButton(Kit kit){
         this.kit = kit;

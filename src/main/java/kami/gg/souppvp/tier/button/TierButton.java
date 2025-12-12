@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TierButton extends Button {
 
-    private Tiers tier;
+    private final Tiers tier;
 
     public TierButton(Tiers tier){
         this.tier = tier;
@@ -40,6 +40,6 @@ public class TierButton extends Button {
         if (profileTier == tier){
             lore.add(CC.translate("&a&lYour Current Tier"));
         }
-        return new ItemBuilder(Material.PAPER).name(CC.translate("&b" + tier.getDisplay())).lore(lore).build();
+        return new ItemBuilder(Material.NAME_TAG).name(CC.translate("&b" + tier.getDisplay())).lore(lore).build();
     }
 }

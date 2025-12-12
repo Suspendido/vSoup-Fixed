@@ -106,7 +106,7 @@ public class PlayerUtil {
         player.setMetadata("noFall", new FixedMetadataValue(SoupPvP.getInstance(), "noFall"));
         Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
-        if (current == SoupPvP.getInstance().getKitsHandler().getKitByName("CopyCat")) {
+        if (current == SoupPvP.getInstance().getKitsHandler().getKits()) {
             player.removeMetadata("CopyCat", SoupPvP.getInstance());
         }
         if (profile.isJuggernaut()) {
@@ -118,7 +118,7 @@ public class PlayerUtil {
         }
 
         SoupPvP.getInstance().getTimersHandler().removeAllPlayerTimers(player.getUniqueId());
-        XPBarTimer.remove(player);
+        TasksUtility.runTaskAsync(() -> XPBarTimer.remove(player));
         SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().remove(player.getUniqueId());
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
         SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(player.getUniqueId());

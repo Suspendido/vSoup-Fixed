@@ -72,6 +72,7 @@ public class CommandManager {
                 new SetKillsCommand(this),
                 new SetBountyCommand(this),
                 new SetDeathsCommand(this),
+                new SetExperience(this),
                 new SetCreditsCommand(this)
         ));
     }

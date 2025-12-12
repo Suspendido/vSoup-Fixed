@@ -60,7 +60,7 @@ public class KitsHandler {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new EskimoKit(), SoupPvP.getInstance());
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StomperKit(), SoupPvP.getInstance());
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new SwitcherooKit(), SoupPvP.getInstance());
-        //SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new WitherKit(), SoupPvP.getInstance());
+//        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new WitherKit(), SoupPvP.getInstance());
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new BarbarianKit(), SoupPvP.getInstance());
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new NinjaKit(), SoupPvP.getInstance());
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TorchKit(), SoupPvP.getInstance());

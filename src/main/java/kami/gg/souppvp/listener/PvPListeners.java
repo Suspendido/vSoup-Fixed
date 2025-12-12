@@ -112,7 +112,6 @@ public class PvPListeners implements Listener {
                 Player online = Bukkit.getPlayer(p.getUuid());
                 if (online == null) continue;
 
-                online.sendMessage(CC.translate("&e" + player.getName() + " &adied."));
                 if (p.equals(profile)) {
                     online.sendMessage(CC.translate("&cYou died."));
                 }

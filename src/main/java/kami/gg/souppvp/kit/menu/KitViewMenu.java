@@ -17,18 +17,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-@Getter
-@Setter
+@Getter @Setter
 public class KitViewMenu extends Menu {
 
     private Kit kit;
 
-    public KitViewMenu(Kit kit){
+    public KitViewMenu(Kit kit) {
         this.kit = kit;
     }
 
@@ -39,46 +36,37 @@ public class KitViewMenu extends Menu {
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        Map<Integer, Button> buttonMap = new HashMap<>();
-        int j = 0;
-        int position = 27;
-        for (ItemStack itemStack : kit.getCombatEquipments()){
-            buttonMap.put(position, new CombatEquipmentButton(kit, j));
-            j++;
-            position++;
+        Map<Integer, Button> buttons = new HashMap<>();
+
+        int slot = 27;
+        for (int i = 0; i < kit.getCombatEquipments().size(); i++) {
+            buttons.put(slot++, new CombatEquipmentButton(kit, i));
         }
-        List<ItemStack> list;
-        list = Arrays.asList(kit.getArmor());
-        if (list.get(0) == null){
-            buttonMap.put(36, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        } else {
-            buttonMap.put(36, new HelmetButton(kit));
+
+        ItemStack[] armor = kit.getArmor();
+        putArmor(buttons, 36, armor[3], new HelmetButton(kit));
+        putArmor(buttons, 37, armor[2], new ChestplateButton(kit));
+        putArmor(buttons, 38, armor[1], new LeggingsButton(kit));
+        putArmor(buttons, 39, armor[0], new BootsButton(kit));
+
+        buttons.put(40, new PotionEffectsButton(kit));
+        buttons.put(44, new BackButton(new KitsSelectMenu()));
+
+        for (int i = 0; i < 36; i++) {
+            buttons.putIfAbsent(i, Button.placeholder(Material.MUSHROOM_SOUP, (byte) 0, ""));
         }
-        if (list.get(1) == null){
-            buttonMap.put(37, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        } else {
-            buttonMap.put(37, new ChestplateButton(kit));
+        for (int i = 41; i < 45; i++) {
+            buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
         }
-        if (list.get(2) == null){
-            buttonMap.put(38, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        } else {
-            buttonMap.put(38, new LeggingsButton(kit));
-        }
-        if (list.get(3) == null){
-            buttonMap.put(39, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        } else {
-            buttonMap.put(39, new BootsButton(kit));
-        }
-        buttonMap.put(40, new PotionEffectsButton(kit));
-        buttonMap.put(44, new BackButton(new KitsSelectMenu()));
-        for (int i=0; i<36; i++){
-            buttonMap.putIfAbsent(i, Button.placeholder(Material.MUSHROOM_SOUP, (byte) 0, ""));
-        }
-        for (int i=41; i<45; i++){
-            buttonMap.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        }
-        return buttonMap;
+
+        return buttons;
     }
 
-
+    private void putArmor(Map<Integer, Button> map, int slot, ItemStack item, Button button) {
+        if (item == null) {
+            map.put(slot, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+        } else {
+            map.put(slot, button);
+        }
+    }
 }

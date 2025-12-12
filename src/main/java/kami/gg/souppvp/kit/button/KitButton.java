@@ -2,6 +2,7 @@ package kami.gg.souppvp.kit.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.kit.menu.KitViewMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
@@ -65,12 +66,18 @@ public class KitButton extends Button {
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (!clickType.isLeftClick()) return;
-
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         String kitName = kit.getName();
         boolean freeMode = SoupPvP.getIsFreeKitsMode();
         boolean unlocked = profile.getUnlockedKits().contains(kitName);
+
+        if (clickType.isRightClick()) {
+            PlayerUtil.playSound(player, Sound.CLICK);
+            new KitViewMenu(kit).openMenu(player);
+            return;
+        }
+
+        if (!clickType.isLeftClick()) return;
 
         if (freeMode) {
             equip(player, profile, kitName);
@@ -84,6 +91,7 @@ public class KitButton extends Button {
 
         if (profile.getCredits() < kit.getPrice()) {
             PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            player.sendMessage(CC.translate("&cNot enough credits!"));
             return;
         }
 

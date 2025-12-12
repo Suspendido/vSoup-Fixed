@@ -26,17 +26,23 @@ public class KitsSelectMenu extends Menu {
     @Override
     public Map<Integer, Button> getButtons(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Map<Integer, Button> buttonMap = new HashMap<>();
-        buttonMap.put(2, new RandomKitButton());
-        buttonMap.put(4, new YourStatisticsButton(profile));
-        buttonMap.put(6, new SelectPreviousKitButton(profile));
-        for (int i=0; i<18; i++){
-            buttonMap.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
+
+        Map<Integer, Button> buttons = new HashMap<>();
+
+        buttons.put(2, new RandomKitButton());
+        buttons.put(4, new YourStatisticsButton(profile));
+        buttons.put(6, new SelectPreviousKitButton(profile));
+
+        for (int i = 0; i < 18; i++) {
+            buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
         }
-        for (Kit kit : SoupPvP.getInstance().getKitsHandler().getKits()){
-            buttonMap.put(buttonMap.size(), new KitButton(kit));
+
+        int slot = 18;
+        for (Kit kit : SoupPvP.getInstance().getKitsHandler().getKits()) {
+            buttons.put(slot++, new KitButton(kit));
         }
-        return buttonMap;
+
+        return buttons;
     }
 
     @Override

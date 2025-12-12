@@ -2,7 +2,6 @@ package kami.gg.souppvp.kit.button.view.amor;
 
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.util.menu.Button;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class BootsButton extends Button {
 
-    private Kit kit;
+    private final Kit kit;
 
     public BootsButton(Kit kit){
         this.kit = kit;
@@ -20,7 +19,7 @@ public class BootsButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         List<ItemStack> list = Arrays.asList(kit.getArmor());
-        return list.get(0);
+        return list.getFirst();
     }
 
 }
