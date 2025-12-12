@@ -60,6 +60,7 @@ public class SoupPvPCommand extends Command {
                     SoupPvP.getInstance().getTablistManager().reload();
                     SoupPvP.getInstance().getScoreboardManager().reload();
                     SoupPvP.getInstance().getNametagManager().reload();
+                    SoupPvP.getInstance().getMapManager().reload();
 
                     long endTime = System.currentTimeMillis();
                     sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &aConfigs reloaded! &7(" + (endTime - startTime) + "ms)"));

@@ -1,5 +1,6 @@
 package kami.gg.souppvp;
 
+import com.github.llanezsa.library.Library;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mongodb.MongoClient;
@@ -18,9 +19,11 @@ import kami.gg.souppvp.juggernaut.JuggernautListener;
 import kami.gg.souppvp.killstreak.KillstreaksHandler;
 import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.listener.*;
+import kami.gg.souppvp.map.MapManager;
 import kami.gg.souppvp.nametag.NametagManager;
 import kami.gg.souppvp.nametag.NametagListener;
 import kami.gg.souppvp.perk.PerksHandler;
+import kami.gg.souppvp.placeholder.SoupPlaceholderAdapter;
 import kami.gg.souppvp.scoreboard.ScoreboardAdapter;
 import kami.gg.souppvp.scoreboard.ScoreboardManager;
 import kami.gg.souppvp.storage.FlatFileHandler;
@@ -43,6 +46,7 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.*;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Type;
@@ -85,6 +89,7 @@ public class SoupPvP extends JavaPlugin {
     private NametagManager nametagManager;
     private RankHook rankHook;
     private ClientHook clientHook;
+    private MapManager mapManager;
 
     @Override
     public void onEnable(){
@@ -116,12 +121,17 @@ public class SoupPvP extends JavaPlugin {
         saveProfilesTask = new SaveProfilesTask();
         clearTimerCacheTask = new ClearTimerCacheTask();
         canaPerkAndFiremanKitTask = new CanaPerkAndFiremanKitTask();
+        mapManager = new MapManager();
         rankHook = new RankHook();
         clientHook = new ClientHook();
         (new PacketBorderHandler()).start();
 
         setupAssemble();
         assemble.setTicks(2);
+
+        if (verifyPlugin("Library", SoupPvP.getInstance())) {
+            Library.get().getPlaceholderHandler().registerPlaceholder(new SoupPlaceholderAdapter());
+        }
 
         registerListeners();
         new CommandManager(this);
@@ -237,5 +247,10 @@ public class SoupPvP extends JavaPlugin {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new JuggernautListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StrengthAndInstantHarmNerfListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TimersListener(), this);
+    }
+
+    public static boolean verifyPlugin(String plugin, SoupPvP instance) {
+        PluginManager pm = instance.getServer().getPluginManager();
+        return pm.getPlugin(plugin) != null;
     }
 }
