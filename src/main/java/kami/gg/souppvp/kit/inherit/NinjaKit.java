@@ -7,7 +7,6 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
-import kami.gg.souppvp.util.projectile.TypedRunnable;
 import kami.gg.souppvp.util.projectile.event.CustomProjectileHitEvent;
 import kami.gg.souppvp.util.projectile.projectile.ItemProjectile;
 import org.bukkit.*;
@@ -29,8 +28,7 @@ public class NinjaKit extends Kit {
 
     private final String TIMER_NAME = "Shuriken";
     private final int SHURIKEN_COOLDOWN = 10;
-    private final ItemStack SHURIKEN_ITEM =
-            new ItemBuilder(Material.NETHER_STAR).name(CC.translate("&bShuriken")).amount(4).build();
+    private final ItemStack SHURIKEN_ITEM = new ItemBuilder(Material.NETHER_STAR).name(CC.translate("&bShuriken")).amount(4).build();
 
     @Override
     public String getName() {
@@ -102,9 +100,8 @@ public class NinjaKit extends Kit {
         if (killer == null) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
-        if (current != this || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!profile.getCurrentKit().equals(getName()) || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
 
         for (ItemStack armor : killer.getInventory().getArmorContents()) {
             if (armor != null) {
@@ -128,9 +125,8 @@ public class NinjaKit extends Kit {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
-        if (current != this) return;
+        if (!profile.getCurrentKit().equals(getName())) return;
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
         if (item == null || !item.isSimilar(SHURIKEN_ITEM)) return;
 
@@ -139,8 +135,7 @@ public class NinjaKit extends Kit {
 
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
             long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
-            player.sendMessage(ChatColor.RED + "You can't use this for another "
-                    + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
             return;
         }
 
@@ -148,8 +143,7 @@ public class NinjaKit extends Kit {
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
 
         ItemProjectile projectile = new ItemProjectile("SHURIKEN", player, new ItemStack(Material.NETHER_STAR), 2);
-        projectile.addTypedRunnable((TypedRunnable<ItemProjectile>) o ->
-                o.getEntity().getWorld().spigot().playEffect(o.getEntity().getLocation(), Effect.HAPPY_VILLAGER));
+        projectile.addTypedRunnable(o -> o.getEntity().getWorld().spigot().playEffect(o.getEntity().getLocation(), Effect.HAPPY_VILLAGER));
 
         // Remove 1 shuriken
         item.setAmount(item.getAmount() - 1);

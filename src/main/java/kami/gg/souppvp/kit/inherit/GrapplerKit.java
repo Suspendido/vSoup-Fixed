@@ -6,7 +6,11 @@ import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.timer.Timer;
-import kami.gg.souppvp.util.*;
+import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.DurationFormatter;
+import kami.gg.souppvp.util.ItemBuilder;
+import kami.gg.souppvp.util.PlayerUtil;
+import kami.gg.souppvp.util.XPBarTimer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,11 +27,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class GrapplerKit extends Kit {
+
+    private final ItemStack grapplerRod = new ItemBuilder(Material.FISHING_ROD).name(CC.translate("&aGrappler")).build();
 
     @Override
     public String getName() {
@@ -46,23 +51,26 @@ public class GrapplerKit extends Kit {
 
     @Override
     public ItemStack getIcon() {
-        return new ItemBuilder(Material.FISHING_ROD).build();
+        return grapplerRod;
     }
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Have the ability to take daily vacations. Using your grappler, you can");
-        description.add("&7hook yourself onto locations and can travel a vast distance if accurate.");
-        return description;
+        return List.of(
+                "&7Have the ability to take daily vacations. Using your grappler, you can",
+                "&7hook yourself onto locations and can travel a vast distance if accurate."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 3).build());
-        itemStacks.add(new ItemBuilder(Material.FISHING_ROD).name(CC.translate("&aGrappler")).build());
-        return itemStacks;
+        return List.of(
+                new ItemBuilder(Material.IRON_SWORD)
+                        .enchantment(Enchantment.DAMAGE_ALL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+                grapplerRod
+        );
     }
 
     @Override
@@ -77,9 +85,7 @@ public class GrapplerKit extends Kit {
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-        return potionEffects;
+        return List.of(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
     }
 
     @Override
@@ -87,19 +93,28 @@ public class GrapplerKit extends Kit {
 
     }
 
+    private boolean isInvalid(Profile p) {
+        return p.isInEvent() || p.getProfileState() == ProfileState.SPAWN;
+    }
+
+    private boolean isGrappler(Profile p) {
+        return p.getCurrentKit().equals(getName());
+    }
+
     @EventHandler
     public void onGrappleLaunch(ProjectileLaunchEvent event) {
-        if (event.getEntity().getShooter() instanceof Player && event.getEntity().getType() == EntityType.FISHING_HOOK){
-            Player shooter = (Player) event.getEntity().getShooter();
-            Profile shooterProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(shooter.getUniqueId());
-            Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Grappler");
-            if (shooterProfile.isInEvent() || shooterProfile.getProfileState() == ProfileState.SPAWN) return;
-            if (shooterProfile.getCurrentKit().equals(kit)){
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(shooter.getUniqueId(), "Grappler", true)) {
-                    shooter.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(shooter.getUniqueId(), "Grappler", true), true) + ChatColor.RED + ".");
-                    event.setCancelled(true);
-                }
-            }
+        if (!(event.getEntity().getShooter() instanceof Player player)) return;
+        if (event.getEntity().getType() != EntityType.FISHING_HOOK) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null || isInvalid(profile) || !isGrappler(profile)) return;
+
+        var timers = SoupPvP.getInstance().getTimersHandler();
+
+        if (timers.hasTimer(player.getUniqueId(), "Grappler", true)) {
+            long remaining = timers.getRemaining(player.getUniqueId(), "Grappler", true);
+            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+            event.setCancelled(true);
         }
     }
 
@@ -107,38 +122,37 @@ public class GrapplerKit extends Kit {
     public void onPlayerFishEvent(PlayerFishEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Grappler");
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
-            if (event.getPlayer().getItemInHand().getType() == this.getCombatEquipments().get(1).getType()) {
-                if (event.getHook().isValid()) {
-                    if (event.getState() == PlayerFishEvent.State.FISHING) {
-                        return;
-                    }
-                    final Entity hooked = event.getHook();
-                    if (hooked == null) {
-                        return;
-                    }
-                    if (event.getCaught() != null) {
-                        event.getHook().remove();
-                        return;
-                    }
-                    final Location location = player.getLocation();
-                    final Location hookedLocation = hooked.getLocation();
-                    final Vector velocity = new Vector(
-                            hookedLocation.getX() - location.getX(),
-                            hookedLocation.getY() - location.getY() + 2.5,
-                            hookedLocation.getZ() - location.getZ()
-                    ).multiply(0.25);
+        if (profile == null || isInvalid(profile) || !isGrappler(profile)) return;
 
-                    player.setVelocity(velocity);
-                    hooked.remove();
-                    SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Grappler", TimeUnit.SECONDS.toMillis(30)), true);
-                    XPBarTimer.runXpBar(player, 30);
-                    PlayerUtil.playSound(player, Sound.ORB_PICKUP);
-                }
-            }
+        if (!player.getItemInHand().isSimilar(grapplerRod)) return;
+        if (!event.getHook().isValid()) return;
+        if (event.getState() == PlayerFishEvent.State.FISHING) return;
+
+        Entity hooked = event.getHook();
+        if (hooked == null) return;
+
+        if (event.getCaught() != null) {
+            event.getHook().remove();
+            return;
         }
-    }
 
+        Location pLoc = player.getLocation();
+        Location hookLoc = hooked.getLocation();
+
+        Vector velocity = new Vector(
+                hookLoc.getX() - pLoc.getX(),
+                hookLoc.getY() - pLoc.getY() + 2.5,
+                hookLoc.getZ() - pLoc.getZ()
+        ).multiply(0.25);
+
+        player.setVelocity(velocity);
+        hooked.remove();
+
+        // Add cooldown
+        var timers = SoupPvP.getInstance().getTimersHandler();
+        timers.addPlayerTimer(player.getUniqueId(), new Timer("Grappler", TimeUnit.SECONDS.toMillis(30)), true);
+        XPBarTimer.runXpBar(player, 30);
+
+        PlayerUtil.playSound(player, Sound.ORB_PICKUP);
+    }
 }

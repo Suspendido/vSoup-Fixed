@@ -93,79 +93,56 @@ public class ZeusKit extends Kit {
     }
 
     @EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event){
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Zeus");
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
-            if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
-                event.setCancelled(true);
-                player.updateInventory();
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Lightning Bolt", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Lightning Bolt", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(BlockUtil.getTargetBlock(player, 10).getLocation())){
-                    player.sendMessage(CC.translate("&cYou can't do this in spawn."));
-                } else {
-                    SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Lightning Bolt", TimeUnit.SECONDS.toMillis(45)), true);
-                    XPBarTimer.runXpBar(player, 45);
-                    PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER);
-                    FallingBlock block = event.getPlayer().getWorld().spawnFallingBlock(player.getEyeLocation(), Material.STAINED_GLASS, (byte) 4);
-                    block.setMetadata("lightning", new FixedMetadataValue(SoupPvP.getInstance(), player.getUniqueId()));
-                    block.setDropItem(false);
-                    player.getLocation().getWorld().playSound(player.getLocation(), Sound.EXPLODE, 1F, 1F);
+        if (!profile.getCurrentKit().equals(getName())) return;
+        if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (!player.getItemInHand().isSimilar(this.getCombatEquipments().get(1))) return;
 
-                    block.setVelocity(event.getPlayer().getEyeLocation().getDirection().multiply(2.5).add(new Vector(0, 0.3, 0)));
+        event.setCancelled(true);
+        player.updateInventory();
 
-                    new BukkitRunnable() {
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Lightning Bolt", true)) {
+            player.sendMessage(ChatColor.RED + "You can't use this for another " +
+                    ChatColor.YELLOW + DurationFormatter.getRemaining(
+                    SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Lightning Bolt", true), true)
+                    + ChatColor.RED + ".");
+            return;
+        }
 
-                        @Override
-                        public void run() {
-                            if (block.isDead() || !block.isValid() || !player.isOnline()) {
-                                cancel();
-                                return;
-                            }
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            return;
+        }
 
-                            for(Entity entity : block.getNearbyEntities(3, 3, 3)) {
-                                if(entity instanceof Player) {
-                                    Profile profile1 = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId());
-                                    if(entity.getUniqueId().equals(player.getUniqueId()) || profile1.getProfileState() == ProfileState.SPAWN) {
-                                        continue;
-                                    }
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                player.getUniqueId(),
+                new Timer("Lightning Bolt", TimeUnit.SECONDS.toMillis(45)),
+                true
+        );
 
-                                    block.remove();
-                                    cancel();
+        XPBarTimer.runXpBar(player, 45);
+        PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER);
 
-                                    Player found = (Player) entity;
-                                    found.damage(8, player);
-                                    player.getWorld().strikeLightning(found.getLocation());
+        boolean hit = false;
+        for (Player target : player.getWorld().getPlayers()) {
+            if (target == player) continue;
+            Profile tProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
 
-                                    break;
-                                }
-                            }
-                        }
-                    }.runTaskTimer(SoupPvP.getInstance(), 2L, 2L);
-                }
-            }
+            if (tProfile.getProfileState() == ProfileState.SPAWN) continue;
+            if (target.getLocation().distance(player.getLocation()) > 10) continue;
+
+            hit = true;
+
+            target.damage(8, player);
+            player.getWorld().strikeLightningEffect(target.getLocation());
+        }
+
+        if (!hit) {
+            player.sendMessage(CC.translate("&cNo players nearby."));
         }
     }
-
-    @EventHandler
-    public void onBlockIgnite(BlockIgniteEvent event) {
-        if (event.getCause() == BlockIgniteEvent.IgniteCause.LIGHTNING) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
-        if(event.getEntityType() == EntityType.FALLING_BLOCK && event.getEntity().hasMetadata("lightning")) {
-            event.getEntity().remove();
-            event.setCancelled(true);
-
-        }
-    }
-
 }

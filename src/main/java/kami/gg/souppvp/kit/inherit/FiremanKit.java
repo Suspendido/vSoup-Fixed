@@ -93,7 +93,6 @@ public class FiremanKit extends Kit {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-
         if (!(event.getEntity() instanceof Player player)) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
@@ -105,7 +104,7 @@ public class FiremanKit extends Kit {
 
         if (cause != EntityDamageEvent.DamageCause.FIRE && cause != EntityDamageEvent.DamageCause.LAVA && cause != EntityDamageEvent.DamageCause.FIRE_TICK) return;
 
-        if (this.equals(profile.getCurrentKit())) {
+        if (profile.getCurrentKit().equals(getName())) {
             event.setCancelled(true);
         }
     }

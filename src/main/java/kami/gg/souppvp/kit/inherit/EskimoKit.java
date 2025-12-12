@@ -7,7 +7,6 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -18,11 +17,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class EskimoKit extends Kit {
+
+    private final ItemStack ICE_ITEM = new ItemBuilder(Material.PACKED_ICE).name(CC.translate("&5Ice Dome")).build();
 
     @Override
     public String getName() {
@@ -46,36 +46,51 @@ public class EskimoKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Whenever possible, spawn in an ice dome like an igloo to");
-        description.add("&7trap enemies and gain a higher chance of killing them.");
-        return description;
+        return List.of(
+                "&7Whenever possible, spawn in an ice dome like an igloo to",
+                "&7trap enemies and gain a higher chance of killing them."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 3).build());
-        itemStacks.add(new ItemBuilder(Material.PACKED_ICE).name(CC.translate("&5Ice Dome")).build());
-        return itemStacks;
+        return List.of(
+                new ItemBuilder(Material.IRON_SWORD)
+                        .enchantment(Enchantment.DAMAGE_ALL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+
+                ICE_ITEM
+        );
     }
 
     @Override
     public ItemStack[] getArmor() {
         return new ItemStack[]{
-                new ItemBuilder(Material.LEATHER_BOOTS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_LEGGINGS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_CHESTPLATE).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build(),
-                new ItemBuilder(Material.LEATHER_HELMET).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2).enchantment(Enchantment.DURABILITY, 10).build()
+                new ItemBuilder(Material.LEATHER_BOOTS)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                        .enchantment(Enchantment.DURABILITY, 10).build(),
+
+                new ItemBuilder(Material.LEATHER_LEGGINGS)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                        .enchantment(Enchantment.DURABILITY, 10).build(),
+
+                new ItemBuilder(Material.LEATHER_CHESTPLATE)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                        .enchantment(Enchantment.DURABILITY, 10).build(),
+
+                new ItemBuilder(Material.LEATHER_HELMET)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2)
+                        .enchantment(Enchantment.DURABILITY, 10).build()
         };
     }
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
-        potionEffects.add(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
-        return potionEffects;
+        return List.of(
+                new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0),
+                new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0)
+        );
     }
 
     @Override
@@ -84,25 +99,38 @@ public class EskimoKit extends Kit {
     }
 
     @EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event){
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Eskimo");
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
-            if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
-                event.setCancelled(true);
-                player.updateInventory();
-                if(SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Ice Dome", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Ice Dome", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Ice Dome", TimeUnit.SECONDS.toMillis(30)), true);
-                XPBarTimer.runXpBar(player, 30);
-                player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 5 * 20, 1));
-                BlockUtil.generateTemporarySphere(player.getLocation().add(0, -1, 0), 5, true, Material.ICE, 5);
-            }
-        }
-    }
+        if (!profile.getCurrentKit().equals(getName())) return;
 
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+
+        ItemStack hand = player.getItemInHand();
+        if (!hand.isSimilar(ICE_ITEM)) return;
+
+        event.setCancelled(true);
+
+        // Cooldown
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Ice Dome", true)) {
+            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Ice Dome", true);
+
+            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+            return;
+        }
+
+        // Apply cooldown
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                player.getUniqueId(),
+                new Timer("Ice Dome", TimeUnit.SECONDS.toMillis(30)),
+                true
+        );
+
+        XPBarTimer.runXpBar(player, 30);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 5 * 20, 1));
+        BlockUtil.generateTemporarySphere(player.getLocation().add(0, -1, 0), 5, true, Material.ICE, 5);
+    }
 }

@@ -21,11 +21,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RogueKit extends Kit {
+
+    private final ItemStack BACKSTAB_DAGGER = new ItemBuilder(Material.GOLD_SWORD)
+            .name(CC.translate("&6Backstab Dagger"))
+            .enchantment(Enchantment.DURABILITY, 10)
+            .build();
 
     @Override
     public String getName() {
@@ -49,18 +53,22 @@ public class RogueKit extends Kit {
 
     @Override
     public List<String> getDescription() {
-        List<String> description = new ArrayList<>();
-        description.add("&7Go rogue and back stab any enemies you see. With every backstab,");
-        description.add("&7deal a large amount of damage towards enemies to catch them off guard.");
-        return description;
+        return List.of(
+                "&7Go rogue and backstab enemies.",
+                "&7A precise backstab deals massive damage."
+        );
     }
 
     @Override
     public List<ItemStack> getCombatEquipments() {
-        List<ItemStack> itemStacks = new ArrayList<>();
-        itemStacks.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 3).build());
-        itemStacks.add(new ItemBuilder(Material.GOLD_SWORD).name(CC.translate("&6Backstab Dagger")).enchantment(Enchantment.DURABILITY, 10).build());
-        return itemStacks;
+        return List.of(
+                new ItemBuilder(Material.IRON_SWORD)
+                        .enchantment(Enchantment.DAMAGE_ALL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build(),
+
+                BACKSTAB_DAGGER
+        );
     }
 
     @Override
@@ -69,69 +77,76 @@ public class RogueKit extends Kit {
                 new ItemBuilder(Material.CHAINMAIL_BOOTS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
                 new ItemBuilder(Material.CHAINMAIL_LEGGINGS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
                 new ItemBuilder(Material.IRON_CHESTPLATE).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
-                new ItemBuilder(Material.LEATHER_HELMET).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).enchantment(Enchantment.DURABILITY, 3).build()
+                new ItemBuilder(Material.LEATHER_HELMET)
+                        .color(Color.BLACK)
+                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
+                        .enchantment(Enchantment.DURABILITY, 3)
+                        .build()
         };
     }
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        potionEffects.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-        potionEffects.add(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
-        return potionEffects;
+        return List.of(
+                new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1),
+                new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0)
+        );
     }
 
     @Override
-    public void onSelect(Player player) {
+    public void onSelect(Player player) { }
 
-    }
-
-    @EventHandler(priority= EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) {
+
+        if (!(event.getDamager() instanceof Player damager)) return;
+        if (!(event.getEntity() instanceof Player victim)) return;
+
+        Profile attacker = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damager.getUniqueId());
+        if (attacker == null) return;
+
+        if (attacker.isInEvent() || attacker.getProfileState() == ProfileState.SPAWN) return;
+        if (!attacker.getCurrentKit().equals(getName())) return;
+
+        ItemStack hand = damager.getItemInHand();
+        if (hand == null || hand.getType() != Material.GOLD_SWORD) return;
+
+        final var timers = SoupPvP.getInstance().getTimersHandler();
+        final String timerId = "Back Stabber";
+
+        if (timers.hasTimer(damager.getUniqueId(), timerId, true)) {
+            damager.sendMessage(ChatColor.RED + "You can't use this for another "
+                    + ChatColor.YELLOW + DurationFormatter.getRemaining(
+                    timers.getRemaining(damager.getUniqueId(), timerId, true), true)
+                    + ChatColor.RED + ".");
             return;
         }
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            Player damager = (Player) event.getDamager();
-            Profile damagerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damager.getUniqueId());
-            Player victim = (Player) event.getEntity();
-            Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Rogue");
-            if (damagerProfile.isInEvent() || damagerProfile.getProfileState() == ProfileState.SPAWN) return;
-            if (damagerProfile.getCurrentKit().equals(kit)){
-                if (damager.getItemInHand() != null && damager.getItemInHand().getType() == this.getCombatEquipments().get(1).getType()){
-                    if (SoupPvP.getInstance().getTimersHandler().hasTimer(damager.getUniqueId(), "Back Stabber", true)) {
-                        damager.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(damager.getUniqueId(), "Back Stabber", true), true) + ChatColor.RED + ".");
-                        return;
-                    }
-                    Vector playerVector = damager.getLocation().getDirection();
-                    Vector entityVector = victim.getLocation().getDirection();
 
-                    playerVector.setY(0F);
-                    entityVector.setY(0F);
+        Vector attackerDir = damager.getLocation().getDirection().setY(0).normalize();
+        Vector victimDir = victim.getLocation().getDirection().setY(0).normalize();
 
-                    double degrees = playerVector.angle(entityVector);
+        double dot = attackerDir.dot(victimDir);
+        boolean isBehind = dot > 0.15;
 
-                    if (Math.abs(degrees) < 1.4) {
-
-                        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(damager.getUniqueId(), new Timer("Back Stabber", TimeUnit.SECONDS.toMillis(30)), true);
-                        XPBarTimer.runXpBar(damager, 30);
-
-                        damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
-                        damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
-
-                        if (victim.getHealth() - 8D <= 0) {
-                            victim.damage(8, damager);
-                        } else {
-                            event.setDamage(0D);
-                        }
-                        victim.setHealth(victim.getHealth() - 8D);
-                        damager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2 * 20, 1));
-                    } else {
-                        damager.sendMessage(CC.translate("&cBackstab failed!"));
-                    }
-                }
-            }
+        if (!isBehind) {
+            damager.sendMessage(CC.translate("&cBackstab failed!"));
+            return;
         }
-    }
 
+        timers.addPlayerTimer(damager.getUniqueId(), new Timer(timerId, TimeUnit.SECONDS.toMillis(30)), true);
+        XPBarTimer.runXpBar(damager, 30);
+
+        damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
+        damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
+
+        double damage = 8.0;
+
+        if (victim.getHealth() - damage <= 0) {
+            victim.damage(damage, damager);
+        } else {
+            event.setDamage(0);
+            victim.setHealth(victim.getHealth() - damage);
+        }
+        damager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+    }
 }

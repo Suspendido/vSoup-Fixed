@@ -87,10 +87,9 @@ public class YodaKit extends Kit {
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent event){
         Player player = event.getPlayer();
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Yoda");
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
+        if (profile.getCurrentKit().equals(getName())){
             if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
                 event.setCancelled(true);
                 player.updateInventory();
@@ -105,7 +104,7 @@ public class YodaKit extends Kit {
                     if (entity instanceof Player){
                         PlayerUtil.playSound((Player) entity, Sound.ENDERMAN_STARE);
                         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(entity)) return;
-                        ((Player) entity).sendMessage(CC.translate("&cYou are being pulled by The Force."));
+                        entity.sendMessage(CC.translate("&cYou are being pulled by The Force."));
                     }
                 }
                 Location location = player.getLocation();
@@ -123,7 +122,7 @@ public class YodaKit extends Kit {
                                 if (profile1.getProfileState() == ProfileState.SPAWN){
                                     return;
                                 }
-                                moveToward(player1, location, 0.5);
+                                moveToward(player1, location);
                             }
                         }
                     }
@@ -132,12 +131,12 @@ public class YodaKit extends Kit {
         }
     }
 
-    private void moveToward(Entity entity, Location to, double speed){
+    private void moveToward(Entity entity, Location to){
         Location loc = entity.getLocation();
         double x = loc.getX() - to.getX();
         double y = loc.getY() - to.getY();
         double z = loc.getZ() - to.getZ();
-        Vector velocity = new Vector(x, y, z).normalize().multiply(-speed);
+        Vector velocity = new Vector(x, y, z).normalize().multiply(-0.5);
         entity.setVelocity(velocity);
     }
 

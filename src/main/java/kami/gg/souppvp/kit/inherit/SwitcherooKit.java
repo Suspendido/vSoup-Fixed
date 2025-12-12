@@ -93,9 +93,8 @@ public class SwitcherooKit extends Kit {
     public void execute(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Switcheroo");
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
+        if (profile.getCurrentKit().equals(getName())){
             if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
                 if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1))) {
                     if (profile.getProfileState() == ProfileState.SPAWN) {
@@ -119,18 +118,15 @@ public class SwitcherooKit extends Kit {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Snowball) {
-            Player damaged = (Player) event.getEntity();
+        if (event.getEntity() instanceof Player damaged && event.getDamager() instanceof Snowball) {
             Entity damager = event.getDamager();
             Snowball snowball = (Snowball) damager;
-            if (!(snowball.getShooter() instanceof Player)) return;
-            Player shooter = (Player) snowball.getShooter();
+            if (!(snowball.getShooter() instanceof Player shooter)) return;
 
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(shooter.getUniqueId());
-            Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Switcheroo");
 
             if (!profile.isInEvent()){
-                if (profile.getCurrentKit().equals(kit)){
+                if (profile.getCurrentKit().equals(getName())){
                     if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damaged)){
                         shooter.sendMessage(CC.translate("&cYou cannot switch players into spawn."));
                     }
@@ -149,14 +145,12 @@ public class SwitcherooKit extends Kit {
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){
         Player killer = event.getEntity().getKiller();
-        Player target = event.getEntity();
         if (killer == null){
             return;
         }
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Switcheroo");
         if (!profile.isInEvent()){
-            if (profile.getCurrentKit().equals(kit)){
+            if (profile.getCurrentKit().equals(getName())){
                 for (ItemStack itemStack : killer.getInventory().getContents()){
                     if (itemStack.isSimilar(this.getCombatEquipments().get(1))){
                         if (itemStack.getAmount() == 3){

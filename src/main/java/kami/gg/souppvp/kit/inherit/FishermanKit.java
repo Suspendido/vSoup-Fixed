@@ -86,9 +86,8 @@ public class FishermanKit extends Kit {
     public void onPlayerFishEvent(PlayerFishEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Fisherman");
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
+        if (profile.getCurrentKit().equals(getName())){
             if (event.getPlayer().getItemInHand().getType() == this.getCombatEquipments().get(1).getType()) {
                 if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Fishing Rod", true)) {
                     player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Fishing Rod", true), true) + ChatColor.RED + ".");

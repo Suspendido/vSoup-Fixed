@@ -90,10 +90,9 @@ public class TorchKit extends Kit {
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent event){
         Player player = event.getPlayer();
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Torch");
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(kit)){
+        if (profile.getCurrentKit().equals(getName())){
             if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
                 event.setCancelled(true);
                 player.updateInventory();

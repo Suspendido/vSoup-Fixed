@@ -145,7 +145,7 @@ public class StomperKit extends Kit {
         if (!CHARGED_PLAYERS.contains(uuid)) return;
 
         Profile profile = getProfile(player);
-        if (profile == null || !isUsingKit(profile)) return;
+        if (profile == null || !profile.getCurrentKit().equals(getName())) return;
 
         if (event.getTo().getBlock().isLiquid()) {
             CHARGED_PLAYERS.remove(uuid);
@@ -164,7 +164,7 @@ public class StomperKit extends Kit {
         if (item == null || item.getType() != Material.ANVIL) return;
 
         Profile profile = getProfile(player);
-        if (profile == null || !isUsingKit(profile)) return;
+        if (profile == null || !profile.getCurrentKit().equals(getName())) return;
 
         if (profile.isInEvent() || isInSpawn(player, profile)) {
             player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
@@ -200,7 +200,7 @@ public class StomperKit extends Kit {
 
         Profile profile = getProfile(player);
 
-        if (profile == null || !isUsingKit(profile)) return;
+        if (profile == null || !profile.getCurrentKit().equals(getName())) return;
 
         UUID uuid = player.getUniqueId();
         CHARGED_PLAYERS.remove(uuid);
@@ -220,7 +220,7 @@ public class StomperKit extends Kit {
         Player player = event.getPlayer();
         Profile profile = getProfile(player);
 
-        if (profile == null || !isUsingKit(profile)) return;
+        if (profile == null || !profile.getCurrentKit().equals(getName())) return;
         if (profile.isInEvent() || isInSpawn(player, profile)) return;
 
         if (player.getLocation().getBlockY() >= MAX_Y_LEVEL) {
@@ -267,11 +267,6 @@ public class StomperKit extends Kit {
 
     private Profile getProfile(Player player) {
         return SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-    }
-
-    private boolean isUsingKit(Profile profile) {
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-        return current == this;
     }
 
     private boolean isInSpawn(Player player, Profile profile) {

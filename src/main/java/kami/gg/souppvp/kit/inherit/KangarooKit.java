@@ -11,7 +11,6 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.XPBarTimer;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -92,14 +91,12 @@ public class KangarooKit extends Kit {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-        if (event.getTo().getBlockX() == event.getFrom().getBlockX()
-                && event.getTo().getBlockY() == event.getFrom().getBlockY()
-                && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) {
+        if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) {
             return;
         }
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile == null || !this.equals(profile.getCurrentKit())) return;
+        if (profile == null || !profile.getCurrentKit().equals(getName())) return;
 
         if (player.isOnGround()) {
             jumpingUsers.remove(player.getUniqueId());
@@ -121,7 +118,7 @@ public class KangarooKit extends Kit {
         Action action = event.getAction();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        if (profile == null || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN || !this.equals(profile.getCurrentKit())) {
+        if (profile == null || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN || profile.getCurrentKit().equals(getName())) {
             return;
         }
 

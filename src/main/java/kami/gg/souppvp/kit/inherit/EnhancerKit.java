@@ -96,7 +96,7 @@ public class EnhancerKit extends Kit {
 
     @Override
     public List<PotionEffect> getPotionEffects() {
-        return Arrays.asList(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+        return List.of(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
     }
 
     @Override
@@ -106,10 +106,9 @@ public class EnhancerKit extends Kit {
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (current != this) return;
+        if (!profile.getCurrentKit().equals(getName())) return;
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         ItemStack hand = player.getItemInHand();
@@ -143,9 +142,8 @@ public class EnhancerKit extends Kit {
                     if (!(entity instanceof Player nearby)) continue;
 
                     Profile nearbyProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(nearby.getUniqueId());
-                    Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(nearbyProfile.getUsername());
 
-                    if (current != EnhancerKit.this) continue;
+                    if (!nearbyProfile.getCurrentKit().equals(getName())) continue;
                     if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(nearby)) continue;
 
                     nearby.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));
