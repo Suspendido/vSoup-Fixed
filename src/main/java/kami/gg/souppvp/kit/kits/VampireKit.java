@@ -99,73 +99,79 @@ public class VampireKit extends Kit {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Vampire");
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) {
+        if (item == null || item.getType() != Material.MONSTER_EGG || item.getDurability() != 65) return;
+        if (!profile.getCurrentKit().equals(getName())) return;
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        event.setCancelled(true);
+
+        if (profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+            player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
             return;
         }
-        if (current == kit && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && item != null && item.isSimilar(this.getCombatEquipments().get(1))) {
-            event.setCancelled(true);
-            if (profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
-                return;
-            }
-            if (player.hasMetadata("requireLand")) {
-                player.sendMessage(ChatColor.RED + "You must land on the ground once you leave Spawn to use this!");
-                return;
-            }
-            if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Bat Blast", true)) {
-                player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Bat Blast", true), true) + ChatColor.RED + ".");
-                return;
-            }
-            List<Entity> entities = Lists.newArrayList();
-            for(int i = 1; i <= 6; i++) {
-                entities.add(player.getWorld().spawnEntity(player.getLocation(), EntityType.BAT));
-            }
-            new BukkitRunnable() {
-                final long stayTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.toMillis(2000L);
-                final long boostTime = System.currentTimeMillis() + 100L;
-                final Location location = player.getEyeLocation().clone();
-                @Override
-                public void run() {
-                    if(System.currentTimeMillis() >= this.stayTime) {
-                        this.cancel();
 
-                        entities.forEach(Entity::remove);
-                        return;
-                    }
-                    entities.stream()
-                            .filter(Entity::isValid)
-                            .forEach(bat -> {
-                                if(System.currentTimeMillis() < this.boostTime) {
-                                    bat.setVelocity(this.location.getDirection().clone().multiply(1.9));
-                                }
-
-                                bat.setVelocity(this.location.getDirection().clone().multiply(0.4));
-
-                                bat.getNearbyEntities(3, 3, 3)
-                                        .stream()
-                                        .filter(entity -> entity instanceof Player && !SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(entity))
-                                        .map(Player.class::cast)
-                                        .filter(found -> !found.getUniqueId().equals(player.getUniqueId()))
-                                        .forEach(found -> {
-                                            bat.setVelocity(bat.getVelocity().add(new Vector(0, 0.5, 0)));
-                                            bat.getWorld().playSound(bat.getLocation(), Sound.BAT_HURT, 0.1F, 0.1F);
-
-                                            found.setVelocity(bat.getVelocity().clone().add(new Vector(0, 0.07, 0)));
-
-                                            if(MinecraftServer.currentTick % 3 == 0) {
-                                                found.damage(10, player);
-                                            }
-                                        });
-                            });
-                }
-            }.runTaskTimer(SoupPvP.getInstance(), 1L, 1L);
-            player.getLocation().getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 1F);
-            SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Bat Blast", TimeUnit.SECONDS.toMillis(45)), true);
-            XPBarTimer.runXpBar(player, 45);
+        if (player.hasMetadata("requireLand")) {
+            player.sendMessage(ChatColor.RED + "You must land on the ground once you leave Spawn to use this!");
+            return;
         }
+
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Bat Blast", true)) {
+            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Bat Blast", true), true) + ChatColor.RED + ".");
+            return;
+        }
+
+        // Spawn bats
+        List<Entity> entities = Lists.newArrayList();
+        for(int i = 1; i <= 6; i++) {
+            entities.add(player.getWorld().spawnEntity(player.getLocation(), EntityType.BAT));
+        }
+
+        new BukkitRunnable() {
+            final long stayTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.toMillis(2000L);
+            final long boostTime = System.currentTimeMillis() + 100L;
+            final Location location = player.getEyeLocation().clone();
+
+            @Override
+            public void run() {
+                if(System.currentTimeMillis() >= this.stayTime) {
+                    this.cancel();
+                    entities.forEach(Entity::remove);
+                    return;
+                }
+
+                entities.stream()
+                        .filter(Entity::isValid)
+                        .forEach(bat -> {
+                            if(System.currentTimeMillis() < this.boostTime) {
+                                bat.setVelocity(this.location.getDirection().clone().multiply(1.9));
+                            } else {
+                                bat.setVelocity(this.location.getDirection().clone().multiply(0.4));
+                            }
+
+                            bat.getNearbyEntities(3, 3, 3)
+                                    .stream()
+                                    .filter(entity -> entity instanceof Player && !SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(entity))
+                                    .map(Player.class::cast)
+                                    .filter(found -> !found.getUniqueId().equals(player.getUniqueId()))
+                                    .forEach(found -> {
+                                        bat.setVelocity(bat.getVelocity().add(new Vector(0, 0.5, 0)));
+                                        bat.getWorld().playSound(bat.getLocation(), Sound.BAT_HURT, 0.1F, 0.1F);
+
+                                        found.setVelocity(bat.getVelocity().clone().add(new Vector(0, 0.07, 0)));
+
+                                        if(MinecraftServer.currentTick % 3 == 0) {
+                                            found.damage(10, player);
+                                        }
+                                    });
+                        });
+            }
+        }.runTaskTimer(SoupPvP.getInstance(), 1L, 1L);
+
+        player.getLocation().getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 1F);
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Bat Blast", TimeUnit.SECONDS.toMillis(45)), true);
+        XPBarTimer.runXpBar(player, 45);
     }
 
     @EventHandler
@@ -173,10 +179,8 @@ public class VampireKit extends Kit {
         if (event.getEntity().getKiller() == null) return;
         Player killer = event.getEntity().getKiller();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
-        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName("Vampire");
-        Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
-        if (!killer.getUniqueId().equals(event.getEntity().getUniqueId()) && current == kit) {
+        if (!killer.getUniqueId().equals(event.getEntity().getUniqueId()) && profile.getCurrentKit().equals(getName())) {
             killer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 10, 4));
         }
     }
