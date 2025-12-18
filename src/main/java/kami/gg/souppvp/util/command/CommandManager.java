@@ -9,8 +9,9 @@ import kami.gg.souppvp.command.credit.*;
 import kami.gg.souppvp.command.shop.RepairCommand;
 import kami.gg.souppvp.command.spawn.*;
 import kami.gg.souppvp.events.impl.sumo.command.SumoCommand;
+import kami.gg.souppvp.feats.leaderboard.command.LeaderboardCommand;
 import kami.gg.souppvp.map.command.MapCommand;
-import kami.gg.souppvp.storage.StorageStatsCommand;
+import kami.gg.souppvp.feats.storage.StorageStatsCommand;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -56,6 +57,10 @@ public class CommandManager {
                 new TiersCommand(this),
                 new SetKillstreakCommand(this),
                 new PerksCommand(this),
+                new LeaderboardCommand(this),
+                new KitsCommand(this),
+                new MarketCommand(this),
+
                 // Event
                 new SumoCommand(this),
 
