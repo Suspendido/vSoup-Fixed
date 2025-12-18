@@ -1,6 +1,5 @@
 package kami.gg.souppvp;
 
-import com.github.llanezsa.library.Library;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mongodb.MongoClient;
@@ -12,24 +11,26 @@ import kami.gg.souppvp.coinflip.listener.CoinFlipListener;
 import kami.gg.souppvp.coinflip.listener.WagerCustomEventListeners;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
 import kami.gg.souppvp.events.impl.sumo.SumoListener;
+import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
+import kami.gg.souppvp.feats.hooks.staff.StaffHook;
 import kami.gg.souppvp.handlers.*;
-import kami.gg.souppvp.hooks.clients.ClientHook;
-import kami.gg.souppvp.hooks.ranks.RankHook;
+import kami.gg.souppvp.feats.hooks.clients.ClientHook;
+import kami.gg.souppvp.feats.hooks.ranks.RankHook;
 import kami.gg.souppvp.juggernaut.JuggernautListener;
 import kami.gg.souppvp.killstreak.KillstreaksHandler;
 import kami.gg.souppvp.kit.KitsHandler;
+import kami.gg.souppvp.feats.leaderboard.LeaderboardManager;
 import kami.gg.souppvp.listener.*;
 import kami.gg.souppvp.map.MapManager;
-import kami.gg.souppvp.nametag.NametagManager;
-import kami.gg.souppvp.nametag.NametagListener;
+import kami.gg.souppvp.feats.nametag.NametagManager;
+import kami.gg.souppvp.feats.nametag.NametagListener;
 import kami.gg.souppvp.perk.PerksHandler;
-import kami.gg.souppvp.placeholder.SoupPlaceholderAdapter;
-import kami.gg.souppvp.scoreboard.ScoreboardAdapter;
-import kami.gg.souppvp.scoreboard.ScoreboardManager;
-import kami.gg.souppvp.storage.FlatFileHandler;
-import kami.gg.souppvp.storage.StorageType;
-import kami.gg.souppvp.tablist.TablistManager;
-import kami.gg.souppvp.tablist.TablistListener;
+import kami.gg.souppvp.feats.scoreboard.ScoreboardAdapter;
+import kami.gg.souppvp.feats.scoreboard.ScoreboardManager;
+import kami.gg.souppvp.feats.storage.FlatFileHandler;
+import kami.gg.souppvp.feats.storage.StorageType;
+import kami.gg.souppvp.feats.tablist.TablistManager;
+import kami.gg.souppvp.feats.tablist.TablistListener;
 import kami.gg.souppvp.tasks.CanaPerkAndFiremanKitTask;
 import kami.gg.souppvp.tasks.ClearDropsTask;
 import kami.gg.souppvp.tasks.ClearTimerCacheTask;
@@ -89,7 +90,10 @@ public class SoupPvP extends JavaPlugin {
     private NametagManager nametagManager;
     private RankHook rankHook;
     private ClientHook clientHook;
+    private PlaceholderHook placeholderHook;
+    private StaffHook staffHook;
     private MapManager mapManager;
+    private LeaderboardManager leaderboardManager;
 
     @Override
     public void onEnable(){
@@ -124,14 +128,16 @@ public class SoupPvP extends JavaPlugin {
         mapManager = new MapManager();
         rankHook = new RankHook();
         clientHook = new ClientHook();
+        placeholderHook = new PlaceholderHook();
+        staffHook = new StaffHook();
+        leaderboardManager = new LeaderboardManager();
         (new PacketBorderHandler()).start();
 
         setupAssemble();
         assemble.setTicks(2);
 
-        if (verifyPlugin("Library", SoupPvP.getInstance())) {
-            Library.get().getPlaceholderHandler().registerPlaceholder(new SoupPlaceholderAdapter());
-        }
+        leaderboardManager.updateAllLeaderboards();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(SoupPvP.getInstance(), leaderboardManager::updateAllLeaderboards, leaderboardManager.getUpdateInterval(), leaderboardManager.getUpdateInterval());
 
         registerListeners();
         new CommandManager(this);
@@ -163,6 +169,7 @@ public class SoupPvP extends JavaPlugin {
         tablistManager.cleanup();
         scoreboardManager.cleanup();
         assemble.cleanup();
+        leaderboardManager.getCachedLeaderboards().clear();
 
         if (mongoClient != null) {
             mongoClient.close();
@@ -247,10 +254,5 @@ public class SoupPvP extends JavaPlugin {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new JuggernautListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StrengthAndInstantHarmNerfListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TimersListener(), this);
-    }
-
-    public static boolean verifyPlugin(String plugin, SoupPvP instance) {
-        PluginManager pm = instance.getServer().getPluginManager();
-        return pm.getPlugin(plugin) != null;
     }
 }
