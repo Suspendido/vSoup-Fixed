@@ -5,7 +5,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlipState;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
-import kami.gg.souppvp.storage.StorageType;
+import kami.gg.souppvp.feats.storage.StorageType;
 import kami.gg.souppvp.tier.Tiers;
 import lombok.Getter;
 import lombok.Setter;
