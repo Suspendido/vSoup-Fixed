@@ -1,7 +1,5 @@
 package kami.gg.souppvp.util.menu.pagination;
 
-import java.util.Arrays;
-
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import lombok.AllArgsConstructor;
@@ -21,38 +19,26 @@ public class PageButton extends Button {
 	public ItemStack getButtonItem(Player player) {
 		if (this.mod > 0) {
 			if (hasNext(player)) {
-				return new ItemBuilder(Material.REDSTONE_TORCH_ON)
-						.name(ChatColor.GREEN + "Next Page")
-						.lore(Arrays.asList(
-								ChatColor.YELLOW + "Click here to jump",
-								ChatColor.YELLOW + "to the next page."
-						))
+				return new ItemBuilder(Material.CARPET)
+                        .durability(5)
+						.name("&aNext Page &8»")
 						.build();
 			} else {
-				return new ItemBuilder(Material.LEVER)
-						.name(ChatColor.GRAY + "Next Page")
-						.lore(Arrays.asList(
-								ChatColor.YELLOW + "There is no available",
-								ChatColor.YELLOW + "next page."
-						))
+				return new ItemBuilder(Material.CARPET)
+                        .durability(8)
+						.name("&7Next Page &c✖")
 						.build();
 			}
 		} else {
 			if (hasPrevious(player)) {
-				return new ItemBuilder(Material.REDSTONE_TORCH_ON)
-						.name(ChatColor.GREEN + "Previous Page")
-						.lore(Arrays.asList(
-								ChatColor.YELLOW + "Click here to jump",
-								ChatColor.YELLOW + "to the previous page."
-						))
+				return new ItemBuilder(Material.CARPET)
+                        .durability(5)
+						.name("&aPrevious Page &8«")
 						.build();
 			} else {
-				return new ItemBuilder(Material.LEVER)
-						.name(ChatColor.GRAY + "Previous Page")
-						.lore(Arrays.asList(
-								ChatColor.YELLOW + "There is no available",
-								ChatColor.YELLOW + "previous page."
-						))
+				return new ItemBuilder(Material.CARPET)
+                        .durability(8)
+						.name("&7Previous Page &c✖")
 						.build();
 			}
 		}
