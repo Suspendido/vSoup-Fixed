@@ -65,45 +65,40 @@ public class ResetStatisticsButton extends Button {
         // Must have money
         if (profile.getCredits() < price) {
             PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            player.sendMessage(CC.translate("&cInsufficient credits!"));
             return;
         }
 
         playNeutral(player);
+        TaskUtil.runLater(player::closeInventory, 1L);
+        PlayerUtil.playSound(player, Sound.NOTE_PIANO);
 
-        new ConfirmMenu("Select a procedure action", confirmed -> {
+        // Reset kit
+        profile.setCurrentKit(instance.getKitsHandler().getKitByName("Default").getName());
+        profile.setPreviousKit(profile.getCurrentKit());
 
-            if (!confirmed) return;
+        // Reset unlocked kits
+        profile.setUnlockedKits(DEFAULT_KITS);
 
-            TaskUtil.runLater(player::closeInventory, 1L);
-            PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+        // Reset stats
+        profile.setKills(0);
+        profile.setDeaths(0);
+        profile.setCredits(0);
+        profile.setExperiences(0);
+        profile.setTier(Tiers.ZERO);
 
-            // Reset kit
-            profile.setCurrentKit(instance.getKitsHandler().getKitByName("Default").getName());
-            profile.setPreviousKit(profile.getCurrentKit());
+        profile.setCurrentKillstreak(0);
+        profile.setHighestKillstreak(0);
 
-            // Reset unlocked kits
-            profile.setUnlockedKits(DEFAULT_KITS);
+        // Perks
+        profile.setActivePerks(DEFAULT_PERKS);
+        profile.setUnlockedPerks(Collections.emptyList());
 
-            // Reset stats
-            profile.setKills(0);
-            profile.setDeaths(0);
-            profile.setCredits(0);
-            profile.setExperiences(0);
-            profile.setTier(Tiers.ZERO);
+        // Wagers
+        profile.setTotalWagerGames(0);
+        profile.setWagersWon(0);
+        profile.setWagersLost(0);
 
-            profile.setCurrentKillstreak(0);
-            profile.setHighestKillstreak(0);
-
-            // Perks
-            profile.setActivePerks(DEFAULT_PERKS);
-            profile.setUnlockedPerks(Collections.emptyList());
-
-            // Wagers
-            profile.setTotalWagerGames(0);
-            profile.setWagersWon(0);
-            profile.setWagersLost(0);
-
-            player.sendMessage(CC.translate("&aSuccessfully reset your statistics."));
-        }).openMenu(player);
+        player.sendMessage(CC.translate("&aSuccessfully reset your statistics."));
     }
 }
