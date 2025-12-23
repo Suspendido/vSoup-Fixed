@@ -1,0 +1,201 @@
+STAFF_MODE:
+  STAFF_MODE_ON_JOIN: true # Enable staff on join
+  LUNAR_STAFF_MODULES: true # Enable lunar staff modules
+  ACTION_BAR_ENABLED: true
+  ACTION_BAR_STRING: '&6Vanish: %vanished% &7┃ &6Build: %staffbuild% &7┃ &6Hide Staff: %hidestaff%'
+  SILENT_VIEW_TITLE: 'Silently viewing...' # When clicking a chest or hopper in staff mode.
+  FREEZE_MESSAGE_INTERVAL: 3
+  RANDOM_TP_MINER_Y: 25 # For random tp miner player has to be below this y level
+  PAUSE_PLAYTIME_STAFF: true
+  PLACEHOLDERS:
+    TRUE_PLACEHOLDER: '&a✔'
+    FALSE_PLACEHOLDER: '&c×'
+  DISABLED_COMMANDS_FROZEN:
+    - 'f home'
+    - 't home'
+    - 'faction home'
+    - 'team home'
+    - 'logout'
+  REPORTS_MENU:
+    TITLE: '&dReports'
+    SIZE: 27
+    MAX_REPORTS: 81
+    REPORT_FORMAT:
+      NAME: '&dReport: &e%reported%'
+      MATERIAL: 'PAPER'
+      COMMAND: '/teleport %reported%'
+      DATA: 0
+      LORE:
+        - '&7&m----------------------------'
+        - '&ePlayer: &c%player%'
+        - '&eReported: &c%reported%'
+        - '&eReason: &c%reason%'
+        - ''
+        - '&eClick to teleport to &d%reported%&e.'
+        - '&7&m----------------------------'
+  REQUESTS_MENU:
+    TITLE: '&dRequests'
+    SIZE: 27
+    MAX_REPORTS: 81
+    REQUEST_FORMAT:
+      NAME: '&dRequest: &e%player%'
+      MATERIAL: 'PAPER'
+      COMMAND: '/teleport %player%'
+      DATA: 0
+      LORE:
+        - '&7&m----------------------------'
+        - '&ePlayer: &c%player%'
+        - '&eRequest: &c%reason%'
+        - ''
+        - '&eClick to teleport to &d%player%&e.'
+        - '&7&m----------------------------'
+  STAFF_ITEMS:
+    VANISH_ON:
+      NAME: '&3Vanish &c(Disabled)'
+      ACTION: 'VANISH_ON' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'INK_SACK'
+      DATA: 8
+      SLOT: 1
+      REPLACE: 'VANISH_OFF' # When clicked, which item should replace this one.
+      COMMAND: ''
+      LORE:
+        - '&eClick to appear to all online players. '
+    VANISH_OFF:
+      NAME: '&3Vanish &a(Enabled)'
+      ACTION: 'VANISH_OFF' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'INK_SACK'
+      DATA: 10
+      SLOT: 1
+      REPLACE: 'VANISH_ON' # When clicked, which item should replace this one.
+      COMMAND: ''
+      LORE:
+        - '&eClick to vanish from all online players.'
+    FREEZE:
+      NAME: '&bFreeze'
+      ACTION: 'FREEZE' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'ICE'
+      DATA: 0
+      SLOT: 2
+      REPLACE: '' # When clicked, which item should replace this one.
+      COMMAND: ''
+      LORE:
+        - '&eClick a player to freeze them.'
+    RANDOM_TP:
+      NAME: '&6Random Teleport'
+      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'FEATHER'
+      DATA: 0
+      SLOT: 8
+      REPLACE: '' # When clicked, which item should replace this one.
+      COMMAND: '/randomtp'
+      LORE:
+        - '&eClick to randomly teleport to a online player.'
+    RANDOM_TP_COMBAT:
+      NAME: '&4Teleport Combat'
+      ACTION: 'COMBAT_TP' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'BLAZE_ROD'
+      DATA: 0
+      SLOT: 6
+      REPLACE: '' # When clicked, which item should replace this one.
+      COMMAND: ''
+      LORE:
+        - '&eClick to randomly teleport to players in combat.'
+    INSPECTION:
+      NAME: '&dInventory Inspect'
+      ACTION: 'INSPECTION' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'BOOK'
+      DATA: 0
+      SLOT: 9
+      REPLACE: '' # When clicked, which item should replace this one.
+      COMMAND: ''
+      LORE:
+        - '&eClick a player to inspect their inventory.'
+    COMPASS:
+      NAME: '&cWall Teleport'
+      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'COMPASS'
+      DATA: 0
+      SLOT: 5
+      REPLACE: '' # When clicked, which item should replace this one.
+      COMMAND: ''
+      LORE:
+        - '&eClick a wall to teleport through it.'
+    CARPET:
+      NAME: '&5Online Staff'
+      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      MATERIAL: 'SKULL_ITEM'
+      DATA: 0
+      SLOT: 4
+      REPLACE: '' # When clicked, which item should replace this one.
+      COMMAND: '/staffonline'
+      LORE:
+        - '&eClick to view online staff.'
+  INSPECTION_MENU:
+    TITLE: '&dInspection Menu'
+    SIZE: 54
+    FILLER:
+      NAME: '&7'
+      MATERIAL: STAINED_GLASS_PANE
+      DATA: 3
+    POTIONS_VIEWER:
+      NAME: '&dActive Effects'
+      MATERIAL: BREWING_STAND_ITEM
+      DATA: 0
+      SLOT: 50
+      FORMAT: '&e%effect% &7(&d%time% &dLVL: %amplifier%&7)'
+    PLAYER_INFO:
+      NAME: '&ePlayer Info&7: &d%player%'
+      MATERIAL: 'SKULL_ITEM'
+      DATA: 0
+      SLOT: 51
+      LORE:
+        - '&dKills&7: &f%kills%'
+        - '&dDeaths&7: &f%deaths%'
+        - '&dLives&7: &f%lives%'
+    CLOSE_INSPECTION:
+      NAME: '&cClose Inspection'
+      MATERIAL: 'WOOL'
+      DATA: 14
+      SLOT: 54
+      LORE:
+        - '&eClick to close inspection.'
+    HELMET_SLOT: 46
+    CHESTPLATE_SLOT: 47
+    LEGGINGS_SLOT: 48
+    BOOTS_SLOT: 49
+  STAFF_ONLINE_MENU:
+    TITLE: '&dOnline Staff'
+    SIZE: 27
+    STAFF_HEAD:
+      NAME: '%rank-prefix%&d%color%%player%'
+      MATERIAL: 'SKULL_ITEM'
+      DATA: 3
+      COMMAND: '/teleport %player%'
+      LORE:
+        - '&ePlaytime: &d%playtime%'
+        - ''
+        - '&eStaff Mode: %staff%'
+        - '&eVanished: %vanish%'
+        - ''
+        - '&3Click to teleport to &b%player%&e.'
+  
+  DENY_BREAK: '&cYou cannot break blocks while in staffmode.'
+  DENY_PLACE: '&cYou cannot place blocks while in staffmode.'
+  DENY_DROP: '&cYou cannot drop items while in staffmode.'
+  COMBAT_TP_EMPTY: '&cCould not find players in combat.'
+  NOT_ALLOWED_COMMAND: '&cYou are not allowed to use this command while frozen.'
+  HIT_DENIED: '&cYou cannot damage other players while frozen!'
+  HIT_FROZEN: '&eYou cannot hit &c%player% &eas they are currently frozen!'
+  ENABLED_STAFF: '&dMod Mode: &aEnabled'
+  DISABLED_STAFF: '&dMod Mode: &cDisabled'
+  ENABLED_STAFF_TARGET: '&dMod Mode: &aEnabled &7(%player%)'
+  DISABLED_STAFF_TARGET: '&dMod Mode: &cDisabled &7(%player%)'
+  ENABLED_VANISH: '&dVanish: &aEnabled'
+  DISABLED_VANISH: '&dVanish: &cDisabled'
+  ENABLED_VANISH_TARGET: '&dVanish: &aEnabled &7(%player%)'
+  DISABLED_VANISH_TARGET: '&dVanish: &cDisabled &7(%player%)'
+  VANISH_INTERVAL_MESSAGE:
+    - '&7&m---------------------------'
+    - '&d&lYou are currently frozen!'
+    - '&eJoin the teamspeak: &dts.azurite.cc'
+    - '&7&m---------------------------'

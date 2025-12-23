@@ -1,10 +1,17 @@
 package kami.gg.souppvp.shop;
 
-import kami.gg.souppvp.shop.button.*;
+import kami.gg.souppvp.kit.menu.KitsBuyMenu;
+import kami.gg.souppvp.perk.menu.PerksMenu;
+import kami.gg.souppvp.shop.items.ItemsMenu;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,24 +20,60 @@ public class ShopMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Select a feature to purchase");
+        return CC.translate("Server Shop");
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player var1) {
-        Map<Integer, Button> buttonMap = new HashMap<>();
-        buttonMap.put(10, new RepairDurabilityButton(50));
-        buttonMap.put(11, new SoupRefillButton(100));
-        buttonMap.put(12, new GoldenApplesButton(300));
-        buttonMap.put(13, new MilkBucketButton(100));
-        buttonMap.put(14, new BartenderButton());
+        Map<Integer, Button> button = new HashMap<>();
+
+        button.put(11, new Button() {
+            @Override
+            public ItemStack getButtonItem(Player player) {
+                return new ItemBuilder(Material.BEACON)
+                        .name("&bItems Shop")
+                        .build();
+            }
+            @Override
+            public void clicked(Player player, ClickType clickType) {
+                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
+                new ItemsMenu().openMenu(player);
+            }
+        });
+
+        button.put(13, new Button() {
+            @Override
+            public ItemStack getButtonItem(Player player) {
+                return new ItemBuilder(Material.ENDER_CHEST)
+                        .name("&bPerks Shop")
+                        .build();
+            }
+            @Override
+            public void clicked(Player player, ClickType clickType) {
+                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
+                new PerksMenu().openMenu(player);
+            }
+        });
+
+        button.put(15, new Button() {
+            @Override
+            public ItemStack getButtonItem(Player player) {
+                return new ItemBuilder(Material.DIAMOND_SWORD)
+                        .name("&bKits Shop")
+                        .build();
+            }
+            @Override
+            public void clicked(Player player, ClickType clickType) {
+                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
+                new KitsBuyMenu().openMenu(player);
+            }
+        });
         setPlaceholder(true);
-        return buttonMap;
+        return button;
     }
 
     @Override
     public int size(Map<Integer, Button> buttons) {
         return 27;
     }
-
 }
