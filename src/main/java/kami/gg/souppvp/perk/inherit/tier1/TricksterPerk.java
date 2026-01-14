@@ -18,9 +18,9 @@ public class TricksterPerk extends Perk {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7You will never display the correct"));
-        lore.add(CC.translate("&7health or bounty above your head."));
-        return lore;
+        lore.add("&7You will never display the correct");
+        lore.add("&7health or bounty above your head.");
+        return CC.translate(lore);
     }
 
     @Override

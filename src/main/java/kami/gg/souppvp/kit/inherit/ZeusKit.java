@@ -106,10 +106,7 @@ public class ZeusKit extends Kit {
         player.updateInventory();
 
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Lightning Bolt", true)) {
-            player.sendMessage(ChatColor.RED + "You can't use this for another " +
-                    ChatColor.YELLOW + DurationFormatter.getRemaining(
-                    SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Lightning Bolt", true), true)
-                    + ChatColor.RED + ".");
+            player.sendMessage(CC.translate("You can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Lightning Bolt", true), true) + "&c."));
             return;
         }
 
@@ -117,15 +114,6 @@ public class ZeusKit extends Kit {
             player.sendMessage(CC.translate("&cYou can't do this in spawn."));
             return;
         }
-
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                player.getUniqueId(),
-                new Timer("Lightning Bolt", TimeUnit.SECONDS.toMillis(45)),
-                true
-        );
-
-        XPBarTimer.runXpBar(player, 45);
-        PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER);
 
         boolean hit = false;
         for (Player target : player.getWorld().getPlayers()) {
@@ -144,5 +132,14 @@ public class ZeusKit extends Kit {
         if (!hit) {
             player.sendMessage(CC.translate("&cNo players nearby."));
         }
+
+        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
+                player.getUniqueId(),
+                new Timer("Lightning Bolt", TimeUnit.SECONDS.toMillis(45)),
+                true
+        );
+
+        XPBarTimer.runXpBar(player, 45);
+        PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER);
     }
 }

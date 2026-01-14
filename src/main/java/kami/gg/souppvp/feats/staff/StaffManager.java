@@ -4,7 +4,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.staff.extra.StaffItem;
 import kami.gg.souppvp.feats.staff.extra.StaffItemAction;
 import kami.gg.souppvp.feats.staff.listener.StaffListener;
-import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.ItemUtils;
 import kami.gg.souppvp.util.Pair;
@@ -133,9 +132,7 @@ public class StaffManager {
         for (StaffItem item : staffItems.values()) {
             // They are always vanished when u enable staff mode.
             if (item.getAction() == StaffItemAction.VANISH_ON) continue;
-
-            int slot = getItemSlot(player, item);
-            setItemInConfiguredSlot(player, item.getItem(), slot);
+            player.getInventory().setItem(item.getSlot() - 1, item.getItem());
         }
 
         player.updateInventory();
@@ -144,12 +141,6 @@ public class StaffManager {
         enableVanish(player);
         staffMembers.put(player.getUniqueId(), staff);
         this.getHideStaff().add(player.getUniqueId());
-    }
-
-    private int getItemSlot(Player player, StaffItem item) {
-        Profile profile = getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Map<String, Integer> slots = profile.getModModeSlots();
-        return slots.getOrDefault(item.getName(), item.getSlot());
     }
 
     private void setItemInConfiguredSlot(Player player, ItemStack item, int slot) {
@@ -195,7 +186,7 @@ public class StaffManager {
         if (isStaffEnabled(player)) {
             for (StaffItem item : staffItems.values()) {
                 if (item.getAction() == StaffItemAction.VANISH_OFF) {
-                    setItemInConfiguredSlot(player, item.getItem(), getItemSlot(player, item));
+                    player.getInventory().setItem(item.getSlot() - 1, item.getItem());
                 }
             }
         }
@@ -214,7 +205,7 @@ public class StaffManager {
         if (isStaffEnabled(player)) {
             for (StaffItem item : staffItems.values()) {
                 if (item.getAction() == StaffItemAction.VANISH_ON) {
-                    setItemInConfiguredSlot(player, item.getItem(), getItemSlot(player, item));
+                    player.getInventory().setItem(item.getSlot() - 1, item.getItem());
                 }
             }
         }

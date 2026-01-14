@@ -6,21 +6,19 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import kami.gg.souppvp.util.command.extra.TabCompletion;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class SoupPvPCommand extends Command {
 
     public SoupPvPCommand(CommandManager manager) {
         super(manager, "souppvp");
-        this.completions.add(new TabCompletion(Arrays.asList("reload", "save", "version", "ver"), 0));
+        this.completions.add(new TabCompletion(Arrays.asList("reload", "save", "version", "ver", "saveuser", "deleteusers", "deleteprofiles"), 0));
         this.setPermissible("souppvp.reload");
     }
 
@@ -39,6 +37,7 @@ public class SoupPvPCommand extends Command {
                 "&e/souppvp reload &8- &fReloads all the config.",
                 "&e/souppvp version &8- &fGets the plugin current version.",
                 "&e/souppvp save &8- &fSaves the config.",
+                "&e/souppvp deleteusers &8- &fDeletes all the user data.",
                 CC.LINE
         ));
     }
@@ -61,19 +60,59 @@ public class SoupPvPCommand extends Command {
                     SoupPvP.getInstance().getScoreboardManager().reload();
                     SoupPvP.getInstance().getNametagManager().reload();
                     SoupPvP.getInstance().getMapManager().reload();
+                    SoupPvP.getInstance().getStaffManager().reload();
 
                     long endTime = System.currentTimeMillis();
                     sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &aConfigs reloaded! &7(" + (endTime - startTime) + "ms)"));
                 }
                 return;
 
+            case "deleteprofiles":
+            case "deleteusers":
+                if (!sender.hasPermission("souppvp.admin.deleteprofiles")) {
+                    sendMessage(sender, "&cYou don't have permission to use this command!");
+                    return;
+                }
+
+                sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &eDeleting all profiles..."));
+
+                Bukkit.getScheduler().runTaskAsynchronously(SoupPvP.getInstance(), () -> {
+                    long startDelete = System.currentTimeMillis();
+                    int deletedCount = 0;
+                    int failedCount = 0;
+
+                    List<UUID> uuidsToDelete = List.copyOf(SoupPvP.getInstance().getProfilesHandler().getProfiles().keySet());
+
+                    for (UUID uuid : uuidsToDelete) {
+                        boolean deleted = SoupPvP.getInstance().getProfilesHandler().deleteProfile(uuid);
+                        if (deleted) {
+                            deletedCount++;
+                        } else {
+                            failedCount++;
+                        }
+                    }
+
+                    long endDelete = System.currentTimeMillis();
+
+                    int finalDeleted = deletedCount;
+                    int finalFailed = failedCount;
+                    Bukkit.getScheduler().runTask(SoupPvP.getInstance(), () -> {
+                        sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &aDeleted &l" + finalDeleted + "&a profiles."));
+                        if (finalFailed > 0) {
+                            sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &cFailed to delete &l" + finalFailed + "&c profiles."));
+                        }
+                        sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &7Completed in &e" + (endDelete - startDelete) + "ms"));
+                    });
+                });
+                return;
             case "ver":
             case "version":
                 sendMessage(sender, "&7[&6&lSoupPvP&7] &eCurrent version is &a" + SoupPvP.getInstance().getDescription().getVersion() + "&e.");
                 return;
 
+            case "saveusers":
             case "save":
-                for (Profile profile : SoupPvP.getInstance().getProfilesHandler().getProfiles()) {
+                for (Profile profile : SoupPvP.getInstance().getProfilesHandler().getProfiles().values()) {
                     profile.saveProfile();
                 }
                 Long started = System.currentTimeMillis();
@@ -82,40 +121,5 @@ public class SoupPvPCommand extends Command {
                 return;
         }
         sendUsage(sender);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onProcess(PlayerCommandPreprocessEvent e) {
-        Player sender = e.getPlayer();
-        String message = e.getMessage().toLowerCase();
-        if (sender.hasPermission("souppvp.reload")) return;
-
-        // /souppvp
-        if (message.equals("/souppvp") || message.equals("/souppvp:" + name) || message.equals("/" + name)) {
-            for (String line : Arrays.asList(
-                    CC.LINE,
-                    "&fThis server is running &6SoupPvP Core",
-                    "&fOriginal project was made by &bhieu&f.",
-                    CC.LINE
-            )) {
-                sendMessage(sender, line);
-            }
-            return;
-        }
-
-        // Aliases
-        for (String alias : aliases()) {
-            if (message.equals("/souppvp:" + alias) || message.equals("/" + alias)) {
-                for (String line : Arrays.asList(
-                        CC.LINE,
-                        "&fThis server is running &6SoupPvP Core&f.",
-                        "&fOriginal project was made by &bhieu&f.",
-                        CC.LINE
-                )) {
-                    sendMessage(sender, line);
-                }
-                return;
-            }
-        }
     }
 }

@@ -21,13 +21,12 @@ public class RandomKitButton extends Button {
     @Override
     public ItemStack getButtonItem(Player player) {
         return new ItemBuilder(Material.JUKEBOX)
-                .name(CC.translate("&bRandomise A Kit"))
+                .name("&bRandomise A Kit")
                 .lore(
-                        CC.translate("&7Receive a random kit you own!"),
+                        "&7Receive a random kit you own!",
                         "",
-                        CC.translate("&eClick to randomize!")
-                )
-                .build();
+                        "&eClick to randomize!"
+                ).build();
     }
 
     @Override
@@ -39,7 +38,7 @@ public class RandomKitButton extends Button {
         List<String> unlocked = profile.getUnlockedKits();
 
         if (unlocked == null || unlocked.isEmpty()) {
-            player.sendMessage(CC.translate("&cYou don't own any kits to randomize."));
+            sendMessage(player, "&cYou don't own any kits to randomize.");
             return;
         }
 
@@ -47,7 +46,7 @@ public class RandomKitButton extends Button {
         Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(kitName);
 
         if (kit == null) {
-            player.sendMessage(CC.translate("&cThis kit no longer exists in the system."));
+            sendMessage(player, "&cThis kit no longer exists in the system.");
             return;
         }
 
@@ -55,6 +54,6 @@ public class RandomKitButton extends Button {
         profile.setCurrentKit(kit.getName());
 
         PlayerUtil.playSound(player, Sound.CLICK);
-        player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kit.getName() + "&a kit."));
+        sendMessage(player, "&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kit.getName() + "&a kit.");
     }
 }

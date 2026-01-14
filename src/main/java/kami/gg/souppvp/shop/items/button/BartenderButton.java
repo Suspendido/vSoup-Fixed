@@ -1,4 +1,4 @@
-package kami.gg.souppvp.shop.button;
+package kami.gg.souppvp.shop.items.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;

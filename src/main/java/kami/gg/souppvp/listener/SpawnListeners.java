@@ -24,17 +24,4 @@ public class SpawnListeners implements Listener {
             event.setCancelled(true);
         }
     }
-
-    @EventHandler
-    public void onPlayerMoveItem(InventoryClickEvent event) {
-        if (event.getClickedInventory() == null || !(event.getWhoClicked() instanceof Player)) return;
-
-        Profile profile = plugin.getProfilesHandler().getProfileByUUID(event.getWhoClicked().getUniqueId());
-
-        if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) return;
-
-        if (profile.getProfileState() == ProfileState.SPAWN || plugin.getSpawnHandler().getCuboid().contains(event.getWhoClicked())) {
-            event.setCancelled(true);
-        }
-    }
 }

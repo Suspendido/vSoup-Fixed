@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
@@ -77,11 +77,7 @@ public class RogueKit extends Kit {
                 new ItemBuilder(Material.CHAINMAIL_BOOTS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
                 new ItemBuilder(Material.CHAINMAIL_LEGGINGS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
                 new ItemBuilder(Material.IRON_CHESTPLATE).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build(),
-                new ItemBuilder(Material.LEATHER_HELMET)
-                        .color(Color.BLACK)
-                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
-                        .enchantment(Enchantment.DURABILITY, 3)
-                        .build()
+                new ItemBuilder(Material.LEATHER_HELMET).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).enchantment(Enchantment.DURABILITY, 3).build()
         };
     }
 
@@ -94,7 +90,9 @@ public class RogueKit extends Kit {
     }
 
     @Override
-    public void onSelect(Player player) { }
+    public void onSelect(Player player) {
+
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
@@ -115,10 +113,12 @@ public class RogueKit extends Kit {
         final String timerId = "Back Stabber";
 
         if (timers.hasTimer(damager.getUniqueId(), timerId, true)) {
-            damager.sendMessage(ChatColor.RED + "You can't use this for another "
-                    + ChatColor.YELLOW + DurationFormatter.getRemaining(
-                    timers.getRemaining(damager.getUniqueId(), timerId, true), true)
-                    + ChatColor.RED + ".");
+            damager.sendMessage(CC.translate("&cYou can't use this for another " + DurationFormatter.getRemaining(timers.getRemaining(damager.getUniqueId(), timerId, true), true) + "&c."));
+            return;
+        }
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damager.getLocation())) {
+            damager.sendMessage(CC.translate("&cYou can't do this in spawn."));
             return;
         }
 

@@ -26,43 +26,20 @@ public class BountyPlayerButton extends Button {
 
         SoupPvP plugin = SoupPvP.getInstance();
         Profile profile = plugin.getProfilesHandler().getProfileByUUID(target.getUniqueId());
-
         List<String> lore = new ArrayList<>();
-        lore.add("");
+        String perk0 = profile.getActivePerks().getFirst();
 
-        String perk0 = profile.getActivePerks().get(0);
-        String perk2 = profile.getActivePerks().get(2);
-
-        boolean hasTrickster = perk0 != null && perk0.equalsIgnoreCase("Trickster");
-        boolean hasIncognito = perk2 != null && perk2.equalsIgnoreCase("Incognito");
-
-        if (hasTrickster) {
-            lore.add(CC.translate("&fBounty: &b" + ThreadLocalRandom.current().nextInt(0, 1001)));
+        if (perk0 != null && perk0.equalsIgnoreCase("Trickster")) {
+            lore.add(CC.translate(" &b▪ &fBounty: &b" + ThreadLocalRandom.current().nextInt(0, 1001)));
         } else {
-            lore.add(CC.translate("&fBounty: &b" + profile.getBounty()));
+            lore.add(CC.translate(" &b▪ &fBounty: &b" + profile.getBounty()));
         }
-
-        if (!hasIncognito) {
-            lore.add(CC.translate("&fCurrent Killstreak: &b" + profile.getCurrentKillstreak()));
-        }
-
-        lore.add(CC.translate("&fCurrent Kit: &b" + profile.getCurrentKit()));
-
-        if (hasTrickster) {
-            lore.add(CC.translate("&fCurrent Health: &f" + ThreadLocalRandom.current().nextInt(0, 11) + "&4❤"));
-        } else {
-            lore.add(CC.translate("&fCurrent Health: &f" + (int) (target.getHealth() / 2) + "&4❤"));
-        }
-
-        double distance = viewer.getLocation().distance(target.getLocation());
-        lore.add(CC.translate("&fDistance: &b" + (int) distance));
-
-        lore.add("");
 
         return new ItemBuilder(Material.SKULL_ITEM)
-                .name(CC.translate("&b" + target.getName()))
+                .name(CC.translate(target.getDisplayName()))
                 .lore(lore)
                 .durability(3)
+                .setSkullOwner(target.getName())
                 .build();
     }
 }

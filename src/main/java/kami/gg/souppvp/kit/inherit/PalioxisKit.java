@@ -5,6 +5,7 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
+import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -70,11 +71,7 @@ public class PalioxisKit extends Kit {
                 new ItemBuilder(Material.IRON_BOOTS).build(),
                 new ItemBuilder(Material.IRON_LEGGINGS).build(),
                 new ItemBuilder(Material.IRON_CHESTPLATE).build(),
-                new ItemBuilder(Material.LEATHER_HELMET)
-                        .color(Color.BLACK)
-                        .enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1)
-                        .enchantment(Enchantment.DURABILITY, 10)
-                        .build()
+                new ItemBuilder(Material.LEATHER_HELMET).color(Color.BLACK).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).enchantment(Enchantment.DURABILITY, 10).build()
         };
     }
 
@@ -94,23 +91,11 @@ public class PalioxisKit extends Kit {
         if (killer == null) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
         if (!profile.getCurrentKit().equals(getName())) return;
-
-        givePearl(killer);
-
-        for (ItemStack armor : killer.getInventory().getArmorContents()) {
-            if (armor != null) {
-                armor.setDurability((short) Math.max(0, armor.getDurability() - 10));
-            }
-        }
-
-        applySpeedBoost(killer, profile);
-        killer.updateInventory();
-    }
-
-    private void givePearl(Player killer) {
         if (killer.getInventory().contains(Material.ENDER_PEARL)) return;
+
         if (killer.getInventory().firstEmpty() != -1) {
             killer.getInventory().addItem(ENDER_PEARL.clone());
             return;
@@ -126,18 +111,21 @@ public class PalioxisKit extends Kit {
                 return;
             }
         }
-    }
 
-    private void applySpeedBoost(Player killer, Profile profile) {
+        for (ItemStack armor : killer.getInventory().getArmorContents()) {
+            if (armor != null) {
+                armor.setDurability((short) Math.max(0, armor.getDurability() - 10));
+            }
+        }
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(killer.getLocation())) {
+            killer.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            return;
+        }
+
         int boostDuration = 20 * 10;
-
-        PotionEffect currentSpeed3 = killer.getActivePotionEffects().stream()
-                .filter(pe -> pe.getType() == PotionEffectType.SPEED && pe.getAmplifier() == 2)
-                .findFirst()
-                .orElse(null);
-
+        PotionEffect currentSpeed3 = killer.getActivePotionEffects().stream().filter(pe -> pe.getType() == PotionEffectType.SPEED && pe.getAmplifier() == 2).findFirst().orElse(null);
         int duration = currentSpeed3 != null ? currentSpeed3.getDuration() + boostDuration : boostDuration;
-
         killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, duration, 2), true);
 
         new BukkitRunnable() {
@@ -150,5 +138,7 @@ public class PalioxisKit extends Kit {
                 killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
             }
         }.runTaskLater(plugin, duration);
+
+        killer.updateInventory();
     }
 }

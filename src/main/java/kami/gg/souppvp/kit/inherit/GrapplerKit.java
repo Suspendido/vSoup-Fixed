@@ -11,7 +11,6 @@ import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.XPBarTimer;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -51,7 +50,7 @@ public class GrapplerKit extends Kit {
 
     @Override
     public ItemStack getIcon() {
-        return grapplerRod;
+        return new ItemBuilder(Material.FISHING_ROD).build();
     }
 
     @Override
@@ -65,10 +64,7 @@ public class GrapplerKit extends Kit {
     @Override
     public List<ItemStack> getCombatEquipments() {
         return List.of(
-                new ItemBuilder(Material.IRON_SWORD)
-                        .enchantment(Enchantment.DAMAGE_ALL, 1)
-                        .enchantment(Enchantment.DURABILITY, 3)
-                        .build(),
+                new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 3).build(),
                 grapplerRod
         );
     }
@@ -111,9 +107,14 @@ public class GrapplerKit extends Kit {
 
         var timers = SoupPvP.getInstance().getTimersHandler();
 
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            return;
+        }
+
         if (timers.hasTimer(player.getUniqueId(), "Grappler", true)) {
             long remaining = timers.getRemaining(player.getUniqueId(), "Grappler", true);
-            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
             event.setCancelled(true);
         }
     }

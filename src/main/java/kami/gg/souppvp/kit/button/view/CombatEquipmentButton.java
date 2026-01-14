@@ -10,8 +10,8 @@ import java.util.List;
 
 public class CombatEquipmentButton extends Button {
 
-    private Kit kit;
-    private int position;
+    private final Kit kit;
+    private final int position;
 
     public CombatEquipmentButton(Kit kit, int position) {
         this.kit = kit;

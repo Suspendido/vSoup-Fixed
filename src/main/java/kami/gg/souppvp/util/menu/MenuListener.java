@@ -6,84 +6,70 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class MenuListener implements Listener {
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onButtonPress(InventoryClickEvent event) {
-		Player player = (Player) event.getWhoClicked();
-		Menu openMenu = Menu.currentlyOpenedMenus.get(player.getName());
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onButtonPress(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
 
-		if (openMenu != null) {
-			if (event.getSlot() != event.getRawSlot()) {
-				if ((event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT)) {
-					event.setCancelled(true);
-				}
+        Menu openMenu = Menu.currentlyOpenedMenus.get(player.getName());
 
-				return;
-			}
+        if (openMenu == null) return;
 
-			if (openMenu.getButtons().containsKey(event.getSlot())) {
-				Button button = openMenu.getButtons().get(event.getSlot());
-				boolean cancel = button.shouldCancel(player, event.getClick());
+        if (event.getSlot() != event.getRawSlot()) {
+            if (event.getClick().isShiftClick()) {
+                event.setCancelled(true);
+            }
+            return;
+        }
 
-				if (!cancel && (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT)) {
-					event.setCancelled(true);
+        Button button = openMenu.getButtons().get(event.getSlot());
 
-					if (event.getCurrentItem() != null) {
-						player.getInventory().addItem(event.getCurrentItem());
-					}
-				} else {
-					event.setCancelled(cancel);
-				}
+        if (button == null) {
+            if (event.getCurrentItem() != null || event.getClick().isShiftClick()) {
+                event.setCancelled(true);
+            }
+            return;
+        }
 
-				button.clicked(player, event.getClick());
-				button.clicked(player, event.getSlot(), event.getClick(), event.getHotbarButton());
+        boolean cancel = button.shouldCancel(player, event.getClick());
+        event.setCancelled(cancel || event.getClick().isShiftClick());
 
-				if (Menu.currentlyOpenedMenus.containsKey(player.getName())) {
-					Menu newMenu = Menu.currentlyOpenedMenus.get(player.getName());
+        button.clicked(player, event.getClick());
+        button.clicked(player, event.getSlot(), event.getClick(), event.getHotbarButton());
 
-					if (newMenu == openMenu) {
-						boolean buttonUpdate = button.shouldUpdate(player, event.getClick());
+        if (button.closesMenu(player, event.getClick())) {
+            Menu.currentlyOpenedMenus.remove(player.getName());
+            return;
+        }
 
-						if ((newMenu.isUpdateAfterClick() && buttonUpdate) || buttonUpdate) {
-							openMenu.setClosedByMenu(true);
-							newMenu.openMenu(player);
-						}
-					}
-				} else if (button.shouldUpdate(player, event.getClick())) {
-					openMenu.setClosedByMenu(true);
-					openMenu.openMenu(player);
-				}
+        if (button.shouldUpdate(player, event.getClick())) {
+            openMenu.setClosedByMenu(true);
+            openMenu.openMenu(player);
+        }
 
-				if (event.isCancelled()) {
-					Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), player::updateInventory, 1L);
-				}
-			} else {
-				if (event.getCurrentItem() != null) {
-					event.setCancelled(true);
-				}
+        if (event.isCancelled()) {
+            Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), player::updateInventory, 1L);
+        }
+    }
 
-				if ((event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT)) {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player player)) return;
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onInventoryClose(InventoryCloseEvent event) {
-		Player player = (Player) event.getPlayer();
-		Menu openMenu = Menu.currentlyOpenedMenus.get(player.getName());
+        Menu openMenu = Menu.currentlyOpenedMenus.get(player.getName());
 
-		if (openMenu != null) {
-			openMenu.onClose(player);
+        if (openMenu == null) return;
 
-			Menu.currentlyOpenedMenus.remove(player.getName());
-		}
-	}
+        if (openMenu.isClosedByMenu()) {
+            openMenu.setClosedByMenu(false);
+            return;
+        }
 
+        openMenu.onClose(player);
+        Menu.currentlyOpenedMenus.remove(player.getName());
+    }
 }

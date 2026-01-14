@@ -1,6 +1,6 @@
-package kami.gg.souppvp.hooks.ranks.type;
+package kami.gg.souppvp.feats.hooks.ranks.type;
 
-import kami.gg.souppvp.hooks.ranks.Rank;
+import kami.gg.souppvp.feats.hooks.ranks.Rank;
 import me.activated.core.plugin.AquaCoreAPI;
 import org.bukkit.entity.Player;
 

@@ -26,16 +26,14 @@ public class KitsBuyMenu extends PaginatedMenu {
     @Override
     public Map<Integer, Button> getAllPagesButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
-
-        Profile profile = SoupPvP.getInstance()
-                .getProfilesHandler()
-                .getProfileByUUID(player.getUniqueId());
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        boolean freeMode = SoupPvP.getIsFreeKitsMode();
 
         int index = 0;
-
         for (Kit kit : SoupPvP.getInstance().getKitsHandler().getKits()) {
-            if (profile.getUnlockedKits().contains(kit.getName())) continue;
-            buttons.put(index++, new KitButton(kit));
+            if (!freeMode && !profile.getUnlockedKits().contains(kit.getName())) {
+                buttons.put(index++, new KitButton(kit));
+            }
         }
 
         return buttons;

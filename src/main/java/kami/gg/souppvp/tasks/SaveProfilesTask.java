@@ -10,7 +10,7 @@ public class SaveProfilesTask {
     public SaveProfilesTask(){
         Bukkit.getScheduler().scheduleSyncRepeatingTask(SoupPvP.getInstance(), () -> {
             Long started = System.currentTimeMillis();
-            for (Profile profile : SoupPvP.getInstance().getProfilesHandler().getProfiles()) {
+            for (Profile profile : SoupPvP.getInstance().getProfilesHandler().getProfiles().values()) {
                 profile.saveProfile();
             }
             Long ended = System.currentTimeMillis();

@@ -13,8 +13,8 @@ public class SpawnItems {
             .name(CC.translate("&bHost Events &7(Right Click)"))
             .build();
 
-    public static ItemStack GAME_PERKS = new ItemBuilder(Material.CHEST)
-            .name(CC.translate("&bGame Perks &7(Right Click)"))
+    public static ItemStack SHOP = new ItemBuilder(Material.CHEST)
+            .name(CC.translate("&bShop &7(Right Click)"))
             .build();
 
     public static ItemStack YOUR_STATISTICS = new ItemBuilder(Material.SKULL_ITEM)

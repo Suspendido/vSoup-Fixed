@@ -8,7 +8,6 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.Callback;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -24,25 +23,30 @@ public class BooleanButton extends Button {
     public ItemStack getButtonItem(Player player) {
         List<String> lore = new ArrayList<>();
         lore.add("");
-        if (this.confirm){
-            lore.add(CC.translate("&aClick here to confirm"));
-            lore.add(CC.translate("&athe procedure action."));
+
+        if (confirm) {
+            lore.add("&aClick here to confirm");
+            lore.add("&athe procedure action.");
         } else {
-            lore.add(CC.translate("&cClick here to cancel"));
-            lore.add(CC.translate("&cthe procedure action."));
+            lore.add("&cClick here to cancel");
+            lore.add("&cthe procedure action.");
         }
-        return new ItemBuilder(Material.WOOL).name(this.confirm ? CC.translate("&a&lConfirm") : CC.translate("&c&lCancel")).lore(lore).durability(this.confirm ? (byte) 5 : 14).build();
+        return new ItemBuilder(Material.WOOL)
+                .name(confirm ? "&a&lConfirm" : "&c&lCancel")
+                .lore(lore)
+                .data(confirm ? 5 : 14
+                ).build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (this.confirm) {
+        if (confirm) {
             player.playSound(player.getLocation(), Sound.NOTE_PIANO, 20.0f, 0.1f);
         } else {
             player.playSound(player.getLocation(), Sound.DIG_GRAVEL, 20.0f, 0.1f);
         }
         player.closeInventory();
-        this.callback.callback(this.confirm);
+        callback.callback(confirm);
     }
 
     @ConstructorProperties(value={"confirm", "callback"})

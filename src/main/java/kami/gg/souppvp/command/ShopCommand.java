@@ -3,6 +3,7 @@ package kami.gg.souppvp.command;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.shop.ShopMenu;
+import kami.gg.souppvp.shop.items.ItemsMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;

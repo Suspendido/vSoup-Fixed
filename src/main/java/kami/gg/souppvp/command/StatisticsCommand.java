@@ -53,7 +53,7 @@ public class StatisticsCommand extends Command {
         String activePerkName = profile.getActivePerks().size() > 2 ? profile.getActivePerks().get(2) : null;
         Perk activePerk = activePerkName != null ? SoupPvP.getInstance().getPerksHandler().getPerkByName(activePerkName) : null;
 
-        sender.sendMessage(CC.translate(StringUtils.repeat("&7&m-", 53)));
+        sender.sendMessage(" ");
         sender.sendMessage(CC.translate(isSelf ? "&bYour Statistics:" : "&b" + profile.getUsername() + "'s Statistics:"));
         sender.sendMessage(CC.translate(" &fKills: &b" + profile.getKills()));
         sender.sendMessage(CC.translate(" &fDeaths: &b" + profile.getDeaths()));
@@ -78,6 +78,6 @@ public class StatisticsCommand extends Command {
             sender.sendMessage(CC.translate(" &fBounty: &b" + profile.getBounty()));
         }
 
-        sender.sendMessage(CC.translate(StringUtils.repeat("&7&m-", 53)));
+        sender.sendMessage(" ");
     }
 }

@@ -5,13 +5,14 @@ import kami.gg.souppvp.events.menu.HostEventsMenu;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.menu.KitsSelectMenu;
 import kami.gg.souppvp.options.OptionsMenu;
-import kami.gg.souppvp.perk.menu.PerksMenu;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.shop.ShopMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.EventItems;
 import kami.gg.souppvp.util.SpawnItems;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,95 +20,133 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 
 public class SpawnEventItemsListener implements Listener {
 
-    private static final DecimalFormat df = new DecimalFormat("0.00");
+    private static final DecimalFormat KDR_FORMAT = new DecimalFormat("0.00");
 
     @EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event){
+    public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        ItemStack item = event.getItem();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)){
-            if (event.getItem().isSimilar(SpawnItems.KITS_SELECTOR)){
-                new KitsSelectMenu().openMenu(player);
-                return;
-            }
-            if (event.getItem().isSimilar(SpawnItems.HOST_EVENTS)){
-                new HostEventsMenu().openMenu(player);
-                return;
-            }
-            if (event.getItem().isSimilar(SpawnItems.GAME_PERKS)){
-                new PerksMenu().openMenu(player);
-                return;
-            }
-            if (event.getItem().isSimilar(SpawnItems.YOUR_STATISTICS)){
-                player.sendMessage(CC.translate(StringUtils.repeat("&7&m-", 53)));
-                player.sendMessage(CC.translate("&bYour Statistics:"));
-                player.sendMessage(CC.translate(" &fKills: &b" + profile.getKills()));
-                player.sendMessage(CC.translate(" &fDeaths: &b" + profile.getDeaths()));
-                if (profile.getDeaths() == 0){
-                    player.sendMessage(CC.translate(" &fKDR: &6Infinity"));
-                } else {
-                    double kdr = (double) profile.getKills() / (double) profile.getDeaths();
-                    String context = kdr >= 1 ? "&a" : "&c";
-                    player.sendMessage(CC.translate(" &fKDR: " + context + df.format(kdr)));
-                }
-                player.sendMessage(CC.translate(" &fCurrent Killstreak: &b" + profile.getCurrentKillstreak()));
-                player.sendMessage(CC.translate(" &fHighest Killstreak: &b" + profile.getHighestKillstreak()));
-                player.sendMessage(CC.translate(" &fCredits: &b" + profile.getCredits()));
-                player.sendMessage(CC.translate(" &fTier: &7" + profile.getTier().getDisplay() + "✫"));
-                if (profile.getBounty() > 0){
-                    player.sendMessage(CC.translate(" &fBounty: &b" + profile.getBounty()));
-                }
-                player.sendMessage(CC.translate(StringUtils.repeat("&7&m-", 53)));
-                return;
-            }
-            if (event.getItem().isSimilar(SpawnItems.PREVIOUS_KIT)) {
-                if (profile.getPreviousKit() == null){
-                    player.sendMessage(CC.translate("&cYou don't have a previous kit."));
-                    return;
-                }
-                Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-                Kit previous = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getPreviousKit());
 
-                profile.setCurrentKit(previous.getName());
-                profile.setPreviousKit(current.getName());
+        if (item == null || !isRightClick(event.getAction())) return;
+        if (profile == null) return;
 
-                player.sendMessage(CC.translate("&aSuccessfully given you your previous kit &r" + previous.getRarityType().getColor() + profile.getPreviousKit() + "&a"));
-                return;
-            }
-            if (event.getItem().isSimilar(SpawnItems.YOUR_OPTIONS)){
-                new OptionsMenu().openMenu(player);
-                return;
-            }
-            if (event.getItem().isSimilar(EventItems.LEAVE_EVENT)){
-                if (profile.getSumoEvent() != null){
-                    profile.getSumoEvent().handleLeave(player);
-                }
+        if (item.isSimilar(SpawnItems.KITS_SELECTOR)) {
+            new KitsSelectMenu().openMenu(player);
+            return;
+        }
+
+        if (item.isSimilar(SpawnItems.HOST_EVENTS)) {
+            new HostEventsMenu().openMenu(player);
+            return;
+        }
+
+        if (item.isSimilar(SpawnItems.SHOP)) {
+            new ShopMenu().openMenu(player);
+            player.playSound(player.getLocation(), Sound.VILLAGER_HAGGLE, 1F, 1F);
+            return;
+        }
+
+        if (item.isSimilar(SpawnItems.YOUR_STATISTICS)) {
+            displayStatistics(player, profile);
+            return;
+        }
+
+        if (item.isSimilar(SpawnItems.PREVIOUS_KIT)) {
+            handlePreviousKit(player, profile);
+            return;
+        }
+
+        if (item.isSimilar(SpawnItems.YOUR_OPTIONS)) {
+            new OptionsMenu().openMenu(player);
+            return;
+        }
+
+        if (item.isSimilar(EventItems.LEAVE_EVENT)) {
+            if (profile.getSumoEvent() != null) {
+                profile.getSumoEvent().handleLeave(player);
             }
         }
     }
 
+    private boolean isRightClick(Action action) {
+        return action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
+    }
+
+    private void displayStatistics(Player player, Profile profile) {
+        player.sendMessage(" ");
+        player.sendMessage(CC.translate("&bYour Statistics:"));
+        player.sendMessage(CC.translate(" &fKills: &b" + profile.getKills()));
+        player.sendMessage(CC.translate(" &fDeaths: &b" + profile.getDeaths()));
+
+        if (profile.getDeaths() == 0) {
+            player.sendMessage(CC.translate(" &fKDR: &6Infinity"));
+        } else {
+            double kdr = (double) profile.getKills() / profile.getDeaths();
+            String color = kdr >= 1.0 ? "&a" : "&c";
+            player.sendMessage(CC.translate(" &fKDR: " + color + KDR_FORMAT.format(kdr)));
+        }
+
+        player.sendMessage(CC.translate(" &fCurrent Killstreak: &b" + profile.getCurrentKillstreak()));
+        player.sendMessage(CC.translate(" &fHighest Killstreak: &b" + profile.getHighestKillstreak()));
+        player.sendMessage(CC.translate(" &fCredits: &b" + profile.getCredits()));
+        player.sendMessage(CC.translate(" &fTier: &7" + profile.getTier().getDisplay() + "✫"));
+
+        if (profile.getBounty() > 0) {
+            player.sendMessage(CC.translate(" &fBounty: &b" + profile.getBounty()));
+        }
+
+        player.sendMessage(" ");
+    }
+
+    private void handlePreviousKit(Player player, Profile profile) {
+        String previousKitName = profile.getPreviousKit();
+
+        if (previousKitName == null) {
+            player.sendMessage(CC.translate("&cYou don't have a previous kit."));
+            return;
+        }
+
+        Kit currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+        Kit previousKit = SoupPvP.getInstance().getKitsHandler().getKitByName(previousKitName);
+
+        if (currentKit == null || previousKit == null) {
+            player.sendMessage(CC.translate("&cError loading kits. Please try again."));
+            return;
+        }
+
+        profile.setPreviousKit(currentKit.getName());
+        profile.setCurrentKit(previousKit.getName());
+
+        previousKit.equipKit(player);
+        player.sendMessage(CC.translate("&aSuccessfully equipped your previous kit: " + previousKit.getRarityType().getColor() + previousKit.getName()));
+    }
+
     @EventHandler
-    public void onPlayerDropItemEvent(PlayerDropItemEvent event){
-        if (event.getPlayer().getGameMode().equals(GameMode.SURVIVAL)){
-            Player player = event.getPlayer();
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-                event.setCancelled(true);
-            }
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.getGameMode() == GameMode.SURVIVAL && isInSpawn(player)) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onInventoryDragEvent(InventoryDragEvent event) {
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SURVIVAL)){
-            Player player = (Player) event.getWhoClicked();
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-                event.setCancelled(true);
-            }
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        if (player.getGameMode() == GameMode.SURVIVAL && isInSpawn(player)) {
+            event.setCancelled(true);
         }
+    }
+
+    private boolean isInSpawn(Player player) {
+        return SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player);
     }
 }

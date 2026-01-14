@@ -20,7 +20,7 @@ public class PerkButton extends Button {
     private final Perk perk;
     private final int tier;
 
-    public PerkButton(Perk perk, int tier){
+    public PerkButton(Perk perk, int tier) {
         this.perk = perk;
         this.tier = tier;
     }
@@ -31,34 +31,43 @@ public class PerkButton extends Button {
         if (tier == 1) color = "&e";
         if (tier == 2) color = "&c";
         if (tier == 3) color = "&5";
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.MENU_BAR);
-        lore.addAll(perk.getDescription());
-        lore.add(CC.MENU_BAR);
+
+        if (perk.getDescription() != null && !perk.getDescription().isEmpty()) {
+            lore.addAll(perk.getDescription());
+        } else {
+            lore.add("&7No description available.");
+        }
+
         lore.add("");
+
         if (profile.getUnlockedPerks().contains(perk.getName().replaceAll(" ", "_"))){
             if (profile.getActivePerks().get(tier-1).equals(perk.getName().replaceAll(" ", "_"))){
-                lore.add(CC.translate("&fStatus: &6Equipped"));
+                lore.add("&fStatus: &6Equipped");
                 lore.add("");
-                lore.add(CC.translate("&aYou currently have this perk enabled."));
+                lore.add("&aYou currently have this perk enabled.");
             } else {
-                lore.add(CC.translate("&fStatus: &aUnlocked"));
+                lore.add("&fStatus: &aUnlocked");
                 lore.add("");
-                lore.add(CC.translate("&aClick here to select this perk."));
+                lore.add("&aClick here to select this perk.");
             }
         } else {
-            lore.add(CC.translate("&fStatus: &cLocked"));
-            lore.add(CC.translate("&fCost: &a" + perk.getCost() + " credits"));
+            lore.add("&fStatus: &cLocked");
+            lore.add("&fCost: &a" + perk.getCost() + " credits");
             lore.add("");
-            lore.add(CC.translate("&eClick here to purchase this perk."));
+            lore.add("&eClick here to purchase this perk.");
         }
-        return new ItemBuilder(perk.getIcon()).name(CC.translate(color + perk.getName())).lore(lore).build();
+        return new ItemBuilder(perk.getIcon())
+                .name(color + perk.getName())
+                .lore(lore)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
+        if (clickType.isLeftClick()) {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
             Perk currentPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(tier-1));
             if (currentPerk == perk) {
@@ -66,25 +75,34 @@ public class PerkButton extends Button {
                 return;
             }
             String formattedPerkName = perk.getName().replaceAll(" ", "_");
-            if (profile.getUnlockedPerks().contains(formattedPerkName)){
+            if (profile.getUnlockedPerks().contains(formattedPerkName)) {
                 Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-                if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(tier-1)) == hardlinePerk){
+
+                if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(tier-1)) == hardlinePerk) {
+                    if (profile.getCurrentKillstreak() > 0 ) {
+                        sendMessage(player, "&cYou lost your killstreak of " + profile.getCurrentKillstreak() + "!");
+                    }
+
                     profile.setCurrentKillstreak(0);
-                    player.sendMessage(CC.translate("&cYour current killstreak has been reset."));
                 }
+
                 profile.getActivePerks().set(tier-1, perk.getName().replaceAll(" ", "_"));
                 playNeutral(player);
+
             } else {
-                if (profile.getCredits() >= perk.getCost()){
+                if (profile.getCredits() >= perk.getCost()) {
                     playNeutral(player);
                     new ConfirmMenu("Select a procedure action", data -> {
-                        if (data){
+                        if (data) {
                             profile.setCredits(profile.getCredits() - perk.getCost());
                             profile.getUnlockedPerks().add(perk.getName().replaceAll(" ", "_"));
                             Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
                             if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(tier-1)) == hardlinePerk){
+                                if (profile.getCurrentKillstreak() > 0 ) {
+                                    sendMessage(player, "&cYou lost your killstreak of " + profile.getCurrentKillstreak() + "!");
+                                }
+
                                 profile.setCurrentKillstreak(0);
-                                player.sendMessage(CC.translate("&cYour current killstreak has been reset."));
                             }
                             profile.getActivePerks().set(tier-1, perk.getName().replaceAll(" ", "_"));
                             player.sendMessage(CC.translate("&aSuccessfully bought the &e" + perk.getName() + " &aperk."));

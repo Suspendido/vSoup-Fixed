@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import com.google.common.collect.Sets;
 import kami.gg.souppvp.SoupPvP;
@@ -85,7 +85,9 @@ public class KangarooKit extends Kit {
     }
 
     @Override
-    public void onSelect(Player player) { }
+    public void onSelect(Player player) {
+
+    }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -106,7 +108,6 @@ public class KangarooKit extends Kit {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL && jumpingUsers.contains(player.getUniqueId())) {
             event.setCancelled(true);
         }
@@ -136,6 +137,11 @@ public class KangarooKit extends Kit {
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, "Kangaroo", true)) {
             long remain = SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, "Kangaroo", true);
             player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remain, true) + "&c."));
+            return;
+        }
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
             return;
         }
 

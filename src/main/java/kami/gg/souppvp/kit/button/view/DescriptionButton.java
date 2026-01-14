@@ -33,7 +33,7 @@ public class DescriptionButton extends Button {
         lore.add("");
 
         if (kit.getPotionEffects() != null && !kit.getPotionEffects().isEmpty()) {
-            lore.add("&b&lPermanent Effects:");
+            lore.add("&bPermanent Effects:");
 
             for (PotionEffect effect : kit.getPotionEffects()) {
                 String effectName = WordUtils.capitalize(
@@ -41,12 +41,12 @@ public class DescriptionButton extends Button {
                 );
                 int level = effect.getAmplifier() + 1;
 
-                lore.add(" &b▪ &7" + effectName + level);
+                lore.add(" &b▪ &7" + effectName + " " + level);
             }
         }
 
         return new ItemBuilder(Material.BOOK_AND_QUILL)
-                .name("&b&lDescription")
+                .name("&bDescription")
                 .lore(lore)
                 .build();
     }

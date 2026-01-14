@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
@@ -114,15 +114,17 @@ public class EskimoKit extends Kit {
 
         event.setCancelled(true);
 
-        // Cooldown
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            return;
+        }
+
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Ice Dome", true)) {
             long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Ice Dome", true);
-
             player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
             return;
         }
 
-        // Apply cooldown
         SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
                 player.getUniqueId(),
                 new Timer("Ice Dome", TimeUnit.SECONDS.toMillis(30)),

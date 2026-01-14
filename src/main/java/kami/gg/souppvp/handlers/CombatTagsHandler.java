@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 public class CombatTagsHandler {
 
-    private HashMap<UUID, Long> combatTags;
+    private final HashMap<UUID, Long> combatTags;
 
     public CombatTagsHandler(){
         combatTags = new HashMap<>();

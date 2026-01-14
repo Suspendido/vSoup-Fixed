@@ -1,4 +1,4 @@
-package kami.gg.souppvp.kit.inherit;
+package kami.gg.souppvp.kit.kits;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
@@ -136,6 +136,11 @@ public class NinjaKit extends Kit {
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
             long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
             player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+            return;
+        }
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
             return;
         }
 

@@ -28,9 +28,7 @@ public class SpawnTeleporatationListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-            Player victim = (Player) event.getEntity();
-            Player damager = (Player) event.getDamager();
+        if (event.getEntity() instanceof Player victim && event.getDamager() instanceof Player damager) {
             Profile victimProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(victim.getUniqueId());
             Profile damagerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damager.getUniqueId());
 

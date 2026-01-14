@@ -1,5 +1,5 @@
 name: SoupPvP
-version: gg6ks9w
+version: 1.0
 author: hieu
 main: kami.gg.souppvp.SoupPvP
 depend:
@@ -10,3 +10,4 @@ soft-depend:
   - AquaCore
   - Apollo-Bukkit
   - CheatBreakerAPI
+  - BadlionAPI

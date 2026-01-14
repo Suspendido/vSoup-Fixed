@@ -13,9 +13,7 @@ import org.bson.Document;
 import org.bukkit.Bukkit;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter @Setter
 public class Profile {

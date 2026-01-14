@@ -3,13 +3,14 @@ package kami.gg.souppvp.feats.scoreboard;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.events.impl.sumo.SumoState;
+import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.TimeUtil;
 import kami.gg.souppvp.util.assemble.AssembleAdapter;
-import me.activated.core.plugin.AquaCoreAPI;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ScoreboardAdapter implements AssembleAdapter {
 
     private final SoupPvP plugin;
+    private final StaffManager staffManager;
     private final ScoreboardManager scoreboardManager;
 
     private final List<String> footerLines;
@@ -48,6 +50,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
     public ScoreboardAdapter() {
         this.plugin = SoupPvP.getInstance();
         this.scoreboardManager = plugin.getScoreboardManager();
+        this.staffManager = plugin.getStaffManager();
 
         this.footerLines = getStringList("FOOTER.LINES");
         this.started_sumoLines = getStringList("SUMO_EVENT.STARTED_EVENT.LINES");
@@ -84,6 +87,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
         Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
         Date date = (showDateBelowTitle ? new Date() : null);
         boolean isInSpawn = plugin.getSpawnHandler().getCuboid().contains(player) && profile.getProfileState() == ProfileState.SPAWN;
+        boolean staff = staffManager.isStaffEnabled(player);
+        boolean vanish = staffManager.isVanished(player);
         int footer = footerEnabled ? 2 : 0;
         int numberOfLines = (lastLineEnabled ? 2 : 1) + (showDateBelowTitle ? 1 : 0);
 
@@ -137,22 +142,30 @@ public class ScoreboardAdapter implements AssembleAdapter {
             }
         }
 
-        if (staffEnabled) {
-            boolean staff = SoupPvP.getInstance().getStaffHook().isStaffEnabled(player);
-            boolean vanish = SoupPvP.getInstance().getStaffHook().isVanishEnabled(player);
-
-            if (vanish && !staff) {
-                for (String s : noModMode) {
-                    lines.add(s.replace("%vanished%", "&a✔"));
-                }
-            } else if (staff) {
-                for (String s : modMode) {
-                    lines.add(s
-                            .replace("%vanished%", (vanish ? "&a✔" : "&c✖"))
-                            .replace("%players%", String.valueOf(Bukkit.getOnlinePlayers().size()))
-                    );
-                }
+        if (staffEnabled && staff) {
+            if (showDateBelowTitle) {
+                lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
             }
+
+            if (linesEnabled) {
+                lines.add(line);
+            }
+
+            for (String s : modMode) {
+                lines.add(s
+                        .replace("%vanished%", vanish ? "&a✔" : "&c✖")
+                        .replace("%players%", String.valueOf(Bukkit.getOnlinePlayers().size()))
+                        .replace("%hidestaff%", staffManager.isHideStaff(player) ? "&a✔" : "&c✖")
+                        .replace("%max_online%", String.valueOf(Bukkit.getMaxPlayers()))
+                        .replace("%staff%", String.valueOf(staffManager.getStaffMembers().size()))
+                        .replace("%tps%", getTPSColored())
+                );
+            }
+
+            if (footerEnabled) lines.addAll(footerLines);
+            if (linesEnabled && lastLineEnabled) lines.add(line);
+
+            return CC.translate(lines);
         }
 
         for (String s : statsLines) {
@@ -190,6 +203,11 @@ public class ScoreboardAdapter implements AssembleAdapter {
                             .replace("%sumo_state%", "Waiting...")
                     );
                 }
+            }
+        }
+        if (staffEnabled && vanish) {
+            for (String s : noModMode) {
+                lines.add(s.replace("%vanished%", "&a✔"));
             }
         }
 
@@ -300,5 +318,12 @@ public class ScoreboardAdapter implements AssembleAdapter {
 
     public boolean getBoolean(String path) {
         return scoreboardManager.getScoreboardConfig().getBoolean(path);
+    }
+
+    public String getTPSColored() {
+        double tps = MinecraftServer.getServer().recentTps[0];
+        String color = (tps > 18 ? "§a" : tps > 16 ? "§e" : "§c");
+        String asterisk = (tps > 20 ? "*" : "");
+        return color + asterisk + Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
     }
 }

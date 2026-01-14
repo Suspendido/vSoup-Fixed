@@ -119,6 +119,11 @@ public class ItemBuilder implements Listener {
         return this;
     }
 
+    public ItemBuilder data(int data) {
+        is.setDurability((short) data);
+        return this;
+    }
+
     public ItemBuilder enchantment(Enchantment enchantment, int level) {
         is.addUnsafeEnchantment(enchantment, level);
         return this;

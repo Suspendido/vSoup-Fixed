@@ -5,44 +5,56 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.button.KitButton;
 import kami.gg.souppvp.kit.button.RandomKitButton;
 import kami.gg.souppvp.kit.button.SelectPreviousKitButton;
-import kami.gg.souppvp.kit.button.YourStatisticsButton;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
-import kami.gg.souppvp.util.menu.Menu;
-import org.bukkit.Material;
+import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class KitsSelectMenu extends Menu {
+public class KitsSelectMenu extends PaginatedMenu {
+    private static final int[] CORNERS = {
+             1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
+    };
 
     @Override
-    public String getTitle(Player player) {
-        return CC.translate("Select a kit to equip");
+    public String getPrePaginatedTitle(Player player) {
+        return CC.translate("Kit Selector");
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-
+    public Map<Integer, Button> getAllPagesButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        boolean freeMode = SoupPvP.getIsFreeKitsMode();
 
-        buttons.put(2, new RandomKitButton());
-        buttons.put(4, new YourStatisticsButton(profile));
-        buttons.put(6, new SelectPreviousKitButton(profile));
-
-        for (int i = 0; i < 18; i++) {
-            buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        }
-
-        int slot = 18;
+        int index = 0;
         for (Kit kit : SoupPvP.getInstance().getKitsHandler().getKits()) {
-            buttons.put(slot++, new KitButton(kit));
+            if (freeMode || profile.getUnlockedKits().contains(kit.getName())) {
+                buttons.put(index++, new KitButton(kit));
+            }
         }
 
         return buttons;
+    }
+
+
+    @Override
+    public Map<Integer, Button> getGlobalButtons(Player player) {
+        Profile profile = SoupPvP.getInstance().getProfilesHandler() .getProfileByUUID(player.getUniqueId());
+        Map<Integer, Button> global = new HashMap<>();
+        Button filler = getPlaceholderButton();
+
+        for (int slot : CORNERS) {
+            global.put(slot, filler);
+        }
+
+        global.put(3, new RandomKitButton());
+        global.put(5, new SelectPreviousKitButton(profile));
+
+        return global;
     }
 
     @Override

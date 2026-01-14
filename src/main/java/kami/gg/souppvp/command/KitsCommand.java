@@ -1,43 +1,47 @@
 package kami.gg.souppvp.command;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.menu.KitsSelectMenu;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class KitsCommand extends Command {
-    public KitsCommand(CommandManager manager, String name) {
-        super(manager, name);
+    public KitsCommand(CommandManager manager) {
+        super(manager, "kits");
     }
 
     @Override
     public List<String> aliases() {
-        return List.of();
+        return Arrays.asList("kit", "gkit", "vkit", "zkit");
     }
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /setdeaths <profile> <int>"));
+        return null;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (args.length == 0) {
-            sendUsage(sender);
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            return;
+        }
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        boolean isInSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile.getProfileState() == ProfileState.SPAWN;
+
+        if (!isInSpawn) {
+            sender.sendMessage(CC.translate("&cYou cannot open the kits menu while not being on spawn!"));
             return;
         }
 
-        String s = args[0];
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
-
-        int value = Integer.parseInt(args[1]);
-        profile.setDeaths(value);
-        sender.sendMessage(CC.translate("&aSuccessfully updated!"));
-        profile.saveProfile();
+        new KitsSelectMenu().openMenu(player);
     }
 }

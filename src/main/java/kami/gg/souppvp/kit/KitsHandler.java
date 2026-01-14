@@ -81,7 +81,7 @@ public class KitsHandler {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new YodaKit(), SoupPvP.getInstance());
     }
 
-    public Kit getKitByName(String name){
+    public Kit getKitByName(String name) {
         for (Kit kit : getKits()){
             if (kit.getName().equalsIgnoreCase(name)){
                 return kit;
@@ -90,12 +90,8 @@ public class KitsHandler {
         return null;
     }
 
-    public void addKit(Kit kit){
+    public void addKit(Kit kit) {
         getKits().add(kit);
-    }
-
-    public void removeKit(Kit kit){
-        getKits().remove(kit);
     }
 
 }

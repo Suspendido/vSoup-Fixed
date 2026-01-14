@@ -10,6 +10,7 @@ import kami.gg.souppvp.command.shop.RepairCommand;
 import kami.gg.souppvp.command.spawn.*;
 import kami.gg.souppvp.events.impl.sumo.command.SumoCommand;
 import kami.gg.souppvp.feats.leaderboard.command.LeaderboardCommand;
+import kami.gg.souppvp.feats.staff.command.*;
 import kami.gg.souppvp.map.command.MapCommand;
 import kami.gg.souppvp.feats.storage.StorageStatsCommand;
 import lombok.Getter;
@@ -36,7 +37,13 @@ public class CommandManager {
 
     private void load() {
         commands.addAll(Arrays.asList(
-                // Admin
+                // Staff
+                new StaffCommand(this),
+                new StaffOnlineCommand(this),
+                new VanishCommand(this),
+                new FreezeCommand(this),
+                new HideStaffCommand(this),
+                new StaffBuildCommand(this),
                 new BuildCommand(this),
                 new SetCuboidCommand(this),
                 new StorageStatsCommand(this),

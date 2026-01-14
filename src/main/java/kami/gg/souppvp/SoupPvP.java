@@ -12,7 +12,7 @@ import kami.gg.souppvp.coinflip.listener.WagerCustomEventListeners;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
 import kami.gg.souppvp.events.impl.sumo.SumoListener;
 import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
-import kami.gg.souppvp.feats.hooks.staff.StaffHook;
+import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.handlers.*;
 import kami.gg.souppvp.feats.hooks.clients.ClientHook;
 import kami.gg.souppvp.feats.hooks.ranks.RankHook;
@@ -91,9 +91,9 @@ public class SoupPvP extends JavaPlugin {
     private RankHook rankHook;
     private ClientHook clientHook;
     private PlaceholderHook placeholderHook;
-    private StaffHook staffHook;
     private MapManager mapManager;
     private LeaderboardManager leaderboardManager;
+    private StaffManager staffManager;
 
     @Override
     public void onEnable(){
@@ -129,8 +129,8 @@ public class SoupPvP extends JavaPlugin {
         rankHook = new RankHook();
         clientHook = new ClientHook();
         placeholderHook = new PlaceholderHook();
-        staffHook = new StaffHook();
         leaderboardManager = new LeaderboardManager();
+        staffManager = new StaffManager(this);
         (new PacketBorderHandler()).start();
 
         setupAssemble();
@@ -254,5 +254,10 @@ public class SoupPvP extends JavaPlugin {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new JuggernautListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StrengthAndInstantHarmNerfListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TimersListener(), this);
+    }
+
+    public static boolean verifyPlugin(String plugin, SoupPvP instance) {
+        PluginManager pm = instance.getServer().getPluginManager();
+        return pm.getPlugin(plugin) != null;
     }
 }

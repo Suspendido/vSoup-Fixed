@@ -75,11 +75,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.llanezsa</groupId>
-            <artifactId>Library</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>idk.nigger</groupId>
+            <artifactId>BadlionAPI</artifactId>
+            <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Library-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/lib/Badlion-ModApi-Bukkit.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

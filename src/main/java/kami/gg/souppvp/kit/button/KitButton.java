@@ -7,9 +7,7 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
-import kami.gg.souppvp.util.TaskUtil;
 import kami.gg.souppvp.util.menu.Button;
-import kami.gg.souppvp.util.menu.menus.ConfirmMenu;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -30,36 +28,30 @@ public class KitButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         String kitName = kit.getName();
-        boolean unlocked = profile.getUnlockedKits().contains(kitName) || player.hasPermission("souppvp." + kitName.toLowerCase());
+        boolean unlocked = profile.getUnlockedKits().contains(kitName) || hasExactPermission(player, "souppvp." + kitName.toLowerCase());
         boolean freeMode = SoupPvP.getIsFreeKitsMode();
 
         List<String> lore = new ArrayList<>();
-        lore.add(CC.MENU_BAR);
 
-        kit.getDescription().forEach(line -> lore.add(CC.translate(line)));
-
-        lore.add(CC.MENU_BAR);
+        lore.add(" &b▪ &fRarity: " + kit.getRarityType().getColor() + kit.getRarityType().getName());
         lore.add("");
-
-        lore.add(CC.translate("&fStatus: " + (freeMode || unlocked ? "&aUnlocked" : "&cLocked")));
+        lore.add(" &b▪ &fStatus: " + (freeMode || unlocked ? "&aUnlocked" : "&cLocked"));
 
         if (!freeMode && !unlocked) {
-            lore.add(CC.translate("&fPrice: &c" + kit.getPrice()));
+            lore.add(" &b▪ &fPrice: &c" + kit.getPrice());
         }
 
-        lore.add(CC.translate("&fRarity: " + kit.getRarityType().getColor() + kit.getRarityType().getName()));
         lore.add("");
 
         if (freeMode || unlocked) {
-            lore.add(CC.translate("&eClick here to equip this kit."));
+            lore.add("&aClick here to equip this kit.");
         } else {
-            lore.add(profile.getCredits() >= kit.getPrice()
-                    ? CC.translate("&eClick here to purchase this kit.")
-                    : CC.translate("&cInsufficient Credits!"));
+            lore.add(profile.getCredits() >= kit.getPrice() ? "&aClick here to purchase this kit." : "&cInsufficient Credits!");
         }
+        lore.add("&eRight-Click to preview");
 
         return new ItemBuilder(kit.getIcon())
-                .name(CC.translate(kit.getRarityType().getColor() + kitName))
+                .name(kit.getRarityType().getColor() + kitName)
                 .lore(lore)
                 .build();
     }
@@ -79,13 +71,13 @@ public class KitButton extends Button {
 
         if (!clickType.isLeftClick()) return;
 
-        if (freeMode) {
-            equip(player, profile, kitName);
-            return;
-        }
-
-        if (unlocked) {
-            equip(player, profile, kitName);
+        if (freeMode || unlocked) {
+            kit.equipKit(player);
+            PlayerUtil.playSound(player, Sound.CLICK);
+            profile.setPreviousKit(profile.getCurrentKit());
+            profile.setCurrentKit(kitName);
+            player.closeInventory();
+            player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kitName + "&a kit."));
             return;
         }
 
@@ -95,26 +87,14 @@ public class KitButton extends Button {
             return;
         }
 
-        // ASK CONFIRMATION TO BUY
         PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-        new ConfirmMenu("Select a procedure action", confirmed -> {
-            if (!confirmed) return;
+        profile.setCredits(profile.getCredits() - kit.getPrice());
+        profile.getUnlockedKits().add(kitName);
+        player.sendMessage(CC.translate("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
+    }
 
-            TaskUtil.runLater(player::closeInventory, 1L);
-
-            PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-
-            // Purchase
-            profile.setCredits(profile.getCredits() - kit.getPrice());
-            profile.getUnlockedKits().add(kitName);
-
-            // Equip
-            profile.setPreviousKit(profile.getCurrentKit());
-            profile.setCurrentKit(kitName);
-
-            player.sendMessage(CC.translate("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
-            player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kitName + "&a kit."));
-        }).openMenu(player);
+    private boolean hasExactPermission(Player player, String permission) {
+        return player.getEffectivePermissions().stream().anyMatch(info -> info.getPermission().equalsIgnoreCase(permission) && info.getValue());
     }
 
     private void equip(Player player, Profile profile, String kitName) {

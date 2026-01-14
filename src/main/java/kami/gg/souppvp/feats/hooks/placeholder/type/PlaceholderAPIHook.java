@@ -21,7 +21,7 @@ public class PlaceholderAPIHook implements Placeholder {
         new PlaceholderExpansion() {
             @Override
             public @NotNull String getIdentifier() {
-                return "souppvp";
+                return "SoupPvP";
             }
 
             @Override

@@ -43,6 +43,7 @@ public class CoinFlipMenu extends Menu {
 
         buttons.put(26, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
         buttons.put(36, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
+        buttons.put(44, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
         buttons.put(45, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
 
         for (int i=46; i<54; i++){

@@ -1,5 +1,6 @@
 package kami.gg.souppvp.util.menu;
 
+import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -8,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.List;
 
 public abstract class Button {
 
@@ -27,12 +26,28 @@ public abstract class Button {
 		});
 	}
 
+    public static Button placeholder(Material material) {
+        return (new Button() {
+            public ItemStack getButtonItem(Player player) {
+                return new ItemBuilder(material).build();
+            }
+        });
+    }
+
 	public static void playFail(Player player) {
 		player.playSound(player.getLocation(), Sound.DIG_GRASS, 20F, 0.1F);
 
 	}
 
-	public static void playSuccess(Player player) {
+    public void sendMessage(Player player, String s) {
+        player.sendMessage(CC.translate(s));
+    }
+
+    public boolean closesMenu(Player player, ClickType clickType) {
+        return false;
+    }
+
+    public static void playSuccess(Player player) {
 		player.playSound(player.getLocation(), Sound.NOTE_PIANO, 20F, 15F);
 	}
 

@@ -17,14 +17,12 @@ public class NoFallDamageHandler {
     }
 
     public void remove(UUID uuid){
-        this.getNoFallDamage().remove(uuid);
+        getNoFallDamage().remove(uuid);
     }
 
     public void add(UUID uuid){
-        this.getNoFallDamage().add(uuid);
-        TaskUtil.runLater(() -> {
-            this.getNoFallDamage().remove(uuid);
-        }, 5 * 10L);
+        getNoFallDamage().add(uuid);
+        TaskUtil.runLater(() -> getNoFallDamage().remove(uuid), 5 * 10L);
     }
 
 }

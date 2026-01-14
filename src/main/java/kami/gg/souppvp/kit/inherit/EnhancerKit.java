@@ -120,8 +120,12 @@ public class EnhancerKit extends Kit {
 
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Stim Beacon", true)) {
             long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Stim Beacon", true);
-            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW +
-                    DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+            return;
+        }
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
             return;
         }
 
@@ -137,13 +141,12 @@ public class EnhancerKit extends Kit {
         new BukkitRunnable() {
             @Override
             public void run() {
-
                 for (Entity entity : player.getNearbyEntities(5, 5, 5)) {
                     if (!(entity instanceof Player nearby)) continue;
 
                     Profile nearbyProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(nearby.getUniqueId());
 
-                    if (!nearbyProfile.getCurrentKit().equals(getName())) continue;
+                    if (nearbyProfile.getCurrentKit().equals(getName())) continue;
                     if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(nearby)) continue;
 
                     nearby.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));

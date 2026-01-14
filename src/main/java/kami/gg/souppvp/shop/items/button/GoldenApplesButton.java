@@ -1,4 +1,4 @@
-package kami.gg.souppvp.shop.button;
+package kami.gg.souppvp.shop.items.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
@@ -15,11 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SoupRefillButton extends Button {
+public class GoldenApplesButton extends Button {
 
-    private Integer costCredits;
+    private final Integer costCredits;
 
-    public SoupRefillButton(Integer costCredits){
+    public GoldenApplesButton(Integer costCredits){
         this.costCredits = costCredits;
     }
 
@@ -27,7 +27,7 @@ public class SoupRefillButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Refills all your empty slots with soup."));
+        lore.add(CC.translate("&7Receive 3x golden apples."));
         lore.add("");
         lore.add(CC.translate("&fPrice: &b" + costCredits));
         lore.add("");
@@ -36,7 +36,7 @@ public class SoupRefillButton extends Button {
         } else {
             lore.add(CC.translate("&cInsufficient Credits!"));
         }
-        return new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.translate("&bSoup Refill")).lore(lore).build();
+        return new ItemBuilder(Material.GOLDEN_APPLE).name(CC.translate("&bGolden Apples")).lore(lore).build();
     }
 
     @Override
@@ -47,16 +47,16 @@ public class SoupRefillButton extends Button {
                 PlayerUtil.playSound(player, Sound.DIG_GRASS);
                 player.sendMessage(CC.translate("&cYou can't do this in spawn."));
             } else {
-                if (profile.getCredits() > costCredits){
-                    PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                    profile.setCredits(profile.getCredits() - costCredits);
+                if (profile.getCredits() >= costCredits){
                     if (player.getInventory().firstEmpty() == -1){
                         playFail(player);
-                        player.sendMessage(CC.translate("&cYour inventory is full!"));
+                        player.sendMessage(CC.translate("&cYour inventory is full, have one slot empty!"));
                         return;
                     }
-                    PlayerUtil.giveSoup(player);
-                    player.sendMessage(CC.translate("&aSuccessfully bought the &bSoup Refill&a."));
+                    player.getInventory().addItem(new ItemBuilder(Material.GOLDEN_APPLE).amount(3).build());
+                    PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+                    profile.setCredits(profile.getCredits() - costCredits);
+                    player.sendMessage(CC.translate("&aSuccessfully bought the &bGolden Apples&a."));
                 } else {
                     PlayerUtil.playSound(player, Sound.DIG_GRASS);
                 }

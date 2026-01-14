@@ -1,4 +1,4 @@
-package kami.gg.souppvp.shop.button;
+package kami.gg.souppvp.shop.items.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
@@ -6,8 +6,6 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -17,12 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
-public class RepairDurabilityButton extends Button {
+public class SoupRefillButton extends Button {
 
     private Integer costCredits;
 
-    public RepairDurabilityButton(Integer costCredits){
+    public SoupRefillButton(Integer costCredits){
         this.costCredits = costCredits;
     }
 
@@ -30,7 +27,7 @@ public class RepairDurabilityButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Repairs everything in your inventory."));
+        lore.add(CC.translate("&7Refills all your empty slots with soup."));
         lore.add("");
         lore.add(CC.translate("&fPrice: &b" + costCredits));
         lore.add("");
@@ -39,7 +36,7 @@ public class RepairDurabilityButton extends Button {
         } else {
             lore.add(CC.translate("&cInsufficient Credits!"));
         }
-        return new ItemBuilder(Material.IRON_HELMET).name(CC.translate("&bRepair Durability")).lore(lore).build();
+        return new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.translate("&bSoup Refill")).lore(lore).build();
     }
 
     @Override
@@ -50,11 +47,16 @@ public class RepairDurabilityButton extends Button {
                 PlayerUtil.playSound(player, Sound.DIG_GRASS);
                 player.sendMessage(CC.translate("&cYou can't do this in spawn."));
             } else {
-                if (profile.getCredits() >= costCredits){
+                if (profile.getCredits() > costCredits){
                     PlayerUtil.playSound(player, Sound.NOTE_PIANO);
                     profile.setCredits(profile.getCredits() - costCredits);
-                    PlayerUtil.repairPlayer(player);
-                    player.sendMessage(CC.translate("&aSuccessfully bought the &dRepair Durability&a."));
+                    if (player.getInventory().firstEmpty() == -1){
+                        playFail(player);
+                        player.sendMessage(CC.translate("&cYour inventory is full!"));
+                        return;
+                    }
+                    PlayerUtil.giveSoup(player);
+                    player.sendMessage(CC.translate("&aSuccessfully bought the &bSoup Refill&a."));
                 } else {
                     PlayerUtil.playSound(player, Sound.DIG_GRASS);
                 }

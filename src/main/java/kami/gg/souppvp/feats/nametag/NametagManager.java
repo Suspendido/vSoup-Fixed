@@ -10,7 +10,6 @@ import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.NameThreadFactory;
 import lombok.Getter;
-import me.activated.core.plugin.AquaCoreAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -29,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class NametagManager {
 
+    private final SoupPvP instance;
     private final Map<UUID, Nametag> nametags;
     private final NametagAdapter adapter;
     private final Map<UUID, Long> frozenStartTimes = new ConcurrentHashMap<>();
@@ -38,6 +38,7 @@ public class NametagManager {
     private FileConfiguration nametagConfig;
 
     public NametagManager() {
+        this.instance = SoupPvP.getInstance();
         this.nametags = new ConcurrentHashMap<>();
         this.adapter = new NametagColor();
         this.executor = Executors.newScheduledThreadPool(1, new NameThreadFactory("SoupPvP - NametagThread"));
@@ -49,13 +50,13 @@ public class NametagManager {
 
     private void loadConfig() {
         try {
-            File configFile = new File(SoupPvP.getInstance().getDataFolder(), CONFIG_FILE);
+            File configFile = new File(instance.getDataFolder(), CONFIG_FILE);
             if (!configFile.exists()) {
-                SoupPvP.getInstance().saveResource(CONFIG_FILE, false);
+                instance.saveResource(CONFIG_FILE, false);
             }
             nametagConfig = YamlConfiguration.loadConfiguration(configFile);
         } catch (Exception e) {
-            SoupPvP.getInstance().getLogger().severe("Failed to load nametag configuration: " + e.getMessage());
+            instance.getLogger().severe("Failed to load nametag configuration: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -71,12 +72,12 @@ public class NametagManager {
     }
 
     public void updateLunarTags(Player viewer, Player target, String prefix) {
-        if (SoupPvP.getInstance().getClientHook().getClients().isEmpty()) return;
+        if (instance.getClientHook().getClients().isEmpty()) return;
         if (!nametags.containsKey(viewer.getUniqueId())) return;
 
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
-        boolean staff = SoupPvP.getInstance().getStaffHook().isStaffEnabled(target.getPlayer());
-        boolean isInSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(target) && profile.getProfileState() == ProfileState.SPAWN;
+        Profile profile = instance.getProfilesHandler().getProfileByUUID(target.getUniqueId());
+        boolean staff = instance.getStaffManager().isStaffEnabled(target.getPlayer());
+        boolean isInSpawn = instance.getSpawnHandler().getCuboid().contains(target) && profile.getProfileState() == ProfileState.SPAWN;
         List<String> lines = new ArrayList<>();
 
         if (profile == null) {
@@ -96,8 +97,8 @@ public class NametagManager {
                 lines.add(s
                         .replace("%player%", target.getName())
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
-                        .replace("%rank%", SoupPvP.getInstance().getRankHook().getRankColor(target) + SoupPvP.getInstance().getRankHook().getRankName(target))
-                        .replace("%rank-prefix%", SoupPvP.getInstance().getRankHook().getRankPrefix(target))
+                        .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
                 );
             }
             handleLunar(target, viewer, CC.translate(lines));
@@ -107,8 +108,8 @@ public class NametagManager {
         boolean isTrickster = false;
         try {
             if (!profile.getActivePerks().isEmpty()) {
-                Perk currentPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().getFirst());
-                Perk tricksterPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Trickster");
+                Perk currentPerk = instance.getPerksHandler().getPerkByName(profile.getActivePerks().getFirst());
+                Perk tricksterPerk = instance.getPerksHandler().getPerkByName("Trickster");
                 isTrickster = (currentPerk != null && currentPerk.equals(tricksterPerk));
             }
         } catch (Exception ignored) {}
@@ -119,10 +120,10 @@ public class NametagManager {
                 lines.add(s
                         .replace("%player%", target.getName())
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
-                        .replace("%rank%", SoupPvP.getInstance().getRankHook().getRankColor(target) + SoupPvP.getInstance().getRankHook().getRankName(target))
-                        .replace("%rank-prefix%", SoupPvP.getInstance().getRankHook().getRankPrefix(target))
-                        .replace("%rank_color%", SoupPvP.getInstance().getRankHook().getRankColor(target.getPlayer()))
-                        .replace("%rank_suffix%", SoupPvP.getInstance().getRankHook().getRankSuffix(target.getPlayer()))
+                        .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                        .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                        .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%bounty%", String.valueOf(bountyValue))
 
                 );
@@ -181,11 +182,11 @@ public class NametagManager {
     }
 
     private void handleLunar(Player target, Player viewer, List<String> lines) {
-        SoupPvP.getInstance().getClientHook().overrideNametags(target, viewer, lines);
+        instance.getClientHook().overrideNametags(target, viewer, lines);
     }
 
     public void updateNametagForAll(Player target) {
-        for (Player viewer : SoupPvP.getInstance().getServer().getOnlinePlayers()) {
+        for (Player viewer : instance.getServer().getOnlinePlayers()) {
             if (!viewer.equals(target)) {
                 handleUpdate(viewer, target);
             }
@@ -195,12 +196,12 @@ public class NametagManager {
     public void reload() {
         try {
             loadConfig();
-            for (Player player : SoupPvP.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : instance.getServer().getOnlinePlayers()) {
                 updateNametagForAll(player);
             }
-            SoupPvP.getInstance().getLogger().info("Nametag configuration reloaded!");
+            instance.getLogger().info("Nametag configuration reloaded!");
         } catch (Exception e) {
-            SoupPvP.getInstance().getLogger().severe("Error reloading nametags: " + e.getMessage());
+            instance.getLogger().severe("Error reloading nametags: " + e.getMessage());
         }
     }
 }

@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,29 +18,48 @@ import java.util.regex.Pattern;
 
 @Getter @Setter
 public class MapManager {
+
     private FileConfiguration mapConfig;
+    private File configFile;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    static final String CONFIG_FILE = "map.yml";
 
+    private static final String CONFIG_FILE = "map.yml";
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public MapManager() {
-        if (mapConfig.contains("map.map-start")) {
-            String text = mapConfig.getString("start-date");
-            LocalDate date = LocalDate.parse(text, DATE_FORMAT);
-            this.startDate = date.atStartOfDay();
+        loadConfig();
+        loadDates();
+    }
+
+    private void save() {
+        try {
+            mapConfig.save(configFile);
+        } catch (IOException e) {
+            Bukkit.getLogger().severe("[MapHandler] Failed to save map.yml: " + e.getMessage());
         }
-        if (mapConfig.contains("map.map-end")) {
+    }
+
+    private void loadDates() {
+        if (mapConfig.contains("start-date")) {
+            String text = mapConfig.getString("start-date");
+            if (text != null && !text.isEmpty()) {
+                LocalDate date = LocalDate.parse(text, DATE_FORMAT);
+                this.startDate = date.atStartOfDay();
+            }
+        }
+        if (mapConfig.contains("end-date")) {
             String text = mapConfig.getString("end-date");
-            LocalDate date = LocalDate.parse(text, DATE_FORMAT);
-            this.endDate = date.atStartOfDay();
+            if (text != null && !text.isEmpty()) {
+                LocalDate date = LocalDate.parse(text, DATE_FORMAT);
+                this.endDate = date.atStartOfDay();
+            }
         }
     }
 
     private void loadConfig() {
         try {
-            File configFile = new File(SoupPvP.getInstance().getDataFolder(), CONFIG_FILE);
+            configFile = new File(SoupPvP.getInstance().getDataFolder(), CONFIG_FILE);
 
             if (!configFile.exists()) {
                 SoupPvP.getInstance().saveResource(CONFIG_FILE, false);
@@ -47,9 +67,8 @@ public class MapManager {
 
             mapConfig = YamlConfiguration.loadConfiguration(configFile);
 
-
         } catch (Exception e) {
-            SoupPvP.getInstance().getLogger().severe("Failed to load scoreboard configuration: " + e.getMessage());
+            SoupPvP.getInstance().getLogger().severe("Failed to load map.yml: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -57,7 +76,7 @@ public class MapManager {
     public void setStartDate() {
         this.startDate = LocalDateTime.now();
         mapConfig.set("start-date", startDate.format(DATE_FORMAT));
-        mapConfig.saveToString();
+        save();
         Bukkit.getLogger().info("[MapHandler] Set start date to: " + startDate.format(DATE_FORMAT));
     }
 
@@ -71,7 +90,7 @@ public class MapManager {
         if (duration != null) {
             this.endDate = startDate.plus(duration);
             mapConfig.set("end-date", endDate.format(DATE_FORMAT));
-            mapConfig.saveToString();
+            save();
             Bukkit.getLogger().info("[MapHandler] Set end date to: " + endDate.format(DATE_FORMAT));
         } else {
             Bukkit.getLogger().warning("[MapHandler] Invalid duration format: " + durationStr);
@@ -107,24 +126,15 @@ public class MapManager {
         if (!matcher.matches()) return null;
 
         Duration duration = Duration.ZERO;
-        if (input.contains("d")) {
-            String daysStr = input.split("d")[0].replaceAll("[^0-9]", "");
-            duration = duration.plusDays(Long.parseLong(daysStr));
-            input = input.replace(daysStr + "d", "");
-        }
-        if (input.contains("h")) {
-            String hoursStr = input.split("h")[0].replaceAll("[^0-9]", "");
-            duration = duration.plusHours(Long.parseLong(hoursStr));
-            input = input.replace(hoursStr + "h", "");
-        }
-        if (input.contains("m")) {
-            String minutesStr = input.split("m")[0].replaceAll("[^0-9]", "");
-            duration = duration.plusMinutes(Long.parseLong(minutesStr));
-            input = input.replace(minutesStr + "m", "");
-        }
-        if (input.contains("s")) {
-            String secondsStr = input.split("s")[0].replaceAll("[^0-9]", "");
-            duration = duration.plusSeconds(Long.parseLong(secondsStr));
+        Matcher m = Pattern.compile("(\\d+)([dhms])").matcher(input.toLowerCase());
+        while (m.find()) {
+            long value = Long.parseLong(m.group(1));
+            switch (m.group(2)) {
+                case "d" -> duration = duration.plusDays(value);
+                case "h" -> duration = duration.plusHours(value);
+                case "m" -> duration = duration.plusMinutes(value);
+                case "s" -> duration = duration.plusSeconds(value);
+            }
         }
 
         return duration;
@@ -133,6 +143,7 @@ public class MapManager {
     public void reload() {
         try {
             loadConfig();
+            loadDates();
 
             SoupPvP.instance.getLogger().info("Map configuration reloaded!");
         } catch (Exception e) {

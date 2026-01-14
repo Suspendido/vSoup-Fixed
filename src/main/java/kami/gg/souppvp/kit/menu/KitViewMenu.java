@@ -1,16 +1,11 @@
 package kami.gg.souppvp.kit.menu;
 
 import kami.gg.souppvp.kit.Kit;
-import kami.gg.souppvp.kit.button.view.CombatEquipmentButton;
-import kami.gg.souppvp.kit.button.view.PotionEffectsButton;
-import kami.gg.souppvp.kit.button.view.amor.BootsButton;
-import kami.gg.souppvp.kit.button.view.amor.ChestplateButton;
-import kami.gg.souppvp.kit.button.view.amor.HelmetButton;
-import kami.gg.souppvp.kit.button.view.amor.LeggingsButton;
+import kami.gg.souppvp.kit.button.view.*;
+import kami.gg.souppvp.kit.button.view.amor.*;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
-import kami.gg.souppvp.util.menu.button.BackButton;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
@@ -38,24 +33,20 @@ public class KitViewMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
 
-        int slot = 27;
+        int slot = 14;
         for (int i = 0; i < kit.getCombatEquipments().size(); i++) {
             buttons.put(slot++, new CombatEquipmentButton(kit, i));
         }
 
         ItemStack[] armor = kit.getArmor();
-        putArmor(buttons, 36, armor[3], new HelmetButton(kit));
-        putArmor(buttons, 37, armor[2], new ChestplateButton(kit));
-        putArmor(buttons, 38, armor[1], new LeggingsButton(kit));
-        putArmor(buttons, 39, armor[0], new BootsButton(kit));
+        putArmor(buttons, 10, armor[3], new HelmetButton(kit));
+        putArmor(buttons, 11, armor[2], new ChestplateButton(kit));
+        putArmor(buttons, 12, armor[1], new LeggingsButton(kit));
+        putArmor(buttons, 13, armor[0], new BootsButton(kit));
 
-        buttons.put(40, new PotionEffectsButton(kit));
-        buttons.put(44, new BackButton(new KitsSelectMenu()));
+        buttons.put(22, new DescriptionButton(kit));
 
-        for (int i = 0; i < 36; i++) {
-            buttons.putIfAbsent(i, Button.placeholder(Material.MUSHROOM_SOUP, (byte) 0, ""));
-        }
-        for (int i = 41; i < 45; i++) {
+        for (int i = 0; i < 27; i++) {
             buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
         }
 
@@ -64,7 +55,7 @@ public class KitViewMenu extends Menu {
 
     private void putArmor(Map<Integer, Button> map, int slot, ItemStack item, Button button) {
         if (item == null) {
-            map.put(slot, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+            map.put(slot, Button.placeholder(Material.AIR));
         } else {
             map.put(slot, button);
         }

@@ -84,14 +84,14 @@ SUMO_EVENT:
 STAFF_MODE:
   ENABLED: true
   VANISH_NO_MODMODE: # They are vanished but not in staff mode.
-    - '&4&lStaff Mode'
-    - '&cVanished&7: &7%vanished%'
-    - '&7&m--------------------'
+    - "&7&o&lIn Silent Mode"
+    - ""
   MOD_MODE:
-    - '&4&lStaff Mode'
-    - '&cVanished&7: &7%vanished%'
-    - '&cPlayers&7: &7%players% &7(%staff%)'
-    - '&7&m--------------------'
+    - "&b&lStaff Mode"
+    - "&fVanished&7: %vanished%"
+    - "&fPlayers&7: &b%players%&7 / &b%max_online%"
+    - "&fTPS&7: %tps%"
+    - ""
 
 TIMERS:
   ENABLED: true

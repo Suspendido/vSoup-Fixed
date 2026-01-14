@@ -39,7 +39,7 @@ public class PvPListeners implements Listener {
         if (profile.getProfileState() == ProfileState.SPAWN) return;
         if (plugin.getSpawnHandler().getCuboid().contains(player)) return;
 
-        profile.addCombatTag();
+//        profile.addCombatTag();
     }
 
     @EventHandler
@@ -93,7 +93,7 @@ public class PvPListeners implements Listener {
                 }
 
                 // Broadcasts
-                for (Profile p : plugin.getProfilesHandler().getProfiles()) {
+                for (Profile p : plugin.getProfilesHandler().getProfiles().values()) {
                     if (!p.getEnableKillDeathMessages()) continue;
 
                     Player online = Bukkit.getPlayer(p.getUuid());
@@ -106,7 +106,7 @@ public class PvPListeners implements Listener {
             }
         } else {
             // Death by environment
-            for (Profile p : plugin.getProfilesHandler().getProfiles()) {
+            for (Profile p : plugin.getProfilesHandler().getProfiles().values()) {
                 if (!p.getEnableKillDeathMessages()) continue;
 
                 Player online = Bukkit.getPlayer(p.getUuid());
