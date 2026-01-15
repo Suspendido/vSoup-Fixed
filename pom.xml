@@ -75,13 +75,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>idk.nigger</groupId>
-            <artifactId>BadlionAPI</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/Badlion-ModApi-Bukkit.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
@@ -129,6 +122,13 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/AquaCore.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>idk.nigger</groupId>
+            <artifactId>CirCuit</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/circuit-bukkit.jar</systemPath>
         </dependency>
 
     </dependencies>
