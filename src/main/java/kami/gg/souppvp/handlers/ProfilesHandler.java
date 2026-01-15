@@ -54,8 +54,6 @@ public class ProfilesHandler {
     private void initFlatFile() {
         SoupPvP.getInstance().getFlatFileHandler().loadAllProfiles();
         profiles.putAll(SoupPvP.getInstance().getFlatFileHandler().getCachedProfiles());
-
-        Bukkit.getLogger().info("[SoupPvP] Loaded " + profiles.size() + " profiles from FlatFile.");
     }
 
 
