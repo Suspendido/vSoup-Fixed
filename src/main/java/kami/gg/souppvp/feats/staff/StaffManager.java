@@ -3,7 +3,6 @@ package kami.gg.souppvp.feats.staff;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.staff.extra.StaffItem;
 import kami.gg.souppvp.feats.staff.extra.StaffItemAction;
-import kami.gg.souppvp.feats.staff.listener.StaffListener;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.ItemUtils;
 import kami.gg.souppvp.util.Pair;
@@ -52,8 +51,6 @@ public class StaffManager {
 
         this.loadConfig();
         this.load();
-
-        new StaffListener();
     }
 
     private void loadConfig() {
@@ -76,22 +73,6 @@ public class StaffManager {
         staffItems.clear();
         this.loadConfig();
         this.load();
-    }
-
-    public void disable() {
-        for (Staff staff : staffMembers.values()) {
-            Player player = staff.getPlayer();
-            PlayerInventory inventory = player.getInventory();
-
-            for (PotionEffect effect : staff.getEffects()) {
-                player.addPotionEffect(effect);
-            }
-
-            inventory.setContents(staff.getContents());
-            inventory.setArmorContents(staff.getArmorContents());
-            player.updateInventory();
-            player.setGameMode(staff.getGameMode());
-        }
     }
 
     private void load() {
@@ -141,20 +122,6 @@ public class StaffManager {
         enableVanish(player);
         staffMembers.put(player.getUniqueId(), staff);
         this.getHideStaff().add(player.getUniqueId());
-    }
-
-    private void setItemInConfiguredSlot(Player player, ItemStack item, int slot) {
-        if (player == null || item == null) return;
-        PlayerInventory inv = player.getInventory();
-
-        if (slot == -1) {
-            inv.setLeggings(item);
-            return;
-        }
-
-        if (slot >= 1 && slot <= 36) {
-            inv.setItem(slot - 1, item);
-        }
     }
 
     public void disableStaff(Player player) {

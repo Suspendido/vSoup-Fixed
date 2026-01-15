@@ -1,18 +1,17 @@
 package kami.gg.souppvp.feats.staff.listener;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.feats.staff.extra.StaffItem;
 import kami.gg.souppvp.feats.staff.extra.StaffItemAction;
 import kami.gg.souppvp.feats.staff.menu.InspectionMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.Cooldown;
-import kami.gg.souppvp.util.TaskUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -33,26 +32,28 @@ public class StaffListener implements Listener {
 
     private final SoupPvP instance;
     private final Cooldown interactCooldown;
+    private final List<String> disabledFrozenCommands;
 
-    public StaffListener() {
+    public StaffListener(StaffManager staffManager) {
         this.instance = SoupPvP.getInstance();
         this.interactCooldown = new Cooldown(100);
+        this.disabledFrozenCommands = staffManager.getStaffConfig().getStringList("STAFF_MODE.DISABLED_COMMANDS_FROZEN");
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+
+    @EventHandler(ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Player player = e.getPlayer();
-        String message = e.getMessage().toLowerCase();
 
-        if (!instance.getStaffManager().isFrozen(player)) return;
-        if (message.startsWith("/msg") || message.startsWith("/tell")) {
-            return;
+        if (instance.getStaffManager().isFrozen(player)) {
+            for (String disabledFrozenCommand : disabledFrozenCommands) {
+                if (!e.getMessage().contains(disabledFrozenCommand)) continue;
+                e.setCancelled(true);
+                player.sendMessage(instance.getStaffManager().getStaffConfig().getString("STAFF_MODE.NOT_ALLOWED_COMMAND"));
+                break;
+            }
         }
-
-        e.setCancelled(true);
-        player.sendMessage(CC.translate("&cYou are not allowed to use commands while frozen."));
     }
-
 
     @EventHandler(ignoreCancelled = true)
     public void onTab(PlayerChatTabCompleteEvent e) {
@@ -140,12 +141,12 @@ public class StaffListener implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
-        if (!e.getAction().name().contains("RIGHT")) return;
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
 
-        if (instance.getStaffManager().isStaffEnabled(player) && block != null && block.getType().name().contains("OAK_SIGN")) {
+        if (instance.getStaffManager().isStaffEnabled(player) && block != null && block.getType().name().contains("SIGN")) {
             e.setCancelled(true);
         }
 
@@ -276,15 +277,6 @@ public class StaffListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-
-        if (player.hasPermission("azurite.staff") && instance.getStaffManager().getStaffConfig().getBoolean("STAFF_MODE.STAFF_MODE_ON_JOIN")) {
-            TaskUtil.run(() -> instance.getStaffManager().enableStaff(player));
-        }
-    }
-
-    @EventHandler
     public void onKickStaff(PlayerKickEvent e) {
         Player player = e.getPlayer();
 
@@ -367,6 +359,10 @@ public class StaffListener implements Listener {
             if (!staffItem.getCommand().isEmpty()) {
                 player.chat(staffItem.getCommand());
             }
+            Bukkit.broadcastMessage("ITEM: " + hand.getItemMeta().getDisplayName());
+            Bukkit.broadcastMessage(
+                    instance.getStaffManager().getItem(hand) == null ? "NULL" : "FOUND"
+            );
 
             if (staffItem.getAction() != null) {
                 switch (staffItem.getAction()) {
