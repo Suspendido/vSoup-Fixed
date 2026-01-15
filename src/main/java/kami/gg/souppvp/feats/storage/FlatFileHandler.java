@@ -105,7 +105,7 @@ public class FlatFileHandler {
             }
         }
 
-        instance.getLogger().info("Loaded " + loaded + " profiles from flat file.");
+        instance.getLogger().info("Loaded " + loaded + " profiles from FlatFile.");
     }
 
     public void deleteProfile(UUID uuid) {
