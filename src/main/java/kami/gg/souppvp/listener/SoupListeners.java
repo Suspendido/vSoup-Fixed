@@ -1,7 +1,8 @@
 package kami.gg.souppvp.listener;
 
+import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.killstreak.KillstreakReward;
-import kami.gg.souppvp.util.TaskUtil;
+import kami.gg.souppvp.profile.Profile;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,20 +31,30 @@ public class SoupListeners implements Listener {
         if (player.getHealth() >= CONSUME_THRESHOLD) return;
 
         if (item.isSimilar(KillstreakReward.GRANDMA_SOUP)) {
+            event.setCancelled(true);
             consumeSoup(player, MAX_HEALTH);
             return;
         }
 
         if (item.getType() == Material.MUSHROOM_SOUP) {
+            event.setCancelled(true);
             consumeSoup(player, Math.min(player.getHealth() + SOUP_HEAL, MAX_HEALTH));
         }
     }
 
     private void consumeSoup(Player player, double newHealth) {
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         player.setHealth(newHealth);
-        player.getItemInHand().setType(Material.BOWL);
+
+        if (profile != null && profile.getEnableEasySoup()) {
+            player.setItemInHand(null);
+        } else {
+            player.getItemInHand().setType(Material.BOWL);
+        }
+
         player.updateInventory();
     }
+
 
     @EventHandler
     public void onBowlDrop(PlayerDropItemEvent event) {

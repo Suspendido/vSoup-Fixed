@@ -6,6 +6,7 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlipState;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.feats.storage.StorageType;
+import kami.gg.souppvp.kit.KitProgress;
 import kami.gg.souppvp.tier.Tiers;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,39 +21,39 @@ public class Profile {
 
     private UUID uuid;
     private String username;
+    private ProfileState profileState;
+    private CoinFlipState coinFlipState;
+    private Sumo sumoEvent;
+    private Tiers tier;
+
     private Boolean loaded;
+    private Boolean enableKillDeathMessages;
+    private Boolean enableParticleEffects;
+    private Boolean enableKillstreakMessages;
+    private Boolean enableScoreboard;
+    private Boolean enableEasySoup;
 
     private String currentKit;
     private String previousKit;
+
     private List<String> unlockedKits;
+    private List<String> activePerks;
+    private List<String> unlockedPerks;
+
     private int kills;
     private int deaths;
     private int credits;
     private int bounty;
     private int experiences;
-    private Tiers tier;
     private int currentKillstreak;
     private int highestKillstreak;
-
-    private List<String> activePerks;
-    private List<String> unlockedPerks;
-
     private int totalWagerGames;
     private int wagersWon;
     private int wagersLost;
-
-    private Boolean enableKillDeathMessages;
-    private Boolean enableParticleEffects;
-    private Boolean enableKillstreakMessages;
-    private Boolean enableScoreboard;
-
-    private ProfileState profileState;
-    private CoinFlipState coinFlipState;
-
-    private Sumo sumoEvent;
     private int eventsWon;
 
     private boolean juggernaut;
+    private final Map<String, KitProgress> kitProgress = new HashMap<>();
 
     public Profile(UUID uuid) {
         if (uuid == null) {
@@ -120,6 +121,7 @@ public class Profile {
         this.enableParticleEffects = true;
         this.enableKillstreakMessages = true;
         this.enableScoreboard = true;
+        this.enableEasySoup = true;
 
         this.profileState = ProfileState.SPAWN;
         this.coinFlipState = CoinFlipState.NONE;
@@ -184,6 +186,7 @@ public class Profile {
             this.enableParticleEffects = options.getBoolean("enableParticleEffects", true);
             this.enableKillstreakMessages = options.getBoolean("enableKillstreakMessages", true);
             this.enableScoreboard = options.getBoolean("enableScoreboard", true);
+            this.enableEasySoup = options.getBoolean("enableEasySoup", true);
         }
 
         Document events = (Document) doc.get("eventsStatistics");
@@ -229,6 +232,7 @@ public class Profile {
         options.put("enableParticleEffects", enableParticleEffects);
         options.put("enableKillstreakMessages", enableKillstreakMessages);
         options.put("enableScoreboard", enableScoreboard);
+        options.put("enableEasySoup", enableEasySoup);
         doc.put("options", options);
 
         Document events = new Document();
@@ -277,6 +281,7 @@ public class Profile {
         this.enableParticleEffects = fromFile.getEnableParticleEffects();
         this.enableKillstreakMessages = fromFile.getEnableKillstreakMessages();
         this.enableScoreboard = fromFile.getEnableScoreboard();
+        this.enableEasySoup = fromFile.getEnableEasySoup();
 
         this.eventsWon = fromFile.getEventsWon();
 
@@ -305,12 +310,12 @@ public class Profile {
         loaded = true;
     }
 
-    public boolean isInEvent() {
-        return this.sumoEvent != null;
+    public KitProgress getKitProgress(String kitName) {
+        return kitProgress.computeIfAbsent(kitName.toLowerCase(), k -> new KitProgress());
     }
 
-    public void addSpawnTeleportation() {
-        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().put(uuid, System.currentTimeMillis() + (6 * 1000));
+    public boolean isInEvent() {
+        return this.sumoEvent != null;
     }
 
     public void removeSpawnTeleportation() {

@@ -1,8 +1,6 @@
 package kami.gg.souppvp.options;
 
-import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.options.button.*;
-import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
@@ -20,14 +18,14 @@ public class OptionsMenu extends Menu {
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Map<Integer, Button> buttonMap = new HashMap<>();
-        buttonMap.put(10, new KillDeathMessagesButton());
-        buttonMap.put(11, new KillstreakMessagesButton());
-        buttonMap.put(12, new ScoreboardButton());
-        buttonMap.put(13, new ResetStatisticsButton(10000));
+        Map<Integer, Button> buttons = new HashMap<>();
+        buttons.put(10, new KillDeathMessagesButton());
+        buttons.put(11, new KillstreakMessagesButton());
+        buttons.put(12, new ScoreboardButton());
+        buttons.put(13, new EasySoupButton());
+        buttons.put(14, new ResetStatisticsButton(10000));
         setPlaceholder(true);
-        return buttonMap;
+        return buttons;
     }
 
     @Override
