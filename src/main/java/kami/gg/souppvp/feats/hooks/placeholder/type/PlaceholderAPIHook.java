@@ -42,7 +42,7 @@ public class PlaceholderAPIHook implements Placeholder {
 
                 if (params.startsWith("map_")) {
                     String[] split = params.split("_");
-                    if (split.length < 3) return null;
+                    if (split.length < 2) return null;
 
                     String type = split[1];
 
