@@ -71,11 +71,11 @@ public class LeaderboardMenu extends Menu {
                     .lore(
                             "",
                             "&fYour Rankings&7:",
-                            " &b▪ &fKills: &a#" + killsPos + " &7(" + profile.getKills() + ")",
-                            " &b▪ &fDeaths: &a#" + deathsPos + " &7(" + profile.getDeaths() + ")",
-                            " &b▪ &fKDR: &a#" + kdrPos + " &7(" + String.format("%.2f", kdr) + ")",
-                            " &b▪ &fKillstreak: &a#" + streakPos + " &7(" + profile.getCurrentKillstreak() + ")",
-                            " &b▪ &fCredits: &a#" + creditsPos + " &7(" + profile.getCredits() + ")",
+                            "&b┃ &fKills: &a#" + killsPos + " &7(" + profile.getKills() + ")",
+                            "&b┃ &fDeaths: &a#" + deathsPos + " &7(" + profile.getDeaths() + ")",
+                            "&b┃ &fKDR: &a#" + kdrPos + " &7(" + String.format("%.2f", kdr) + ")",
+                            "&b┃ &fKillstreak: &a#" + streakPos + " &7(" + profile.getCurrentKillstreak() + ")",
+                            "&b┃ &fCredits: &a#" + creditsPos + " &7(" + profile.getCredits() + ")",
                             ""
                     )
                     .build();
