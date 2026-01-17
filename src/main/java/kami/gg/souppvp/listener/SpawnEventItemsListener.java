@@ -3,6 +3,7 @@ package kami.gg.souppvp.listener;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.events.menu.HostEventsMenu;
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.kit.menu.KitsSelectMenu;
 import kami.gg.souppvp.options.OptionsMenu;
 import kami.gg.souppvp.profile.Profile;
@@ -10,9 +11,7 @@ import kami.gg.souppvp.shop.ShopMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.EventItems;
 import kami.gg.souppvp.util.SpawnItems;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.GameMode;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,7 +48,6 @@ public class SpawnEventItemsListener implements Listener {
 
         if (item.isSimilar(SpawnItems.SHOP)) {
             new ShopMenu().openMenu(player);
-            player.playSound(player.getLocation(), Sound.VILLAGER_HAGGLE, 1F, 1F);
             return;
         }
 
@@ -113,11 +111,23 @@ public class SpawnEventItemsListener implements Listener {
             return;
         }
 
-        Kit currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-        Kit previousKit = SoupPvP.getInstance().getKitsHandler().getKitByName(previousKitName);
+        KitsHandler kitsHandler = SoupPvP.getInstance().getKitsHandler();
+        Kit currentKit = kitsHandler.getKitByName(profile.getCurrentKit());
+        Kit previousKit = kitsHandler.getKitByName(previousKitName);
+        Kit defaultKit = kitsHandler.getKitByName("Default");
 
-        if (currentKit == null || previousKit == null) {
+        if (currentKit == null || defaultKit == null) {
             player.sendMessage(CC.translate("&cError loading kits. Please try again."));
+            return;
+        }
+
+        if (previousKit == null || !kitsHandler.hasKitUnlocked(profile, previousKit)) {
+            profile.setPreviousKit(currentKit.getName());
+            profile.setCurrentKit(defaultKit.getName());
+
+            defaultKit.equipKit(player);
+
+            player.sendMessage(CC.translate("&cYour previous kit is no longer available. You were given the &r" + defaultKit.getRarityType().getColor() + defaultKit.getName()));
             return;
         }
 
@@ -125,7 +135,7 @@ public class SpawnEventItemsListener implements Listener {
         profile.setCurrentKit(previousKit.getName());
 
         previousKit.equipKit(player);
-        player.sendMessage(CC.translate("&aSuccessfully equipped your previous kit: " + previousKit.getRarityType().getColor() + previousKit.getName()));
+        player.sendMessage(CC.translate("&aSuccessfully equipped your previous kit: &r" + previousKit.getRarityType().getColor() + previousKit.getName()));
     }
 
     @EventHandler
