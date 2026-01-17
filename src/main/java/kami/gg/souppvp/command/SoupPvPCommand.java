@@ -30,7 +30,7 @@ public class SoupPvPCommand extends Command {
     @Override
     public List<String> usage() {
         return CC.translate(Arrays.asList(
-                CC.LINE,
+                CC.CHAT_BAR,
                 "&6&lSoupPvP Core",
                 "&fThis server is using &6SoupPvP Core",
                 "",
@@ -38,7 +38,7 @@ public class SoupPvPCommand extends Command {
                 "&e/souppvp version &8- &fGets the plugin current version.",
                 "&e/souppvp save &8- &fSaves the config.",
                 "&e/souppvp deleteusers &8- &fDeletes all the user data.",
-                CC.LINE
+                CC.CHAT_BAR
         ));
     }
 
