@@ -34,18 +34,14 @@ public abstract class Button {
         });
     }
 
-	public static void playFail(Player player) {
-		player.playSound(player.getLocation(), Sound.DIG_GRASS, 20F, 0.1F);
-
-	}
-
     public void sendMessage(Player player, String s) {
         player.sendMessage(CC.translate(s));
     }
 
-    public boolean closesMenu(Player player, ClickType clickType) {
-        return false;
-    }
+	public static void playFail(Player player) {
+		player.playSound(player.getLocation(), Sound.DIG_GRASS, 20F, 0.1F);
+
+	}
 
     public static void playSuccess(Player player) {
 		player.playSound(player.getLocation(), Sound.NOTE_PIANO, 20F, 15F);
@@ -54,17 +50,12 @@ public abstract class Button {
 	public static void playNeutral(Player player) {
 		player.playSound(player.getLocation(), Sound.CLICK, 20F, 1F);
 	}
-
 	public abstract ItemStack getButtonItem(Player player);
-
 	public void clicked(Player player, ClickType clickType) {}
-
 	public void clicked(Player player, int slot, ClickType clickType, int hotbarSlot) {}
-
 	public boolean shouldCancel(Player player, ClickType clickType) {
 		return true;
 	}
-
 	public boolean shouldUpdate(Player player, ClickType clickType) {
 		return true;
 	}
