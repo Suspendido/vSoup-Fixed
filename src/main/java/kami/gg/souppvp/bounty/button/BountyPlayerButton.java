@@ -30,9 +30,9 @@ public class BountyPlayerButton extends Button {
         String perk0 = profile.getActivePerks().getFirst();
 
         if (perk0 != null && perk0.equalsIgnoreCase("Trickster")) {
-            lore.add(CC.translate(" &b▪ &fBounty: &b" + ThreadLocalRandom.current().nextInt(0, 1001)));
+            lore.add(CC.translate("&b┃ &fBounty: &b" + ThreadLocalRandom.current().nextInt(0, 1001)));
         } else {
-            lore.add(CC.translate(" &b▪ &fBounty: &b" + profile.getBounty()));
+            lore.add(CC.translate("&b┃ &fBounty: &b" + profile.getBounty()));
         }
 
         return new ItemBuilder(Material.SKULL_ITEM)
