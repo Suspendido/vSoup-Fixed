@@ -10,4 +10,4 @@ soft-depend:
   - AquaCore
   - Apollo-Bukkit
   - CheatBreakerAPI
-  - BadlionAPI
+  - circuit-bukkit
