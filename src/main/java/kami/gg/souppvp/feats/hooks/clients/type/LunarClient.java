@@ -4,6 +4,7 @@ import com.lunarclient.apollo.Apollo;
 import com.lunarclient.apollo.module.combat.CombatModule;
 import com.lunarclient.apollo.module.nametag.Nametag;
 import com.lunarclient.apollo.module.nametag.NametagModule;
+import com.lunarclient.apollo.module.staffmod.StaffModModule;
 import kami.gg.souppvp.feats.hooks.clients.Client;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -16,10 +17,12 @@ public class LunarClient implements Client {
 
     private final NametagModule nametagModule;
     private final CombatModule combatModule;
+    private final StaffModModule staffModModule;
 
     public LunarClient() {
         this.nametagModule = Apollo.getModuleManager().getModule(NametagModule.class);
         this.combatModule = Apollo.getModuleManager().getModule(CombatModule.class);
+        this.staffModModule = Apollo.getModuleManager().getModule(StaffModModule.class);
     }
 
     @Override
@@ -40,5 +43,15 @@ public class LunarClient implements Client {
     @Override
     public void handleJoin(Player player) {
         Apollo.getPlayerManager().getPlayer(player.getUniqueId()).ifPresent(apolloPlayer -> combatModule.getOptions().set(apolloPlayer, CombatModule.DISABLE_MISS_PENALTY, true));
+    }
+
+    @Override
+    public void giveStaffModules(Player player) {
+        Apollo.getPlayerManager().getPlayer(player.getUniqueId()).ifPresent(staffModModule::enableAllStaffMods);
+    }
+
+    @Override
+    public void disableStaffModules(Player player) {
+        Apollo.getPlayerManager().getPlayer(player.getUniqueId()).ifPresent(staffModModule::disableAllStaffMods);
     }
 }

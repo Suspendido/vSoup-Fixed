@@ -23,5 +23,16 @@ public class CheatBreaker implements Client {
 
     @Override
     public void handleJoin(Player player) {
+        CheatBreakerAPI.getInstance().setLegacyCombat(player, true);
+    }
+
+    @Override
+    public void giveStaffModules(Player player) {
+        CheatBreakerAPI.getInstance().giveAllStaffModules(player);
+    }
+
+    @Override
+    public void disableStaffModules(Player player) {
+        CheatBreakerAPI.getInstance().disableAllStaffModules(player);
     }
 }
