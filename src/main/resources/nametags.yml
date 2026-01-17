@@ -1,9 +1,9 @@
 NAMETAGS:
   FORMAT:
-    SPAWN:
-      - "%rank-prefix%%player%"
     STAFF:
       - "&7[Mod Mode]"
+      - "%rank-prefix%%player%"
+    SPAWN:
       - "%rank-prefix%%player%"
     BOUNTY:
       - "&aBounty: &e%bounty%"
@@ -18,5 +18,5 @@ NAMETAGS:
       - "&a%player%"
       - "&f%health% &4❤"
     NORMAL:
-      - "&a%player%a"
+      - "&a%player%"
       - "&f%health% &4❤"
