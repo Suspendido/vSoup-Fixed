@@ -37,7 +37,6 @@ public class CC {
     public static final String MENU_BAR;
     public static final String CHAT_BAR;
     public static final String SB_BAR;
-    public static final String LINE = translate("&7&m-------------------------");
 
     static {
         MAP = new HashMap<>();
