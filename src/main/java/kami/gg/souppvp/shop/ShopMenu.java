@@ -3,7 +3,6 @@ package kami.gg.souppvp.shop;
 import kami.gg.souppvp.kit.menu.KitsBuyMenu;
 import kami.gg.souppvp.perk.menu.PerksMenu;
 import kami.gg.souppvp.shop.items.ItemsMenu;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
@@ -20,7 +19,7 @@ public class ShopMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Server Shop");
+        return "Server Shop";
     }
 
     @Override
