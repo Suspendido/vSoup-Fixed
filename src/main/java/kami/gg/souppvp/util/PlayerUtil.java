@@ -125,17 +125,22 @@ public class PlayerUtil {
     }
 
     public static void repairPlayer(Player player) {
-        for (ItemStack items : player.getEquipment().getArmorContents()) {
-            if (items != null){
-                items.setDurability((short)0);
-            }
+        for (ItemStack item : player.getEquipment().getArmorContents()) {
+            repairItem(item);
         }
-        for (ItemStack items : player.getInventory().getContents()) {
-            if (items != null){
-                items.setDurability((short) 0);
-            }
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            repairItem(item);
         }
     }
+
+    private static void repairItem(ItemStack item) {
+        if (item == null) return;
+        if (item.getType().getMaxDurability() <= 0) return;
+
+        item.setDurability((short) 0);
+    }
+
 
     public static void playSound(Player player, Sound sound){
         player.playSound(player.getLocation(), sound, 1.0F, 1.0F);
