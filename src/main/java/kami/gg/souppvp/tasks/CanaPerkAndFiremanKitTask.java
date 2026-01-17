@@ -47,6 +47,6 @@ public class CanaPerkAndFiremanKitTask {
                 }
             }
 
-        }, 0L, 15L);
+        }, 0L, 5L);
     }
 }
