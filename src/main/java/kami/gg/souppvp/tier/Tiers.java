@@ -6,10 +6,8 @@ import lombok.Getter;
 public enum Tiers {
 
     /*
-
     ONLY the display variable will only be shown in game when utilizing the tier system.
     The display can be for instance "God", "Pro", "Immortal" etc...
-
      */
 
     ZERO(0, "0", 0),
@@ -34,23 +32,30 @@ public enum Tiers {
     NINETEEN(19, "XIX", 90000),
     TWENTY(20, "XX", 100000);
 
-    private Integer tierLevel;
-    private String display;
-    private Integer requiredExperiences;
+    private static final Tiers[] VALUES = values();
 
-    Tiers(Integer tierLevel, String display, Integer requiredExperiences){
+    private final int tierLevel;
+    private final String display;
+    private final int requiredExperiences;
+
+    Tiers(int tierLevel, String display, int requiredExperiences) {
         this.tierLevel = tierLevel;
         this.display = display;
         this.requiredExperiences = requiredExperiences;
     }
 
-    public static Tiers getTierByNumber(Integer number){
-        for (Tiers tiers : Tiers.values()){
-            if (tiers.getTierLevel().equals(number)){
-                return tiers;
+    public Tiers getNext() {
+        int nextIndex = ordinal() + 1;
+        return nextIndex >= VALUES.length ? null : VALUES[nextIndex];
+    }
+
+    public static Tiers getTierByNumber(int number) {
+        for (Tiers tier : VALUES) {
+            if (tier.tierLevel == number) {
+                return tier;
             }
         }
-        return null;
+        return ZERO;
     }
 
 }

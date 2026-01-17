@@ -1,6 +1,6 @@
 package kami.gg.souppvp.command;
 
-import kami.gg.souppvp.tier.menu.TiersMenu;
+import kami.gg.souppvp.tier.menu.TiersProgressMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
@@ -32,6 +32,6 @@ public class TiersCommand extends Command {
             return;
         }
 
-        new TiersMenu().openMenu(player);
+        new TiersProgressMenu().openMenu(player);
     }
 }
