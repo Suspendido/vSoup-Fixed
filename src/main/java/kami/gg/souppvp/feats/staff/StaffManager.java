@@ -98,6 +98,14 @@ public class StaffManager {
         }
     }
 
+    public void enableStaffModules(Player player) {
+        getInstance().getClientHook().giveStaffModules(player);
+    }
+
+    public void disableStaffModules(Player player) {
+        getInstance().getClientHook().disableStaffModules(player);
+    }
+
     public void enableStaff(Player player) {
         PlayerInventory inventory = player.getInventory();
         Staff staff = new Staff(player, player.getGameMode());
@@ -116,6 +124,7 @@ public class StaffManager {
             player.getInventory().setItem(item.getSlot() - 1, item.getItem());
         }
 
+        enableStaffModules(player);
         player.updateInventory();
         player.setGameMode(GameMode.CREATIVE);
 
@@ -137,6 +146,7 @@ public class StaffManager {
                 player.addPotionEffect(effect);
             }
 
+            disableStaffModules(player);
             player.updateInventory();
             player.setGameMode(staff.getGameMode());
 
