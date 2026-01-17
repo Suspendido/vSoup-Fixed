@@ -5,24 +5,27 @@ import kami.gg.souppvp.feats.hooks.ranks.type.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
-public class RankHook implements Rank {
+public class IRankHook implements IRank {
 
-    private Rank rank;
+    private IRank IRank;
 
-    public RankHook() {
+    public IRankHook() {
         super();
         this.load();
     }
 
     private void load() {
         if (verifyPlugin("LuckPerms", SoupPvP.getInstance())) {
-            rank = new LuckPermsRank();
+            IRank = new LuckPermsIRank();
 
         } else if (verifyPlugin("AquaCore", SoupPvP.getInstance())) {
-            rank = new AquaCoreRank();
+            IRank = new AquaCoreRank();
+
+        } else if (verifyPlugin("circuit-bukkit", SoupPvP.getInstance())) {
+            IRank = new CirCuit();
 
         } else {
-            rank = new NoneRank();
+            IRank = new NoneRank();
         }
     }
 
@@ -32,18 +35,18 @@ public class RankHook implements Rank {
     }
 
     @Override public String getRankName(Player player) {
-        return rank.getRankName(player);
+        return IRank.getRankName(player);
     }
     @Override public String getRankPrefix(Player player) {
-        return rank.getRankPrefix(player);
+        return IRank.getRankPrefix(player);
     }
     @Override public String getRankSuffix(Player player) {
-        return rank.getRankSuffix(player);
+        return IRank.getRankSuffix(player);
     }
     @Override public String getRankColor(Player player) {
-        return rank.getRankColor(player);
+        return IRank.getRankColor(player);
     }
     @Override public int getRankWeight(Player player) {
-        return rank.getRankWeight(player);
+        return IRank.getRankWeight(player);
     }
 }

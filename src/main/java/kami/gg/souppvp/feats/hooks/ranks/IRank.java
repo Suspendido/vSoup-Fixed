@@ -2,7 +2,7 @@ package kami.gg.souppvp.feats.hooks.ranks;
 
 import org.bukkit.entity.Player;
 
-public interface Rank {
+public interface IRank {
 
     String getRankName(Player player);
 
