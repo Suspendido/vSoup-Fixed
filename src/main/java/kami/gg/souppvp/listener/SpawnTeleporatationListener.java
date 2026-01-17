@@ -1,4 +1,4 @@
-package kami.gg.souppvp.teleportation;
+package kami.gg.souppvp.listener;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
