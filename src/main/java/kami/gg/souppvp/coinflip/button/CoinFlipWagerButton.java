@@ -5,7 +5,6 @@ import kami.gg.souppvp.coinflip.CoinFlip;
 import kami.gg.souppvp.coinflip.events.WagerCancelEvent;
 import kami.gg.souppvp.coinflip.events.WagerStartEvent;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
@@ -16,17 +15,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CoinFlipWagerButton extends Button {
 
-    private static final DecimalFormat df = new DecimalFormat("0");
-
     private final CoinFlip coinFlip;
 
-    public CoinFlipWagerButton(CoinFlip coinFlip){
+    public CoinFlipWagerButton(CoinFlip coinFlip) {
         this.coinFlip = coinFlip;
     }
 
@@ -34,69 +30,84 @@ public class CoinFlipWagerButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile creatorProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(coinFlip.getCreator());
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        Player creatorPlayer = Bukkit.getPlayer(coinFlip.getCreator());
+        String creatorName = creatorPlayer != null ? creatorPlayer.getName() : "Unknown";
         List<String> lore = new ArrayList<>();
+
         lore.add("");
-        lore.add(CC.translate("&e&lWager:"));
-        lore.add(CC.translate("&a" + coinFlip.getAmount() + " credits"));
+        lore.add("&e&lWager:");
+        lore.add("&a" + coinFlip.getAmount() + " credits");
         lore.add("");
-        lore.add(CC.translate("&e&l" + Bukkit.getPlayer(coinFlip.getCreator()).getName() + "'s Stats"));
-        lore.add(CC.translate("&c• &eTotal Games: &a" + creatorProfile.getTotalWagerGames()));
-        lore.add(CC.translate("&c• &eWon: &a" + creatorProfile.getWagersWon()));
-        lore.add(CC.translate("&c• &eLost: &a" + creatorProfile.getWagersLost()));
-        if (creatorProfile.getWagersWon() == 0) {
-            lore.add(CC.translate("&c• &eWin Percent: &aN/A"));
+        lore.add("&e&l" + creatorName + "'s Stats");
+        lore.add("&c• &eTotal Games: &a" + creatorProfile.getTotalWagerGames());
+        lore.add("&c• &eWon: &a" + creatorProfile.getWagersWon());
+        lore.add("&c• &eLost: &a" + creatorProfile.getWagersLost());
+
+        int totalGames = creatorProfile.getTotalWagerGames();
+        if (totalGames == 0) {
+            lore.add("&c• &eWin Percent: &aN/A");
         } else {
-            double percentage = (double) creatorProfile.getWagersWon() / (double) creatorProfile.getWagersLost() * 100;
-            lore.add(CC.translate("&c• &eWin Percent: &a" + creatorProfile.getWinPercent() + "%"));
+            lore.add("&c• &eWin Percent: &a" + creatorProfile.getWinPercent() + "%");
         }
+
         lore.add("");
-        if (profile.equals(creatorProfile)){
-            lore.add(CC.translate("&7Right-Click to &c&lCANCEL &7the bet!"));
+
+        if (profile.equals(creatorProfile)) {
+            lore.add("&7Right-Click to &c&lCANCEL &7the bet!");
+        } else if (profile.getCredits() < coinFlip.getAmount()) {
+            lore.add("&cInsufficient Credits!");
         } else {
-            if (profile.getCredits() < coinFlip.getAmount()){
-                lore.add(CC.translate("&cInsufficient Credits!"));
-            } else {
-                lore.add(CC.translate("&7Click here to &a&lACCEPT &7the bet!"));
-            }
+            lore.add("&7Click here to &a&lACCEPT &7the bet!");
         }
-        return new ItemBuilder(Material.SKULL_ITEM).durability((short) 3).name(CC.translate("&a&l" + Bukkit.getPlayer(coinFlip.getCreator()).getName())).lore(lore).build();
+
+        return new ItemBuilder(Material.SKULL_ITEM)
+                .durability((short) 3)
+                .setSkullOwner(creatorName)
+                .name("&a&l" + creatorName)
+                .lore(lore)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
         Profile creator = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(coinFlip.getCreator());
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
         if (creator.equals(profile)) {
             if (clickType.isLeftClick()) {
-                player.sendMessage(CC.translate("&cYou cannot accept your own coin flip game."));
+                sendMessage(player, "&cYou cannot accept your own coin flip game.");
+                return;
             }
+
             if (clickType.isRightClick()) {
-                    player.sendMessage(CC.translate("&7The wager has been returned. (&a" + coinFlip.getAmount() + " &acredits&7)"));
-                    player.sendMessage(CC.translate("&cYou cancelled your coinflip game."));
-                    WagerCancelEvent wagerCancelEvent = new WagerCancelEvent(coinFlip);
-                    Bukkit.getPluginManager().callEvent(wagerCancelEvent);
-                    PlayerUtil.playSound(player, Sound.CLICK);
+                sendMessage(player, "&7The wager has been returned. (&a" + coinFlip.getAmount() + " &acredits&7)");
+                sendMessage(player, "&cYou cancelled your coinflip game.");
+
+                Bukkit.getPluginManager().callEvent(new WagerCancelEvent(coinFlip));
+                PlayerUtil.playSound(player, Sound.CLICK);
             }
-        }  else {
-            if (clickType.isLeftClick()){
-                if (profile.getCredits() < coinFlip.getAmount()){
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                } else {
-                    if (coinFlip.getOpponent() == null){
-                        if (SoupPvP.getInstance().getCoinFlipsHandler().hasCoinFlipWager(profile.getUuid())){
-                            CoinFlip playerCoinFlip= SoupPvP.getInstance().getCoinFlipsHandler().getPlayerCoinFlip(player.getUniqueId());
-                            SoupPvP.getInstance().getCoinFlipsHandler().removeCoinFlip(playerCoinFlip);
-                            SoupPvP.getInstance().getCoinFlipsHandler().getCoinFlips().remove(playerCoinFlip);
-                        }
-                        WagerStartEvent wagerStartEvent = new WagerStartEvent(coinFlip, player.getUniqueId());
-                        Bukkit.getPluginManager().callEvent(wagerStartEvent);
-                        PlayerUtil.playSound(player, Sound.CLICK);
-                    } else {
-                        PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                    }
-                }
-            }
+            return;
         }
+
+        if (!clickType.isLeftClick()) return;
+
+        if (profile.getCredits() < coinFlip.getAmount()) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            return;
+        }
+
+        if (coinFlip.getOpponent() != null) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            return;
+        }
+
+        if (SoupPvP.getInstance().getCoinFlipsHandler().hasCoinFlipWager(profile.getUuid())) {
+            CoinFlip existing = SoupPvP.getInstance().getCoinFlipsHandler().getPlayerCoinFlip(player.getUniqueId());
+            SoupPvP.getInstance().getCoinFlipsHandler().removeCoinFlip(existing);
+        }
+
+        Bukkit.getPluginManager().callEvent(new WagerStartEvent(coinFlip, player.getUniqueId()));
+        PlayerUtil.playSound(player, Sound.CLICK);
     }
 
 }
