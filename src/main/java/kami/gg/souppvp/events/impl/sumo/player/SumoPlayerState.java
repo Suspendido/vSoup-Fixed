@@ -10,6 +10,6 @@ public enum SumoPlayerState {
 	WAITING("Waiting"),
 	ELIMINATED("Eliminated");
 
-	private String readable;
+	private final String readable;
 
 }

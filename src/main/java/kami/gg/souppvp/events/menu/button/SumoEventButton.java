@@ -6,11 +6,9 @@ import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.events.impl.sumo.SumoState;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -25,59 +23,70 @@ public class SumoEventButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Single elimination styled event."));
-        lore.add(CC.translate("&7All players take turns fighting for the platform"));
-        lore.add(CC.translate("&7while being spectated by other contestants."));
-        lore.add(CC.translate("&7Win the event by not losing any of your matches."));
+        Sumo activeSumo = SoupPvP.getInstance().getSumoHandler().getActiveSumo();
+
+        lore.add("&7Single elimination styled event.");
+        lore.add("&7All players take turns fighting for the platform");
+        lore.add("&7while being spectated by other contestants.");
+        lore.add("&7Win the event by not losing any of your matches.");
         lore.add("");
-        if (SoupPvP.getInstance().getSumoHandler().getActiveSumo() != null){
-            lore.add(CC.translate("&bOngoing Sumo Event:"));
-            lore.add(CC.translate("&7• &fHost: &b" + SoupPvP.getInstance().getSumoHandler().getActiveSumo().getHost().getUsername()));
-            lore.add(CC.translate("&7• &fParticipants: &b" + SoupPvP.getInstance().getSumoHandler().getActiveSumo().getEventPlayers().size() + "&f/&b" + SoupPvP.getInstance().getSumoHandler().getActiveSumo().getMaxPlayers()));
-            if (SoupPvP.getInstance().getSumoHandler().getActiveSumo().getState().equals(SumoState.WAITING)){
-                lore.add(CC.translate("&7• &fState: &bWaiting..."));
-            } else {
-                lore.add(CC.translate("&7• &fState: &bFighting"));
-            }
+
+        if (activeSumo != null) {
+            lore.add("&bOngoing Sumo Event:");
+            lore.add("&7• &fHost: &b" + activeSumo.getHost().getUsername());
+            lore.add("&7• &fParticipants: &b" + activeSumo.getEventPlayers().size() + "&f/&b" + activeSumo.getMaxPlayers());
+            lore.add(activeSumo.getState().equals(SumoState.WAITING)
+                    ? "&7• &fState: &bWaiting..."
+                    : "&7• &fState: &bFighting"
+            );
             lore.add("");
-            if (profile.isInEvent()){
-                lore.add(CC.translate("&eYou're in this event!"));
-            } else {
-                lore.add(CC.translate("&eClick to join!"));
-            }
+
+            lore.add(profile.isInEvent()
+                    ? "&eYou're in this event!"
+                    : "&eClick to join!"
+            );
         } else {
-            lore.add(CC.translate("&eClick to host!"));
+            lore.add("&eClick to host!");
         }
-        return new ItemBuilder(Events.SUMO.getMaterial()).name(CC.translate("&bSumo Event")).lore(lore).build();
+        return new ItemBuilder(Events.SUMO.getMaterial())
+                .name("&bSumo Event")
+                .lore(lore)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            if (SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId()).getProfileState().equals(ProfileState.SPAWN)){
-                if (player.hasPermission("souppvp.sumohost")){
-                    if (SoupPvP.getInstance().getSumoHandler().getActiveSumo() != null){
-                        PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                    } else {
-                        SoupPvP.getInstance().getSumoHandler().setActiveSumo(new Sumo(player));
-                        SoupPvP.getInstance().getSumoHandler().getActiveSumo().handleJoin(player);
-                        PlayerUtil.playSound(player, Sound.CLICK);
-                    }
-                } else {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                }
-                Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-                if (!profile.isInEvent()){
-                    SoupPvP.getInstance().getSumoHandler().getActiveSumo().handleJoin(player);
-                    PlayerUtil.playSound(player, Sound.CLICK);
-                } else {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                }
-            } else {
-                playFail(player);
-                player.sendMessage(CC.translate("&cYou can only do this at spawn."));
-            }
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        var sumoHandler = SoupPvP.getInstance().getSumoHandler();
+        Sumo activeSumo = sumoHandler.getActiveSumo();
+
+        if (profile.getProfileState() != ProfileState.SPAWN) {
+            playFail(player);
+            sendMessage(player, "&cYou can only do this at spawn.");
+            return;
         }
+
+        if (activeSumo == null) {
+            if (!player.hasPermission("souppvp.sumohost")) {
+                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                return;
+            }
+
+            Sumo sumo = new Sumo(player);
+            sumoHandler.setActiveSumo(sumo);
+            sumo.handleJoin(player);
+
+            playSuccess(player);
+            return;
+        }
+
+        if (profile.isInEvent()) {
+            playFail(player);
+            return;
+        }
+
+        activeSumo.handleJoin(player);
+        PlayerUtil.playSound(player, Sound.CLICK);
     }
 
 }

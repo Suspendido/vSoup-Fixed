@@ -30,7 +30,7 @@ public class SumoCommand extends Command {
     @Override
     public List<String> usage() {
         return CC.translate(Arrays.asList(
-                CC.LINE,
+                CC.CHAT_BAR,
                 "&6&lSumo Event",
                 "",
                 "&e/sumo host",
@@ -39,7 +39,7 @@ public class SumoCommand extends Command {
                 "&e/sumo leave",
                 "&e/sumo tp",
                 "&e/sumo setspawn",
-                CC.LINE
+                CC.CHAT_BAR
         ));
     }
 }

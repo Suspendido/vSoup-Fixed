@@ -5,6 +5,7 @@ import kami.gg.souppvp.events.impl.sumo.player.SumoPlayer;
 import kami.gg.souppvp.events.impl.sumo.player.SumoPlayerState;
 import kami.gg.souppvp.events.impl.sumo.task.SumoRoundEndTask;
 import kami.gg.souppvp.events.impl.sumo.task.SumoRoundStartTask;
+import kami.gg.souppvp.events.impl.sumo.task.SumoTask;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.*;
@@ -21,25 +22,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
+@Getter @Setter
 public class Sumo {
 
 	public static String EVENT_PREFIX = CC.translate("");
 
 	private String name;
-	@Setter private SumoState state = SumoState.WAITING;
+	private SumoState state = SumoState.WAITING;
 	private SumoTask eventTask;
 	private PlayerSnapshot host;
 	private LinkedHashMap<UUID, SumoPlayer> eventPlayers = new LinkedHashMap<>();
-	@Getter private List<UUID> spectators = new ArrayList<>();
-	private int maxPlayers;
-	@Getter @Setter private int totalPlayers;
-	@Setter private Cooldown cooldown;
-	private SumoPlayer roundPlayerA;
-	private SumoPlayer roundPlayerB;
-	@Setter
-	private long roundStart;
+	private List<UUID> spectators = new ArrayList<>();
+    private Cooldown cooldown;
+    private SumoPlayer roundPlayerA;
+    private SumoPlayer roundPlayerB;
 
+    private int maxPlayers;
+    private int totalPlayers;
+    private long roundStart;
 
 	public Sumo(Player player) {
 		this.name = player.getName();

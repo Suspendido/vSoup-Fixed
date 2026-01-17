@@ -2,7 +2,6 @@ package kami.gg.souppvp.events.impl.sumo.task;
 
 import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.events.impl.sumo.SumoState;
-import kami.gg.souppvp.events.impl.sumo.SumoTask;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.Cooldown;
 import kami.gg.souppvp.util.fanciful.FancyMessage;
@@ -11,43 +10,81 @@ import org.bukkit.entity.Player;
 
 public class SumoStartTask extends SumoTask {
 
-	public SumoStartTask(Sumo sumo) {
-		super(sumo, SumoState.WAITING);
-	}
+    private static final int FORCE_END_TICKS = 120;
+    private static final int MIN_PLAYERS = 2;
+    private static final int START_AFTER_TICKS = 30;
+    private static final int ANNOUNCE_INTERVAL = 10;
 
-	@Override
-	public void onRun() {
-		if (getTicks() >= 120) {
-			this.getSumo().end();
-			return;
-		}
+    public SumoStartTask(Sumo sumo) {
+        super(sumo, SumoState.WAITING);
+    }
 
-		if (this.getSumo().getPlayers().size() <= 1 && this.getSumo().getCooldown() != null) {
-			this.getSumo().setCooldown(null);
-			this.getSumo().broadcastMessage("&cThere are not enough players for the Sumo Event to start.");
-		}
+    @Override
+    public void onRun() {
+        Sumo sumo = getSumo();
+        int players = sumo.getPlayers().size();
 
-		if (this.getSumo().getPlayers().size() == this.getSumo().getMaxPlayers() || (getTicks() >= 30 && this.getSumo().getPlayers().size() >= 2)) {
-			if (this.getSumo().getCooldown() == null) {
-				this.getSumo().setCooldown(new Cooldown(11_000));
-				FancyMessage message = new FancyMessage(CC.translate("&7The &bSumo &7Event will start in &b00:10&7! "));
-				message.then("[Click Here]").color(ChatColor.GREEN).command("/sumo join").tooltip(ChatColor.GREEN + "Click to join!").then(" (" + this.getSumo().getRemainingPlayers().size() + "/" + this.getSumo().getMaxPlayers() + ")").color(ChatColor.WHITE);
-				for (Player player : this.getSumo().getPlayers()) {
-					message.send(player);
-				}
-			} else {
-				if (this.getSumo().getCooldown().hasExpired()) {
-					this.getSumo().setState(SumoState.ROUND_STARTING);
-					this.getSumo().onRound();
-					this.getSumo().setTotalPlayers(this.getSumo().getPlayers().size());
-					this.getSumo().setEventTask(new SumoRoundStartTask(this.getSumo()));
-				}
-			}
-		}
+        // Force end
+        if (getTicks() >= FORCE_END_TICKS) {
+            sumo.end();
+            return;
+        }
 
-		if (getTicks() % 10 == 0) {
-			this.getSumo().announce();
-		}
-	}
+        // Not enough players anymore
+        if (players <= 1 && sumo.getCooldown() != null) {
+            sumo.setCooldown(null);
+            sumo.broadcastMessage("&cThere are not enough players for the Sumo Event to start.");
+            return;
+        }
 
+        // Check if event should start
+        if (shouldStart(sumo, players)) {
+            handleStartCountdown(sumo, players);
+        }
+
+        // Periodic announce
+        if (getTicks() % ANNOUNCE_INTERVAL == 0) {
+            sumo.announce();
+        }
+    }
+
+    private boolean shouldStart(Sumo sumo, int players) {
+        return players == sumo.getMaxPlayers()
+                || (getTicks() >= START_AFTER_TICKS && players >= MIN_PLAYERS);
+    }
+
+    private void handleStartCountdown(Sumo sumo, int players) {
+        if (sumo.getCooldown() == null) {
+            startCooldown(sumo, players);
+            return;
+        }
+
+        if (sumo.getCooldown().hasExpired()) {
+            startRound(sumo, players);
+        }
+    }
+
+    private void startCooldown(Sumo sumo, int players) {
+        sumo.setCooldown(new Cooldown(11_000));
+
+        FancyMessage message = new FancyMessage(CC.translate("&7The &bSumo &7Event will start in &b00:10&7! "));
+
+        message.then("[Click Here]")
+                .color(ChatColor.GREEN)
+                .command("/sumo join")
+                .tooltip(ChatColor.GREEN + "Click to join!")
+                .then(" (" + sumo.getRemainingPlayers().size() + "/" + sumo.getMaxPlayers() + ")")
+                .color(ChatColor.WHITE);
+
+        for (Player player : sumo.getPlayers()) {
+            message.send(player);
+        }
+    }
+
+    private void startRound(Sumo sumo, int players) {
+        sumo.setState(SumoState.ROUND_STARTING);
+        sumo.setTotalPlayers(players);
+        sumo.onRound();
+        sumo.setEventTask(new SumoRoundStartTask(sumo));
+    }
 }

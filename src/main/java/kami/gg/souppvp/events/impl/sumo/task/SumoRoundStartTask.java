@@ -3,7 +3,6 @@ package kami.gg.souppvp.events.impl.sumo.task;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.events.impl.sumo.SumoState;
-import kami.gg.souppvp.events.impl.sumo.SumoTask;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import org.bukkit.Location;
@@ -12,52 +11,68 @@ import org.bukkit.entity.Player;
 
 public class SumoRoundStartTask extends SumoTask {
 
-	public SumoRoundStartTask(Sumo sumo) {
-		super(sumo, SumoState.ROUND_STARTING);
-	}
+    private static final int START_DELAY_SECONDS = 3;
 
-	@Override
-	public void onRun() {
-		if (getTicks() >= 3) {
-			this.getSumo().broadcastMessage(CC.translate("&bMatch Started!"));
-			this.getSumo().setEventTask(null);
-			this.getSumo().setState(SumoState.ROUND_FIGHTING);
+    public SumoRoundStartTask(Sumo sumo) {
+        super(sumo, SumoState.ROUND_STARTING);
+    }
 
-			Player playerA = this.getSumo().getRoundPlayerA().getPlayer();
-			Player playerB = this.getSumo().getRoundPlayerB().getPlayer();
+    @Override
+    public void onRun() {
+        Sumo sumo = getSumo();
 
-			Location spawnA = SoupPvP.getInstance().getSumoHandler().getSpawnA();
-			Location spawnB = SoupPvP.getInstance().getSumoHandler().getSpawnB();
+        Player playerA = sumo.getRoundPlayerA().getPlayer();
+        Player playerB = sumo.getRoundPlayerB().getPlayer();
 
-			playerA.teleport(spawnA);
-			playerB.teleport(spawnB);
+        Location spawnA = SoupPvP.getInstance().getSumoHandler().getSpawnA();
+        Location spawnB = SoupPvP.getInstance().getSumoHandler().getSpawnB();
 
-			playerA.playSound(playerA.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.0F);
-			PlayerUtil.allowMovement(playerA);
+        // Always keep players in position during countdown
+        teleportPlayers(playerA, playerB, spawnA, spawnB);
 
-			playerB.playSound(playerB.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.0F);
-			PlayerUtil.allowMovement(playerB);
+        if (getTicks() >= START_DELAY_SECONDS) {
+            startRound(sumo, playerA, playerB);
+            return;
+        }
 
-			((Sumo) this.getSumo()).setRoundStart(System.currentTimeMillis());
-		} else {
-			int seconds = getSeconds();
-			Player playerA = this.getSumo().getRoundPlayerA().getPlayer();
-			Player playerB = this.getSumo().getRoundPlayerB().getPlayer();
+        countdownTick(sumo, playerA, playerB);
+    }
 
-			Location spawnA = SoupPvP.getInstance().getSumoHandler().getSpawnA();
-			Location spawnB = SoupPvP.getInstance().getSumoHandler().getSpawnB();
+    private void startRound(Sumo sumo, Player playerA, Player playerB) {
+        sumo.broadcastMessage(CC.translate("&bMatch Started!"));
+        sumo.setEventTask(null);
+        sumo.setState(SumoState.ROUND_FIGHTING);
+        sumo.setRoundStart(System.currentTimeMillis());
 
-			playerA.teleport(spawnA);
-			playerB.teleport(spawnB);
+        playStartSound(playerA);
+        playStartSound(playerB);
 
-			playerA.playSound(playerA.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
-			PlayerUtil.denyMovement(playerA);
+        PlayerUtil.allowMovement(playerA);
+        PlayerUtil.allowMovement(playerB);
+    }
 
-			playerB.playSound(playerB.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
-			PlayerUtil.denyMovement(playerB);
+    private void countdownTick(Sumo sumo, Player playerA, Player playerB) {
+        int seconds = getRemainingSeconds(3);
 
-			this.getSumo().broadcastMessage("&7The round will be starting in &b" + seconds + "&7...");
-		}
-	}
+        playCountdownSound(playerA);
+        playCountdownSound(playerB);
 
+        PlayerUtil.denyMovement(playerA);
+        PlayerUtil.denyMovement(playerB);
+
+        sumo.broadcastMessage("&7The round will be starting in &b" + seconds + "&7...");
+    }
+
+    private void teleportPlayers(Player a, Player b, Location spawnA, Location spawnB) {
+        a.teleport(spawnA);
+        b.teleport(spawnB);
+    }
+
+    private void playCountdownSound(Player player) {
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+    }
+
+    private void playStartSound(Player player) {
+        player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.0F);
+    }
 }
