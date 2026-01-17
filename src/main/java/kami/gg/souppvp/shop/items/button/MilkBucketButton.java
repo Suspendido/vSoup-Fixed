@@ -17,9 +17,9 @@ import java.util.List;
 
 public class MilkBucketButton extends Button {
 
-    private Integer costCredits;
+    private final int costCredits;
 
-    public MilkBucketButton(Integer costCredits){
+    public MilkBucketButton(Integer costCredits) {
         this.costCredits = costCredits;
     }
 
@@ -27,42 +27,48 @@ public class MilkBucketButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Receive 1x milk bucket. Drinking this"));
-        lore.add(CC.translate("&7clears out all your debuffed effects"));
+        lore.add("&7Receive 1x milk bucket. Drinking this");
+        lore.add("&7clears out all your debuffed effects");
         lore.add("");
-        lore.add(CC.translate("&fPrice: &b" + costCredits));
+        lore.add("&fPrice: &b" + costCredits);
         lore.add("");
-        if (profile.getCredits() >= costCredits){
-            lore.add(CC.translate("&eClick to purchase!"));
-        } else {
-            lore.add(CC.translate("&cInsufficient Credits!"));
-        }
-        return new ItemBuilder(Material.MILK_BUCKET).name(CC.translate("&bMilk Bucket")).lore(lore).build();
+        lore.add(profile.getCredits() >= costCredits
+                ? "&eClick to purchase!"
+                : "&cInsufficient Credits!"
+        );
+
+        return new ItemBuilder(Material.MILK_BUCKET)
+                .name("&bMilk Bucket")
+                .lore(lore)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                player.sendMessage(CC.translate("&cYou can't do this in spawn."));
-            } else {
-                if (profile.getCredits() >= costCredits){
-                    if (player.getInventory().firstEmpty() == -1){
-                        playFail(player);
-                        player.sendMessage(CC.translate("&cYour inventory is full!"));
-                        return;
-                    }
-                    player.getInventory().addItem(new ItemBuilder(Material.MILK_BUCKET).amount(1).build());
-                    PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                    profile.setCredits(profile.getCredits() - costCredits);
-                    player.sendMessage(CC.translate("&aSuccessfully bought the &7Milk Bucket&a."));
-                } else {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                }
-            }
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            return;
         }
+
+        if (profile.getCredits() < costCredits) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            sendMessage(player, "&cInsufficient credits.");
+            return;
+        }
+
+        if (player.getInventory().firstEmpty() == -1) {
+            playFail(player);
+            sendMessage(player, "&cYour inventory is full!");
+            return;
+        }
+
+        player.sendMessage(CC.translate("&aSuccessfully bought the &7Milk Bucket&a."));
+        player.getInventory().addItem(new ItemBuilder(Material.MILK_BUCKET).amount(1).build());
+        profile.setCredits(profile.getCredits() - costCredits);
+        playSuccess(player);
     }
 
 }

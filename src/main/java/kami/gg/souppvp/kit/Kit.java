@@ -39,18 +39,22 @@ public abstract class Kit implements Listener {
         profile.setProfileState(ProfileState.COMBAT);
         player.getInventory().clear();
         player.getInventory().setArmorContents(this.getArmor());
-        int i=0;
-        for (ItemStack itemStack : this.getCombatEquipments()){
-            player.getInventory().setItem(i, this.getCombatEquipments().get(i));
-            i++;
+
+        int i = 0;
+        for (ItemStack item : this.getCombatEquipments()) {
+            player.getInventory().setItem(i++, item);
         }
+
         PlayerUtil.giveSoup(player);
-        for (PotionEffect potionEffect : this.getPotionEffects()){
+
+        for (PotionEffect potionEffect : this.getPotionEffects()) {
             player.addPotionEffect(potionEffect);
         }
+
         onSelect(player);
         setup();
-        player.sendMessage(CC.translate("&aSuccessfully given you the kit &r" + this.getRarityType().getColor() + this.getName() + "&a."));
+        SoupPvP.getInstance().getKitProgressManager().handleKitUse(profile);
+        player.sendMessage(CC.translate("&aSuccessfully given you the kit &r" + getRarityType().getColor() + getName() + "&a."));
     }
 
 }

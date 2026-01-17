@@ -10,15 +10,14 @@ public class InfoPerksButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        return new ItemBuilder(Material.PAPER)
-                .name("&bWhat are perks?")
+        return new ItemBuilder(Material.BOOK_AND_QUILL)
+                .name("&b&lWhat are perks?")
                 .lore(
-                        "&7Each perk allows you to customize your playstyle to",
-                        "&7benefit your combat skills!",
-                        "&7You can select three perks, one from each tier level.",
+                        "&fEach perk allows you to customize your playstyle to",
+                        "&fbenefit your combat skills!",
+                        "&fYou can select three perks, one from each tier level.",
                         "",
                         "&7&oPerks can only be purchased using in-game credits."
                 ).build();
     }
-
 }

@@ -3,6 +3,7 @@ package kami.gg.souppvp.kit;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.inherit.*;
 import kami.gg.souppvp.kit.kits.*;
+import kami.gg.souppvp.profile.Profile;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -94,4 +95,9 @@ public class KitsHandler {
         getKits().add(kit);
     }
 
+    public boolean hasKitUnlocked(Profile profile, Kit kit) {
+        if (kit == null) return false;
+        if (SoupPvP.getIsFreeKitsMode()) return true;
+        return profile.getUnlockedKits().contains(kit.getName());
+    }
 }

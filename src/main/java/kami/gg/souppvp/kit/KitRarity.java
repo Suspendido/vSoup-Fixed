@@ -13,9 +13,9 @@ public enum KitRarity {
     LEGENDARY("Legendary", ChatColor.GOLD, 5000),
     MYTHICAL("Mythical", ChatColor.DARK_PURPLE, 5500);
 
-    private String name;
-    private ChatColor color;
-    private Integer price;
+    private final String name;
+    private final ChatColor color;
+    private final Integer price;
 
     KitRarity(String name, ChatColor color, Integer price) {
         this.name = name;

@@ -10,9 +10,9 @@ import java.util.List;
 
 public class KillstreakButton extends Button {
 
-    private Killstreak killstreak;
+    private final Killstreak killstreak;
 
-    public KillstreakButton(Killstreak killstreak){
+    public KillstreakButton(Killstreak killstreak) {
         this.killstreak = killstreak;
     }
 

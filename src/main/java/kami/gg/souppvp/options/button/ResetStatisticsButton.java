@@ -3,12 +3,10 @@ package kami.gg.souppvp.options.button;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.tier.Tiers;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.TaskUtil;
 import kami.gg.souppvp.util.menu.Button;
-import kami.gg.souppvp.util.menu.menus.ConfirmMenu;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -34,42 +32,39 @@ public class ResetStatisticsButton extends Button {
     public ItemStack getButtonItem(Player player) {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        boolean affordable = profile.getCredits() >= price;
 
         return new ItemBuilder(Material.REDSTONE_COMPARATOR)
-                .name(CC.translate("&bReset Statistics"))
+                .name("&bReset Statistics")
                 .lore(
-                        CC.translate("&7This procedure will reset all SoupPvP statistics."),
-                        CC.translate("&7This does NOT affect your network rank or punishments."),
+                        "&fThis procedure will reset all SoupPvP statistics.",
+                        "&fThis does NOT affect your network rank or punishments.",
                         "",
-                        CC.translate("&fPrice: &b" + price),
+                        "&fPrice: &b" + price,
                         "",
-                        affordable ? CC.translate("&eClick to reset!") : CC.translate("&cInsufficient Credits!")
-                )
-                .build();
+                        profile.getCredits() >= price ? "&eClick to reset!" : "&cInsufficient Credits!"
+                ).build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (!clickType.isLeftClick()) return;
-
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         SoupPvP instance = SoupPvP.getInstance();
+        Profile profile = instance.getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         // Must be in spawn
         if (!instance.getSpawnHandler().getCuboid().contains(player)) {
-            player.sendMessage(CC.translate("&cYou can only do this in spawn."));
+            playFail(player);
+            sendMessage(player, "&cYou can only do this in spawn.");
             return;
         }
 
         // Must have money
         if (profile.getCredits() < price) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            player.sendMessage(CC.translate("&cInsufficient credits!"));
+            playFail(player);
+            sendMessage(player, "&cInsufficient credits!");
             return;
         }
 
-        playNeutral(player);
+        playSuccess(player);
         TaskUtil.runLater(player::closeInventory, 1L);
         PlayerUtil.playSound(player, Sound.NOTE_PIANO);
 
@@ -99,6 +94,6 @@ public class ResetStatisticsButton extends Button {
         profile.setWagersWon(0);
         profile.setWagersLost(0);
 
-        player.sendMessage(CC.translate("&aSuccessfully reset your statistics."));
+        sendMessage(player, "&aSuccessfully reset your statistics.");
     }
 }

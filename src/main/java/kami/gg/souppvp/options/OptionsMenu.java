@@ -1,7 +1,6 @@
 package kami.gg.souppvp.options;
 
 import kami.gg.souppvp.options.button.*;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
 import org.bukkit.entity.Player;
@@ -13,7 +12,7 @@ public class OptionsMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Configure your settings");
+        return "Configure your settings";
     }
 
     @Override

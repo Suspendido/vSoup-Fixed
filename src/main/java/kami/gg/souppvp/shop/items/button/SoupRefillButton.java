@@ -2,7 +2,6 @@ package kami.gg.souppvp.shop.items.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
@@ -17,9 +16,9 @@ import java.util.List;
 
 public class SoupRefillButton extends Button {
 
-    private Integer costCredits;
+    private final int costCredits;
 
-    public SoupRefillButton(Integer costCredits){
+    public SoupRefillButton(int costCredits) {
         this.costCredits = costCredits;
     }
 
@@ -27,41 +26,46 @@ public class SoupRefillButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Refills all your empty slots with soup."));
+
+        lore.add("&7Refills all your empty slots with soup.");
         lore.add("");
-        lore.add(CC.translate("&fPrice: &b" + costCredits));
+        lore.add("&fPrice: &b" + costCredits);
         lore.add("");
-        if (profile.getCredits() >= costCredits){
-            lore.add(CC.translate("&eClick to purchase!"));
-        } else {
-            lore.add(CC.translate("&cInsufficient Credits!"));
-        }
-        return new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.translate("&bSoup Refill")).lore(lore).build();
+        lore.add(profile.getCredits() >= costCredits
+                ? "&eClick to purchase!"
+                : "&cInsufficient Credits!");
+
+        return new ItemBuilder(Material.MUSHROOM_SOUP)
+                .name("&bSoup Refill")
+                .lore(lore)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                player.sendMessage(CC.translate("&cYou can't do this in spawn."));
-            } else {
-                if (profile.getCredits() > costCredits){
-                    PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                    profile.setCredits(profile.getCredits() - costCredits);
-                    if (player.getInventory().firstEmpty() == -1){
-                        playFail(player);
-                        player.sendMessage(CC.translate("&cYour inventory is full!"));
-                        return;
-                    }
-                    PlayerUtil.giveSoup(player);
-                    player.sendMessage(CC.translate("&aSuccessfully bought the &bSoup Refill&a."));
-                } else {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                }
-            }
-        }
-    }
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            sendMessage(player, "&cYou can't do this in spawn.");
+            return;
+        }
+
+        if (profile.getCredits() < costCredits) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            sendMessage(player, "&cInsufficient credits.");
+            return;
+        }
+
+        if (player.getInventory().firstEmpty() == -1) {
+            playFail(player);
+            sendMessage(player, "&cYour inventory is full!");
+            return;
+        }
+
+        sendMessage(player, "&aSuccessfully bought the &bSoup Refill&a.");
+        profile.setCredits(profile.getCredits() - costCredits);
+        PlayerUtil.giveSoup(player);
+        playSuccess(player);
+    }
 }

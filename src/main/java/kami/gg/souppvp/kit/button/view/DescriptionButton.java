@@ -41,7 +41,7 @@ public class DescriptionButton extends Button {
                 );
                 int level = effect.getAmplifier() + 1;
 
-                lore.add(" &b▪ &7" + effectName + " " + level);
+                lore.add("&b┃ &f" + effectName + " " + level);
             }
         }
 

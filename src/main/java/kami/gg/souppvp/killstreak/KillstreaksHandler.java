@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 public class KillstreaksHandler {
 
-    private List<Killstreak> killstreaks;
+    private final List<Killstreak> killstreaks;
 
     public KillstreaksHandler(){
         killstreaks = new ArrayList<>();

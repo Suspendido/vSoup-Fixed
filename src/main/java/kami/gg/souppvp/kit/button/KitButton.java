@@ -2,6 +2,7 @@ package kami.gg.souppvp.kit.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.kit.progress.KitProgress;
 import kami.gg.souppvp.kit.menu.KitViewMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
@@ -30,24 +31,34 @@ public class KitButton extends Button {
         String kitName = kit.getName();
         boolean unlocked = profile.getUnlockedKits().contains(kitName) || hasExactPermission(player, "souppvp." + kitName.toLowerCase());
         boolean freeMode = SoupPvP.getIsFreeKitsMode();
+        KitProgress progress = profile.getKitProgress(kitName);
 
         List<String> lore = new ArrayList<>();
 
-        lore.add(" &b▪ &fRarity: " + kit.getRarityType().getColor() + kit.getRarityType().getName());
-        lore.add("");
-        lore.add(" &b▪ &fStatus: " + (freeMode || unlocked ? "&aUnlocked" : "&cLocked"));
-
-        if (!freeMode && !unlocked) {
-            lore.add(" &b▪ &fPrice: &c" + kit.getPrice());
-        }
-
-        lore.add("");
+        lore.add("&b┃ &fRarity: " + kit.getRarityType().getColor() + kit.getRarityType().getName());
+        lore.add("&b┃ &fStatus: " + (freeMode || unlocked ? "&aUnlocked" : "&cLocked"));
 
         if (freeMode || unlocked) {
-            lore.add("&aClick here to equip this kit.");
-        } else {
-            lore.add(profile.getCredits() >= kit.getPrice() ? "&aClick here to purchase this kit." : "&cInsufficient Credits!");
+            lore.add("");
+            lore.add("&bKit Stats:");
+            lore.add("&b┃ &fKills: &b" + progress.getKills());
+            lore.add("&b┃ &fDeaths: &b" + progress.getDeaths());
+            lore.add("&b┃ &fTimes Equipped: &b" + progress.getTimesUsed());
+            lore.add("&b┃ &fLevel: &b" + progress.getLevel());
+
+            if (progress.getRebirths() > 0) {
+                lore.add("&b┃ &fRebirth: &d" + progress.getRebirths());
+            }
         }
+
+        if (!freeMode && !unlocked) {
+            lore.add("");
+            lore.add("&b┃ &fPrice: &c" + kit.getPrice());
+        }
+
+        lore.add("");
+
+        lore.add(freeMode || unlocked ? "&aClick here to equip this kit." : (profile.getCredits() >= kit.getPrice() ? "&aClick here to purchase this kit." : "&cInsufficient Credits!"));
         lore.add("&eRight-Click to preview");
 
         return new ItemBuilder(kit.getIcon())
@@ -55,6 +66,7 @@ public class KitButton extends Button {
                 .lore(lore)
                 .build();
     }
+
 
     @Override
     public void clicked(Player player, ClickType clickType) {
@@ -90,17 +102,11 @@ public class KitButton extends Button {
         PlayerUtil.playSound(player, Sound.NOTE_PIANO);
         profile.setCredits(profile.getCredits() - kit.getPrice());
         profile.getUnlockedKits().add(kitName);
+        PlayerUtil.playSound(player, Sound.VILLAGER_YES);
         player.sendMessage(CC.translate("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
     }
 
     private boolean hasExactPermission(Player player, String permission) {
         return player.getEffectivePermissions().stream().anyMatch(info -> info.getPermission().equalsIgnoreCase(permission) && info.getValue());
-    }
-
-    private void equip(Player player, Profile profile, String kitName) {
-        PlayerUtil.playSound(player, Sound.CLICK);
-        profile.setPreviousKit(profile.getCurrentKit());
-        profile.setCurrentKit(kitName);
-        player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kitName + "&a kit."));
     }
 }

@@ -1,7 +1,6 @@
 package kami.gg.souppvp.shop.items;
 
 import kami.gg.souppvp.shop.items.button.*;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
 import org.bukkit.entity.Player;
@@ -13,7 +12,7 @@ public class ItemsMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Select a feature to purchase");
+        return "Select a feature to purchase";
     }
 
     @Override

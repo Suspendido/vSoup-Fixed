@@ -2,6 +2,7 @@ package kami.gg.souppvp.kit.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
@@ -30,17 +31,17 @@ public class SelectPreviousKitButton extends Button {
         Kit previous = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getPreviousKit());
 
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Receive your previous kit!"));
+        lore.add("&7Receive your previous kit!");
         lore.add("");
 
         lore.add(previous == null ? CC.translate("&fPrevious Kit: &cNone") : CC.translate("&fPrevious Kit: &r" + previous.getRarityType().getColor() + previous.getName()));
 
-        lore.add(CC.translate("&fCurrent Kit: &r" + current.getRarityType().getColor() + current.getName()));
+        lore.add("&fCurrent Kit: &r" + current.getRarityType().getColor() + current.getName());
         lore.add("");
-        lore.add(CC.translate("&eClick to receive!"));
+        lore.add("&eClick to receive!");
 
         return new ItemBuilder(Material.WATCH)
-                .name(CC.translate("&bSelect Previous Kit"))
+                .name("&bSelect Previous Kit")
                 .lore(lore)
                 .build();
     }
@@ -66,9 +67,6 @@ public class SelectPreviousKitButton extends Button {
         profile.setCurrentKit(previous.getName());
         profile.setPreviousKit(current.getName());
 
-        player.sendMessage(CC.translate("&aSuccessfully equipped the &r"
-                + previous.getRarityType().getColor()
-                + previous.getName()
-                + "&a kit."));
+        player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + previous.getRarityType().getColor() + previous.getName() + "&a kit."));
     }
 }

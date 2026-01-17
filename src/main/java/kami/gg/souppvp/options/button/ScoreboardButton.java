@@ -2,7 +2,6 @@ package kami.gg.souppvp.options.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
@@ -21,18 +20,21 @@ public class ScoreboardButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Edit the visibility of the the scoreboard."));
+        lore.add("&fEdit the visibility of the the scoreboard.");
         lore.add("");
-        if (profile.getEnableScoreboard()){
-            lore.add(CC.translate("&f▸  &aEnabled"));
-            lore.add(CC.translate("&f  &fDisabled"));
+        if (profile.getEnableScoreboard()) {
+            lore.add("&7▸  &aEnabled");
+            lore.add("&f  &cDisabled");
         }  else {
-            lore.add(CC.translate("&f  &fEnabled"));
-            lore.add(CC.translate("&f▸  &aDisabled"));
+            lore.add("&f  &cEnabled");
+            lore.add("&7▸  &aDisabled");
         }
         lore.add("");
-        lore.add(CC.translate("&eClick to toggle!"));
-        return new ItemBuilder(Material.ITEM_FRAME).name(CC.translate("&bScoreboard Visibility")).lore(lore).build();
+        lore.add("&eClick to toggle!");
+        return new ItemBuilder(Material.ITEM_FRAME)
+                .name("&bScoreboard Visibility")
+                .lore(lore)
+                .build();
     }
 
     @Override
