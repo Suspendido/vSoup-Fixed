@@ -100,10 +100,12 @@ public class CyclopsKit extends Kit {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         ItemStack wandItem = getCombatEquipments().get(1);
+        ItemStack item = event.getItem();
 
         if (!profile.getCurrentKit().equals(getName())) return;
         if (!isRightClick(event.getAction())) return;
-        if (!event.getItem().isSimilar(wandItem)) return;
+        if (item == null) return;
+        if (!item.isSimilar(wandItem)) return;
 
         event.setCancelled(true);
         player.updateInventory();
@@ -181,8 +183,7 @@ public class CyclopsKit extends Kit {
                     if (!(entity instanceof Player target)) continue;
                     if (target == player) continue;
 
-                    Profile p = SoupPvP.getInstance().getProfilesHandler()
-                            .getProfileByUUID(target.getUniqueId());
+                    Profile p = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
 
                     if (p.getProfileState() == ProfileState.SPAWN) continue;
 
