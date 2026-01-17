@@ -18,85 +18,83 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.Vector;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 public class PlayerListeners implements Listener {
 
-    private final Set<UUID> forceInvis = new HashSet<>();
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerLogin(final PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
-        if (player.hasPermission("modsuite.staff")) {
-            this.forceInvis.add(player.getUniqueId());
-        }
-    }
+    private final SoupPvP plugin = SoupPvP.getInstance();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        PlayerUtil.resetPlayer(event.getPlayer());
+        Player player = event.getPlayer();
+
+        plugin.getClientHook().handleJoin(player);
+        PlayerUtil.resetPlayer(player);
     }
 
-    @EventHandler
-    public void onPlayerMoveEvent(PlayerMoveEvent event){
-        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
-            Player player = event.getPlayer();
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) return;
-            if (profile.getProfileState() == ProfileState.SPAWN && (!(SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player))) && player.getGameMode().equals(GameMode.SURVIVAL)){
-                player.sendMessage(CC.translate("&7You no longer have spawn protection!"));
-                profile.setProfileState(ProfileState.COMBAT);
-                TaskUtil.runLater(() -> {
-                    if (player.hasMetadata("noFall")) {
-                        player.removeMetadata("noFall", SoupPvP.getInstance());
-                    }
-                }, 20L);
-                if (profile.isJuggernaut()) return;
-                Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-                kit.equipKit(player);
-            }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+        if (!hasMovedBlock(event)) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
+
+        if (profile.getProfileState() != ProfileState.SPAWN) return;
+        if (plugin.getSpawnHandler().getCuboid().contains(player)) return;
+
+        player.sendMessage(CC.translate("&7You no longer have spawn protection!"));
+        profile.setProfileState(ProfileState.COMBAT);
+
+        TaskUtil.runLater(() -> player.removeMetadata("noFall", plugin), 20L);
+
+        if (profile.isJuggernaut()) return;
+
+        Kit kit = plugin.getKitsHandler().getKitByName(profile.getCurrentKit());
+        if (kit != null) {
+            kit.equipKit(player);
         }
     }
 
-    @EventHandler
-    public void onEntityDamageEvent(EntityDamageEvent event){
-        if (!(event.getEntity() instanceof Player)) return;
-        if (event.getEntity().hasMetadata("noFall") && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onFallDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (event.getCause() != EntityDamageEvent.DamageCause.FALL) return;
+        if (!player.hasMetadata("noFall")) return;
+
+        event.setCancelled(true);
+        player.removeMetadata("noFall", plugin);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onSpongeLaunch(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+        if (!hasMovedBlock(event)) return;
+        if (player.hasMetadata("jammed")) return;
+
+        if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.SPONGE) return;
+
+        TasksUtility.runTaskLater(() -> {
+            player.setVelocity(player.getVelocity().setY(2.5));
+            PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP);
+        }, 2L);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDenyMovement(PlayerMoveEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        if (!hasMovedBlock(event)) return;
+
+        if (event.getPlayer().hasMetadata("denyMovement")) {
             event.setCancelled(true);
-            event.getEntity().removeMetadata("noFall", SoupPvP.getInstance());
         }
     }
 
-    @EventHandler
-    public void onPlayerOnSpongeEvent(PlayerMoveEvent event){
-        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
-            Player player = event.getPlayer();
-            if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) return;
-            if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SPONGE){
-                if (player.hasMetadata("jammed")) return;
-                TasksUtility.runTaskLater(() -> {
-                    Vector vector = player.getVelocity().setY(+2.5);
-                    player.setVelocity(vector);
-                    PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP);
-                }, 2L);
-            }
-        }
+    private boolean hasMovedBlock(PlayerMoveEvent event) {
+        return event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockY() != event.getTo().getBlockY() || event.getFrom().getBlockZ() != event.getTo().getBlockZ();
     }
-
-    @EventHandler
-    public void onDenyMovement(PlayerMoveEvent event){
-        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
-            if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) return;
-            if (event.getPlayer().hasMetadata("denyMovement")){
-                event.setCancelled(true);
-            }
-        }
-    }
-
 }
