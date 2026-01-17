@@ -9,5 +9,6 @@ public interface Client {
     void overrideNametags(Player target, Player viewer, List<String> tag);
     void clearNametags(Player player);
     void handleJoin(Player player);
-
+    void giveStaffModules(Player player);
+    void disableStaffModules(Player player);
 }

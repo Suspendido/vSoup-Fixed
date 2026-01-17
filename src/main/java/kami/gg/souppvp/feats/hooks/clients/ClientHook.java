@@ -55,4 +55,18 @@ public class ClientHook implements Client {
             client.handleJoin(player);
         }
     }
+
+    @Override
+    public void giveStaffModules(Player player) {
+        for (Client client : clients) {
+            client.giveStaffModules(player);
+        }
+    }
+
+    @Override
+    public void disableStaffModules(Player player) {
+        for (Client client : clients) {
+            client.disableStaffModules(player);
+        }
+    }
 }
