@@ -7,11 +7,17 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,8 +28,10 @@ import java.util.*;
 
 public class ThirtyKillstreak extends Killstreak implements Listener {
 
+    private final SoupPvP plugin = SoupPvP.getInstance();
+
     @Getter
-    private HashMap<UUID, List<Wolf>> hashMap = new HashMap<>();
+    private final Map<UUID, List<Wolf>> wolvesMap = new HashMap<>();
 
     @Override
     public String getName() {
@@ -40,79 +48,130 @@ public class ThirtyKillstreak extends Killstreak implements Listener {
         return new ItemBuilder(Material.MONSTER_EGG)
                 .durability(95)
                 .name(CC.translate("&a" + getName()))
-                .lore(Arrays.asList(CC.MENU_BAR, CC.translate("&7Spawns a squad of loyal wild wolves,"), CC.translate("&7protecting you until they die."), CC.MENU_BAR, "", CC.translate("&fKillstreak Required: &d" + getRequired()), "")).build();
+                .lore(
+                        CC.MENU_BAR,
+                        "&7Spawns a squad of loyal wolves",
+                        "&7that attack your enemies.",
+                        CC.MENU_BAR,
+                        "",
+                        "&fKillstreak Required: &d" + getRequired()
+                ).build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        if (event.getEntity().getKiller() == null) return;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardlinePerk){
-            if (profile.getCurrentKillstreak() == getRequired()-1){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                List<Wolf> wolves = new ArrayList<>();
-                for (int i = 0; i < 4; i++) {
-                    Wolf wolf = event.getEntity().getKiller().getWorld().spawn(event.getEntity().getKiller().getLocation(), Wolf.class);
-                    wolf.setOwner(event.getEntity().getKiller());
-                    wolf.setCustomName(CC.translate("&cAttack Dog"));
-                    wolf.setTamed(true);
-                    wolf.setAgeLock(true);
-                    wolf.setAdult();
-                    wolf.setAngry(true);
-                    wolf.setMaxHealth(200);
-                    wolf.setHealth(wolf.getMaxHealth());
-                    wolf.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1));
-                    wolf.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                    wolf.setAngry(true);
-                    wolves.add(wolf);
-                }
-                hashMap.put(event.getEntity().getKiller().getUniqueId(), wolves);
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+        int required = getRequiredKillstreak(profile);
+
+        if (profile.getCurrentKillstreak() == required) {
+            killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+            spawnWolves(killer);
+        }
+    }
+
+    private int getRequiredKillstreak(Profile profile) {
+        Perk hardline = plugin.getPerksHandler().getPerkByName("Hardline");
+        return (profile.getActivePerks().size() > 1 && plugin.getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardline) ? getRequired() - 1 : getRequired();
+    }
+
+    private void spawnWolves(Player owner) {
+        List<Wolf> wolves = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            Wolf wolf = owner.getWorld().spawn(owner.getLocation(), Wolf.class);
+
+            wolf.setOwner(owner);
+            wolf.setCustomName(CC.translate(owner.getDisplayName() + "&c's Attack Dog"));
+            wolf.setCustomNameVisible(false);
+
+            wolf.setTamed(true);
+            wolf.setAdult();
+            wolf.setAgeLock(true);
+            wolf.setAngry(true);
+
+            wolf.setMaxHealth(200);
+            wolf.setHealth(200);
+
+            wolf.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1));
+            wolf.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+
+            wolves.add(wolf);
+        }
+
+        wolvesMap.put(owner.getUniqueId(), wolves);
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Wolf wolf && event.getDamager() instanceof Player player) {
+            if (wolf.isTamed() && player.equals(wolf.getOwner())) {
+                player.sendMessage(ChatColor.RED + "You cannot damage your own Attack Dogs.");
+                event.setCancelled(true);
             }
-        } else {
-            if (profile.getCurrentKillstreak() == getRequired()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                List<Wolf> wolves = new ArrayList<>();
-                for (int i = 0; i < 4; i++) {
-                    Wolf wolf = event.getEntity().getKiller().getWorld().spawn(event.getEntity().getKiller().getLocation(), Wolf.class);
-                    wolf.setOwner(event.getEntity().getKiller());
-                    wolf.setCustomName(CC.translate("&cAttack Dog"));
-                    wolf.setTamed(true);
-                    wolf.setAgeLock(true);
-                    wolf.setAdult();
-                    wolf.setAngry(true);
-                    wolf.setMaxHealth(200);
-                    wolf.setHealth(wolf.getMaxHealth());
-                    wolf.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1));
-                    wolf.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                    wolf.setAngry(true);
-                    wolves.add(wolf);
-                }
-                hashMap.put(event.getEntity().getKiller().getUniqueId(), wolves);
+        }
+
+        if (event.getEntity() instanceof Player victim && event.getDamager() instanceof Wolf wolf && wolf.getOwner() instanceof Player owner) {
+            event.setCancelled(true);
+            victim.damage(4.0, owner);
+        }
+    }
+
+    @EventHandler
+    public void onWolfTarget(EntityTargetLivingEntityEvent event) {
+        if (!(event.getEntity() instanceof Wolf wolf)) return;
+        if (!(wolf.getOwner() instanceof Player owner)) return;
+
+        if (event.getTarget() instanceof Player target) {
+            if (target.getUniqueId().equals(owner.getUniqueId())) {
+                event.setCancelled(true);
             }
         }
     }
 
     @EventHandler
-    public void onPlayerQuitEvent(PlayerQuitEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getPlayer().getUniqueId())){
-            for (Wolf wolf : hashMap.get(event.getPlayer().getUniqueId())){
-                wolf.remove();
-            }
-            hashMap.remove(event.getPlayer().getUniqueId());
+    public void onOwnerDamaged(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player owner)) return;
+
+        List<Wolf> wolves = wolvesMap.get(owner.getUniqueId());
+        if (wolves == null) return;
+
+        Player attacker = null;
+
+        if (event.getDamager() instanceof Player p) {
+            attacker = p;
+        } else if (event.getDamager() instanceof Projectile proj && proj.getShooter() instanceof Player p) {
+            attacker = p;
+        }
+
+        if (attacker == null) return;
+
+        for (Wolf wolf : wolves) {
+            if (!wolf.isValid()) continue;
+            wolf.setTarget(attacker);
         }
     }
 
     @EventHandler
-    public void onPlayerDeathEventRemoveFromHashmap(PlayerDeathEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getEntity().getUniqueId())){
-            for (Wolf wolf : hashMap.get(event.getEntity().getUniqueId())){
-                wolf.remove();
-            }
-            hashMap.remove(event.getEntity().getUniqueId());
-        }
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        removeWolves(event.getPlayer().getUniqueId());
     }
 
+    @EventHandler
+    public void onPlayerDeathRemove(PlayerDeathEvent event) {
+        removeWolves(event.getEntity().getUniqueId());
+    }
+
+    private void removeWolves(UUID uuid) {
+        List<Wolf> wolves = wolvesMap.remove(uuid);
+        if (wolves == null) return;
+
+        for (Wolf wolf : wolves) {
+            if (wolf.isValid()) {
+                wolf.remove();
+            }
+        }
+    }
 }

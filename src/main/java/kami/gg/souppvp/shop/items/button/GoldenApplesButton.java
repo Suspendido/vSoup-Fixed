@@ -27,41 +27,45 @@ public class GoldenApplesButton extends Button {
     public ItemStack getButtonItem(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Receive 3x golden apples."));
+        lore.add("&7Receive 3x golden apples.");
         lore.add("");
-        lore.add(CC.translate("&fPrice: &b" + costCredits));
+        lore.add("&fPrice: &b" + costCredits);
         lore.add("");
-        if (profile.getCredits() >= costCredits){
-            lore.add(CC.translate("&eClick to purchase!"));
-        } else {
-            lore.add(CC.translate("&cInsufficient Credits!"));
-        }
-        return new ItemBuilder(Material.GOLDEN_APPLE).name(CC.translate("&bGolden Apples")).lore(lore).build();
+        lore.add(profile.getCredits() >= costCredits
+                ? "&eClick to purchase!"
+                : "&cInsufficient Credits!"
+        );
+
+        return new ItemBuilder(Material.GOLDEN_APPLE).name("&bGolden Apples").lore(lore).build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                player.sendMessage(CC.translate("&cYou can't do this in spawn."));
-            } else {
-                if (profile.getCredits() >= costCredits){
-                    if (player.getInventory().firstEmpty() == -1){
-                        playFail(player);
-                        player.sendMessage(CC.translate("&cYour inventory is full, have one slot empty!"));
-                        return;
-                    }
-                    player.getInventory().addItem(new ItemBuilder(Material.GOLDEN_APPLE).amount(3).build());
-                    PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                    profile.setCredits(profile.getCredits() - costCredits);
-                    player.sendMessage(CC.translate("&aSuccessfully bought the &bGolden Apples&a."));
-                } else {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                }
-            }
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            return;
         }
+
+        if (profile.getCredits() < costCredits) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            sendMessage(player, "&cInsufficient credits.");
+            return;
+        }
+
+        if (player.getInventory().firstEmpty() == -1) {
+            playFail(player);
+            sendMessage(player, "&cYour inventory is full!");
+            return;
+        }
+
+        player.sendMessage(CC.translate("&aSuccessfully bought the &bGolden Apples&a."));
+        player.getInventory().addItem(new ItemBuilder(Material.GOLDEN_APPLE).amount(3).build());
+        profile.setCredits(profile.getCredits() - costCredits);
+        PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+        playSuccess(player);
     }
 
 }

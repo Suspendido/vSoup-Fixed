@@ -17,10 +17,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -29,13 +26,13 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class FortyKillstreak extends Killstreak implements Listener {
 
-    @Getter private HashMap<UUID, Zombie> hashMap = new HashMap<>();
+    private final SoupPvP plugin = SoupPvP.getInstance();
+    @Getter private final HashMap<UUID, Zombie> guards = new HashMap<>();
 
     @Override
     public String getName() {
@@ -50,120 +47,139 @@ public class FortyKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.SKULL_ITEM)
-                .durability(3)
+                .durability(2)
                 .name(CC.translate("&a" + getName()))
-                .lore(Arrays.asList(CC.MENU_BAR, CC.translate("&7Spawns a Security Guard with the only"), CC.translate("&7goal is to protect you."), CC.MENU_BAR, "", CC.translate("&fKillstreak Required: &d" + getRequired()), "")).build();
+                .lore(
+                        CC.MENU_BAR,
+                        "&7Spawns a Security Guard",
+                        "&7whose only goal is to protect you.",
+                        CC.MENU_BAR,
+                        "",
+                        "&fKillstreak Required: &d" + getRequired()
+                ).build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        if (event.getEntity().getKiller() == null) return;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardlinePerk){
-            if (profile.getCurrentKillstreak() == getRequired()-1){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                Zombie zombie = (Zombie) event.getEntity().getKiller().getWorld().spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.ZOMBIE);
-                zombie.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), event.getEntity().getKiller().getUniqueId().toString()));
-                zombie.setMaxHealth(1000);
-                zombie.setHealth(zombie.getMaxHealth());
-                zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0));
-                zombie.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
-                zombie.setCustomName(CC.translate("&b&l" + event.getEntity().getKiller().getName() + "'s Security Guard"));
-                EntityEquipment entityEquipment = zombie.getEquipment();
-                entityEquipment.setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).color(Color.BLUE).build());
-                entityEquipment.setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.BLUE).build());
-                entityEquipment.setBoots(new ItemBuilder(Material.LEATHER_BOOTS).color(Color.BLUE).build());
-                hashMap.put(event.getEntity().getKiller().getUniqueId(), zombie);
-            }
-        } else {
-            if (profile.getCurrentKillstreak() == getRequired()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                Zombie zombie = (Zombie) event.getEntity().getKiller().getWorld().spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.ZOMBIE);
-                zombie.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), event.getEntity().getKiller().getUniqueId().toString()));
-                zombie.setMaxHealth(1000);
-                zombie.setHealth(zombie.getMaxHealth());
-                zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-                zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0));
-                zombie.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
-                zombie.setCustomName(CC.translate("&b&l" + event.getEntity().getKiller().getName() + "'s Security Guard"));
-                EntityEquipment entityEquipment = zombie.getEquipment();
-                entityEquipment.setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).color(Color.BLUE).build());
-                entityEquipment.setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.BLUE).build());
-                entityEquipment.setBoots(new ItemBuilder(Material.LEATHER_BOOTS).color(Color.BLUE).build());
-                hashMap.put(event.getEntity().getKiller().getUniqueId(), zombie);
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+        int required = getRequiredKillstreak(profile);
+
+        if (profile.getCurrentKillstreak() == required) {
+            killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+            spawnGuard(killer);
+        }
+    }
+
+    private int getRequiredKillstreak(Profile profile) {
+        Perk hardline = plugin.getPerksHandler().getPerkByName("Hardline");
+
+        return (profile.getActivePerks().size() > 1 && plugin.getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardline) ? getRequired() - 1 : getRequired();
+    }
+
+    private void spawnGuard(Player owner) {
+        Zombie zombie = (Zombie) owner.getWorld().spawnEntity(owner.getLocation(), EntityType.ZOMBIE);
+
+        zombie.setMetadata("owner", new FixedMetadataValue(plugin, owner.getUniqueId().toString()));
+        zombie.setCustomName(CC.translate("&b&l" + owner.getName() + "'s Security Guard"));
+        zombie.setMaxHealth(1000);
+        zombie.setHealth(1000);
+
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0));
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
+
+        equipGuard(zombie);
+        guards.put(owner.getUniqueId(), zombie);
+    }
+
+    private void equipGuard(Zombie zombie) {
+        EntityEquipment eq = zombie.getEquipment();
+        if (eq == null) return;
+
+        eq.setChestplate(new ItemBuilder(Material.LEATHER_CHESTPLATE).color(Color.BLUE).build());
+        eq.setLeggings(new ItemBuilder(Material.LEATHER_LEGGINGS).color(Color.BLUE).build());
+        eq.setBoots(new ItemBuilder(Material.LEATHER_BOOTS).color(Color.BLUE).build());
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Zombie zombie && event.getDamager() instanceof Player player && isOwner(zombie, player)) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You cannot damage your own Security Guard.");
+            return;
+        }
+
+        if (event.getEntity() instanceof Player victim && event.getDamager() instanceof Zombie zombie) {
+            Player owner = getOwner(zombie);
+            if (owner != null) {
+                event.setCancelled(true);
+                victim.damage(4, owner);
             }
         }
     }
 
     @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof Zombie && event.getDamager() instanceof Player) {
-            Zombie zombie = (Zombie) event.getEntity();
-            Player player = (Player) event.getDamager();
+    public void onEntityTarget(EntityTargetEvent event) {
+        if (!(event.getEntity() instanceof Zombie zombie)) return;
+        if (!(event.getTarget() instanceof Player target)) return;
 
-            if(zombie.hasMetadata("owner") && UUID.fromString(zombie.getMetadata("owner").get(0).asString()).equals(player.getUniqueId())) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "You cannot damage your own Security Guard.");
-            }
-        } else if(event.getEntity() instanceof Player && event.getDamager() instanceof Zombie) {
-            Player player = (Player) event.getEntity();
-            Zombie zombie = (Zombie) event.getDamager();
-
+        if (isOwner(zombie, target)) {
             event.setCancelled(true);
-
-            if(zombie.hasMetadata("owner")) {
-                Player owner = Bukkit.getPlayer(UUID.fromString(zombie.getMetadata("owner").get(0).asString()));
-
-                if(owner != null) {
-                    player.damage(4, owner);
-                }
-            }
         }
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
+        event.getDrops().clear();
         event.setDroppedExp(0);
     }
 
     @EventHandler
-    public void onEntityTarget(EntityTargetEvent event) {
-        if(event.getEntity() instanceof Zombie
-                && event.getTarget() instanceof Player
-                && event.getEntity().hasMetadata("owner")
-                && UUID.fromString(event.getEntity().getMetadata("owner").get(0).asString()).equals(event.getTarget().getUniqueId())) {
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Zombie zombie = guards.get(event.getPlayer().getUniqueId());
+        if (zombie == null || !zombie.isValid()) return;
+
+        if (event.getPlayer().getLocation().distanceSquared(zombie.getLocation()) > 225) {
+            zombie.teleport(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onEntityCombust(EntityCombustEvent event) {
+        if (!(event.getEntity() instanceof Zombie zombie)) return;
+
+        if (zombie.hasMetadata("owner")) {
             event.setCancelled(true);
         }
     }
 
+
     @EventHandler
-    public void onPlayerMoveEvent(PlayerMoveEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getPlayer().getUniqueId())){
-            if (event.getPlayer().getLocation().distance(hashMap.get(event.getPlayer().getUniqueId()).getLocation()) > 15){
-                hashMap.get(event.getPlayer().getUniqueId()).teleport(event.getPlayer());
-            }
-        }
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        removeGuard(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
-    public void onPlayerQuitEvent(PlayerQuitEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getPlayer().getUniqueId())){
-            hashMap.get(event.getPlayer().getUniqueId()).remove();
-            hashMap.remove(event.getPlayer().getUniqueId());
+    public void onPlayerDeathRemove(PlayerDeathEvent event) {
+        removeGuard(event.getEntity().getUniqueId());
+    }
+
+    private void removeGuard(UUID uuid) {
+        Zombie zombie = guards.remove(uuid);
+        if (zombie != null && zombie.isValid()) {
+            zombie.remove();
         }
     }
 
-    @EventHandler
-    public void onPlayerDeathEventRemoveFromHashmap(PlayerDeathEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getEntity().getUniqueId())){
-            hashMap.get(event.getEntity().getUniqueId()).remove();
-            hashMap.remove(event.getEntity().getUniqueId());
-        }
+    private boolean isOwner(Zombie zombie, Player player) {
+        return zombie.hasMetadata("owner") && UUID.fromString(zombie.getMetadata("owner").getFirst().asString()).equals(player.getUniqueId());
     }
 
+    private Player getOwner(Zombie zombie) {
+        if (!zombie.hasMetadata("owner")) return null;
+        return Bukkit.getPlayer(UUID.fromString(zombie.getMetadata("owner").getFirst().asString()));
+    }
 }

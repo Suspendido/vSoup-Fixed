@@ -10,27 +10,26 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class FortyFiveKillstreak extends Killstreak implements Listener {
 
     @Getter
-    private HashMap<UUID, Snowman> hashMap = new HashMap<>();
+    private final HashMap<UUID, Snowman> snowmen = new HashMap<>();
 
     @Override
     public String getName() {
@@ -46,174 +45,161 @@ public class FortyFiveKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.SNOW_BALL)
                 .name(CC.translate("&a" + getName()))
-                .lore(Arrays.asList(CC.MENU_BAR, CC.translate("&7Spawns a Angry Snowman which shoots"), CC.translate("&7strong snowballs for 5 minutes."), CC.MENU_BAR, "", CC.translate("&fKillstreak Required: &d" + getRequired()), "")).build();
+                .lore(
+                        CC.MENU_BAR,
+                        "&fSpawns an Angry Snowman",
+                        "&fthat shoots strong snowballs",
+                        "&ffor 5 minutes.",
+                        CC.MENU_BAR,
+                        "",
+                        "&fKillstreak Required: &d" + getRequired()
+                ).build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        if (event.getEntity().getKiller() == null) return;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardlinePerk){
-            if (profile.getCurrentKillstreak() == getRequired()-1){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                Player closest = null;
-                double lastDistance = 0;
-                for(Entity entity : event.getEntity().getKiller().getNearbyEntities(10, 10, 10)) {
-                    if(!(entity instanceof Player)) {
-                        continue;
-                    }
-                    Player possiblePlayer = (Player) entity;
-                    if(event.getEntity().getKiller().getUniqueId().equals(possiblePlayer.getUniqueId())) {
-                        continue;
-                    }
-                    double possibleNewDistance = event.getEntity().getKiller().getLocation().distance(possiblePlayer.getLocation());
-                    if(closest == null) {
-                        closest = possiblePlayer;
-                        lastDistance = possibleNewDistance;
-                        continue;
-                    }
-                    if(possibleNewDistance < lastDistance) {
-                        closest = possiblePlayer;
-                        lastDistance = possibleNewDistance;
-                    }
-                }
-                Snowman snowman = (Snowman) event.getEntity().getKiller().getWorld().spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.SNOWMAN);
-                snowman.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), event.getEntity().getKiller().getUniqueId().toString()));
-                snowman.setCustomName(CC.translate("&b&l" + event.getEntity().getKiller().getName() + "'s Angry Snowman"));
-                snowman.setMaxHealth(500);
-                snowman.setHealth(snowman.getMaxHealth());
-                hashMap.put(event.getEntity().getKiller().getUniqueId(), snowman);
-                if(closest != null) {
-                    snowman.setTarget(closest);
-                }
-                Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
-                    if(snowman.isValid()) {
-                        snowman.remove();
-                    }
-                }, 20L * 60 * 5); // remove after 5 minutes
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+        int required = getRequiredKillstreak(profile);
+
+        if (profile.getCurrentKillstreak() == required) {
+            killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+            spawnSnowman(killer);
+        }
+    }
+
+    private int getRequiredKillstreak(Profile profile) {
+        Perk hardline = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
+        return (profile.getActivePerks().size() > 1 && SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardline) ? getRequired() - 1 : getRequired();
+    }
+
+    private void spawnSnowman(Player owner) {
+        Snowman snowman = (Snowman) owner.getWorld().spawnEntity(owner.getLocation(), EntityType.SNOWMAN);
+
+        snowman.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), owner.getUniqueId().toString()));
+
+        snowman.setCustomName(CC.translate("&b&l" + owner.getName() + "'s Angry Snowman"));
+        snowman.setMaxHealth(500);
+        snowman.setHealth(500);
+
+        Player closest = getClosestPlayer(owner);
+        if (closest != null) {
+            snowman.setTarget(closest);
+        }
+
+        snowmen.put(owner.getUniqueId(), snowman);
+        Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> removeSnowman(owner.getUniqueId()), 20L * 60 * 5);
+    }
+
+    private Player getClosestPlayer(Player owner) {
+        Player closest = null;
+        double distance = Double.MAX_VALUE;
+
+        for (Entity entity : owner.getNearbyEntities(10, 10, 10)) {
+            if (!(entity instanceof Player target)) continue;
+            if (target.getUniqueId().equals(owner.getUniqueId())) continue;
+
+            double d = owner.getLocation().distanceSquared(target.getLocation());
+            if (d < distance) {
+                distance = d;
+                closest = target;
             }
-        } else {
-            if (profile.getCurrentKillstreak() == getRequired()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                Player closest = null;
-                double lastDistance = 0;
-                for(Entity entity : event.getEntity().getKiller().getNearbyEntities(10, 10, 10)) {
-                    if(!(entity instanceof Player)) {
-                        continue;
-                    }
-                    Player possiblePlayer = (Player) entity;
-                    if(event.getEntity().getKiller().getUniqueId().equals(possiblePlayer.getUniqueId())) {
-                        continue;
-                    }
-                    double possibleNewDistance = event.getEntity().getKiller().getLocation().distance(possiblePlayer.getLocation());
-                    if(closest == null) {
-                        closest = possiblePlayer;
-                        lastDistance = possibleNewDistance;
-                        continue;
-                    }
-                    if(possibleNewDistance < lastDistance) {
-                        closest = possiblePlayer;
-                        lastDistance = possibleNewDistance;
-                    }
-                }
-                Snowman snowman = (Snowman) event.getEntity().getKiller().getWorld().spawnEntity(event.getEntity().getKiller().getLocation(), EntityType.SNOWMAN);
-                snowman.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), event.getEntity().getKiller().getUniqueId().toString()));
-                snowman.setCustomName(CC.translate("&b&l" + event.getEntity().getKiller().getName() + "'s Angry Snowman"));
-                snowman.setMaxHealth(500);
-                snowman.setHealth(snowman.getMaxHealth());
-                hashMap.put(event.getEntity().getKiller().getUniqueId(), snowman);
-                if(closest != null) {
-                    snowman.setTarget(closest);
-                }
-                Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
-                    if(snowman.isValid()) {
-                        snowman.remove();
-                    }
-                }, 20L * 60 * 5); // remove after 5 minutes
-            }
+        }
+        return closest;
+    }
+
+    private void removeSnowman(UUID uuid) {
+        Snowman snowman = snowmen.remove(uuid);
+        if (snowman != null && snowman.isValid()) {
+            snowman.remove();
         }
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof Snowman && event.getDamager() instanceof Player) {
-            Snowman snowman = (Snowman) event.getEntity();
-            Player player = (Player) event.getDamager();
-
-            if(snowman.hasMetadata("owner") && UUID.fromString(snowman.getMetadata("owner").get(0).asString()).equals(player.getUniqueId())) {
+        if (event.getEntity() instanceof Snowman snowman && event.getDamager() instanceof Player player) {
+            if (isOwner(snowman, player)) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You cannot damage your own Angry Snowman.");
+                return;
             }
-        } else if(event.getEntity() instanceof Player && event.getDamager() instanceof Snowman) {
-            Player player = (Player) event.getEntity();
-            Snowman snowman = (Snowman) event.getDamager();
+        }
 
+        if (event.getEntity() instanceof Player victim && event.getDamager() instanceof Snowman snowman) {
             event.setCancelled(true);
+            Player owner = getOwner(snowman);
 
-            if(snowman.hasMetadata("owner")) {
-                Player owner = Bukkit.getPlayer(UUID.fromString(snowman.getMetadata("owner").get(0).asString()));
-
-                if(owner != null) {
-                    player.damage(4, owner);
-                }
+            if (owner != null) {
+                event.setCancelled(true);
+                victim.damage(4, owner);
             }
         }
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        event.setDroppedExp(0);
+    public void onSnowballDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Snowball snowball)) return;
+        if (!(snowball.getShooter() instanceof Snowman snowman)) return;
+        if (!(event.getEntity() instanceof Player victim)) return;
+
+        Player owner = getOwner(snowman);
+        if (owner == null) return;
+
+        event.setCancelled(true);
+        victim.damage(4, owner);
     }
 
     @EventHandler
-    public void onEntityTarget(EntityTargetEvent event) {
-        if(event.getEntity() instanceof Snowman
-                && event.getTarget() instanceof Player
-                && event.getEntity().hasMetadata("owner")
-                && UUID.fromString(event.getEntity().getMetadata("owner").get(0).asString()).equals(event.getTarget().getUniqueId())) {
+    public void onSnowmanMove(PlayerMoveEvent event) {
+        Snowman snowman = snowmen.get(event.getPlayer().getUniqueId());
+        if (snowman == null || !snowman.isValid()) return;
+
+        if (event.getPlayer().getLocation().distanceSquared(snowman.getLocation()) > 225) {
+            snowman.teleport(event.getPlayer());
+        }
+
+        removeSnowLayer(snowman.getLocation().getBlock());
+        removeSnowLayer(snowman.getLocation().clone().add(0, -1, 0).getBlock());
+    }
+
+    @EventHandler
+    public void onSnowmanTarget(EntityTargetLivingEntityEvent event) {
+        if (!(event.getEntity() instanceof Snowman snowman)) return;
+
+        if (!(event.getTarget() instanceof Player target)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (isOwner(snowman, target)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void snowball(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof Player) {
-            if(event.getDamager() instanceof Snowball) {
-                Snowball snowball = (Snowball) event.getDamager();
-                if(snowball.getShooter() instanceof Snowman) {
-                    event.setDamage(4);
-                }
-            }
-        }
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        removeSnowman(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
-    public void onPlayerMoveEvent(PlayerMoveEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getPlayer().getUniqueId())){
-            if (event.getPlayer().getLocation().distance(hashMap.get(event.getPlayer().getUniqueId()).getLocation()) > 15){
-                hashMap.get(event.getPlayer().getUniqueId()).teleport(event.getPlayer());
-            }
+    public void onPlayerDeathRemove(PlayerDeathEvent event) {
+        removeSnowman(event.getEntity().getUniqueId());
+    }
+
+    private void removeSnowLayer(Block block) {
+        if (block.getType() == Material.SNOW) {
+            block.setType(Material.AIR);
         }
     }
 
-    @EventHandler
-    public void onPlayerQuitEvent(PlayerQuitEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getPlayer().getUniqueId())){
-            hashMap.get(event.getPlayer().getUniqueId()).remove();
-            hashMap.remove(event.getPlayer().getUniqueId());
-        }
+    private boolean isOwner(Snowman snowman, Player player) {
+        return snowman.hasMetadata("owner") && UUID.fromString(snowman.getMetadata("owner").getFirst().asString()).equals(player.getUniqueId());
     }
 
-    @EventHandler
-    public void onPlayerDeathEventRemoveFromHashmap(PlayerDeathEvent event){
-        if (hashMap.isEmpty()) return;
-        if (hashMap.containsKey(event.getEntity().getUniqueId())){
-            hashMap.get(event.getEntity().getUniqueId()).remove();
-            hashMap.remove(event.getEntity().getUniqueId());
-        }
+    private Player getOwner(Snowman snowman) {
+        if (!snowman.hasMetadata("owner")) return null;
+        return Bukkit.getPlayer(UUID.fromString(snowman.getMetadata("owner").getFirst().asString()));
     }
-
 }

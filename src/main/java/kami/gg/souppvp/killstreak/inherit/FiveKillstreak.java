@@ -31,26 +31,37 @@ public class FiveKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.IRON_INGOT)
-                .name(CC.translate("&a" + getName()))
-                .lore(Arrays.asList(CC.MENU_BAR, CC.translate("&7Fully repairs your armor, giving"), CC.translate("&7them maximum durability."), CC.MENU_BAR, "", CC.translate("&fKillstreak Required: &d" + getRequired()), "")).build();
+                .name("&a" + getName())
+                .lore(
+                        CC.MENU_BAR,
+                        "&7Fully repairs your armor, giving",
+                        "&7them maximum durability.",
+                        CC.MENU_BAR,
+                        "",
+                        "&fKillstreak Required: &d" + getRequired(),
+                        ""
+                ).build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
+    public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if (event.getEntity().getKiller() == null) return;
+
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardlinePerk){
-            if (profile.getCurrentKillstreak() == getRequired()-1){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                PlayerUtil.repairPlayer(event.getEntity().getKiller());
-            }
-        } else {
-            if (profile.getCurrentKillstreak() == getRequired()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                PlayerUtil.repairPlayer(event.getEntity().getKiller());
-            }
+        if (profile == null) return;
+        Perk hardline = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
+        boolean hasHardline = false;
+
+        if (profile.getActivePerks().size() > 1) {
+            Perk active = SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1));
+            hasHardline = hardline.equals(active);
         }
+
+        int requiredKills = hasHardline ? getRequired() - 1 : getRequired();
+        if (profile.getCurrentKillstreak() != requiredKills) return;
+
+        event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
+        PlayerUtil.repairPlayer(event.getEntity().getKiller());
     }
 
 }

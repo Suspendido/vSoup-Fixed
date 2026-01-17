@@ -8,15 +8,16 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-
 public class FifteenKillstreak extends Killstreak implements Listener {
+
+    private final SoupPvP plugin = SoupPvP.getInstance();
 
     @Override
     public String getName() {
@@ -33,49 +34,49 @@ public class FifteenKillstreak extends Killstreak implements Listener {
         return new ItemBuilder(Material.POTION)
                 .durability(8259)
                 .name(CC.translate("&a" + getName()))
-                .lore(Arrays.asList(CC.MENU_BAR, CC.translate("&7Gives you a potion that will apply"), CC.translate("&7fire resistance for 8 minutes."), CC.MENU_BAR, "", CC.translate("&fKillstreak Required: &d" + getRequired()), "")).build();
+                .lore(
+                        CC.MENU_BAR,
+                        "&7Gives you a potion that will apply",
+                        "&7fire resistance for 8 minutes.",
+                        CC.MENU_BAR,
+                        "",
+                        "&fKillstreak Required: &d" + getRequired()
+                ).build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
+    public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getEntity().getKiller() == null) return;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        Perk hardlinePerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Hardline");
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardlinePerk){
-            if (profile.getCurrentKillstreak() == getRequired()-1){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                if (event.getEntity().getKiller().getInventory().firstEmpty() == -1){
-                    for (int i=0; i<event.getEntity().getKiller().getInventory().getSize(); i++){
-                        ItemStack itemstack = event.getEntity().getKiller().getInventory().getItem(i);
-                        if (itemstack != null) {
-                            if (itemstack.getType() == Material.BOWL || itemstack.getType() == Material.MUSHROOM_SOUP) {
-                                event.getEntity().getKiller().getInventory().setItem(i, KillstreakReward.FIRE_RESISTANCE_POTION);
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    event.getEntity().getKiller().getInventory().addItem(KillstreakReward.FIRE_RESISTANCE_POTION);
-                }
-            }
-        } else {
-            if (profile.getCurrentKillstreak() == getRequired()){
-                event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-                if (event.getEntity().getKiller().getInventory().firstEmpty() == -1){
-                    for (int i=0; i<event.getEntity().getKiller().getInventory().getSize(); i++){
-                        ItemStack itemstack = event.getEntity().getKiller().getInventory().getItem(i);
-                        if (itemstack != null) {
-                            if (itemstack.getType() == Material.BOWL || itemstack.getType() == Material.MUSHROOM_SOUP) {
-                                event.getEntity().getKiller().getInventory().setItem(i, KillstreakReward.FIRE_RESISTANCE_POTION);
-                                return;
-                            }
-                        }
-                    }
-                } else {
-                    event.getEntity().getKiller().getInventory().addItem(KillstreakReward.FIRE_RESISTANCE_POTION);
-                }
+
+        Player killer = event.getEntity().getKiller();
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+
+        int required = getRequiredKillstreak(profile);
+        if (profile.getCurrentKillstreak() != required) return;
+
+        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+        giveItem(killer, KillstreakReward.FIRE_RESISTANCE_POTION);
+    }
+
+    private int getRequiredKillstreak(Profile profile) {
+        Perk hardline = plugin.getPerksHandler().getPerkByName("Hardline");
+        return (profile.getActivePerks().size() > 1 && plugin.getPerksHandler().getPerkByName(profile.getActivePerks().get(1)) == hardline) ? getRequired() - 1 : getRequired();
+    }
+
+    private void giveItem(Player player, ItemStack item) {
+        if (player.getInventory().firstEmpty() != -1) {
+            player.getInventory().addItem(item);
+            return;
+        }
+
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack current = player.getInventory().getItem(i);
+            if (current == null) continue;
+
+            if (current.getType() == Material.BOWL || current.getType() == Material.MUSHROOM_SOUP) {
+                player.getInventory().setItem(i, item);
+                return;
             }
         }
     }
-
 }
