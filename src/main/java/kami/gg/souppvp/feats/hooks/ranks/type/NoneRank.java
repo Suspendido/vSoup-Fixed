@@ -1,9 +1,9 @@
 package kami.gg.souppvp.feats.hooks.ranks.type;
 
-import kami.gg.souppvp.feats.hooks.ranks.Rank;
+import kami.gg.souppvp.feats.hooks.ranks.IRank;
 import org.bukkit.entity.Player;
 
-public class NoneRank implements Rank {
+public class NoneRank implements IRank {
     @Override
     public String getRankName(Player player) {
         return "";

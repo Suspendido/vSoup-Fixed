@@ -16,13 +16,13 @@ public class IRankHook implements IRank {
 
     private void load() {
         if (verifyPlugin("LuckPerms", SoupPvP.getInstance())) {
-            IRank = new LuckPermsIRank();
+            IRank = new LuckPermsRank();
 
         } else if (verifyPlugin("AquaCore", SoupPvP.getInstance())) {
             IRank = new AquaCoreRank();
 
         } else if (verifyPlugin("circuit-bukkit", SoupPvP.getInstance())) {
-            IRank = new CirCuit();
+            IRank = new CirCuitRank();
 
         } else {
             IRank = new NoneRank();

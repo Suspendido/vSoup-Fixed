@@ -1,6 +1,6 @@
 package kami.gg.souppvp.feats.hooks.ranks.type;
 
-import kami.gg.souppvp.feats.hooks.ranks.Rank;
+import kami.gg.souppvp.feats.hooks.ranks.IRank;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class LuckPermsRank implements Rank {
+public class LuckPermsRank implements IRank {
 
     private final net.luckperms.api.LuckPerms luckPerms;
 
