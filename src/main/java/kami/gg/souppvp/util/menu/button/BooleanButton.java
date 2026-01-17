@@ -4,12 +4,10 @@ import java.beans.ConstructorProperties;
 import java.util.ArrayList;
 import java.util.List;
 
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.Callback;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -34,16 +32,16 @@ public class BooleanButton extends Button {
         return new ItemBuilder(Material.WOOL)
                 .name(confirm ? "&a&lConfirm" : "&c&lCancel")
                 .lore(lore)
-                .data(confirm ? 5 : 14
-                ).build();
+                .data(confirm ? 5 : 14)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
         if (confirm) {
-            player.playSound(player.getLocation(), Sound.NOTE_PIANO, 20.0f, 0.1f);
+            playSuccess(player);
         } else {
-            player.playSound(player.getLocation(), Sound.DIG_GRAVEL, 20.0f, 0.1f);
+            playFail(player);
         }
         player.closeInventory();
         callback.callback(confirm);
