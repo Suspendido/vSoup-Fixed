@@ -19,6 +19,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class PvPListeners implements Listener {
 
     private final SoupPvP plugin = SoupPvP.getInstance();
@@ -79,13 +81,20 @@ public class PvPListeners implements Listener {
                     killerProfile.setHighestKillstreak(killerProfile.getCurrentKillstreak());
                 }
 
-                killerProfile.setCredits(killerProfile.getCredits() + 17);
+                int credits = ThreadLocalRandom.current().nextInt(1, 21);
+                int xp = ThreadLocalRandom.current().nextInt(1, 5);
+                boolean proKit = "Pro".equalsIgnoreCase(killerProfile.getCurrentKit());
+                boolean easySoupDisabled = !killerProfile.getEnableEasySoup();
+
+                if (proKit) credits *= 2;
+                if (easySoupDisabled) credits *= 2;
+
+                killerProfile.setCredits(killerProfile.getCredits() + credits);
                 killerProfile.setExperiences(killerProfile.getExperiences() + 3);
 
                 // Kill messages
                 if (killerProfile.getEnableKillDeathMessages()) {
-                    boolean proKit = killerProfile.getCurrentKit().equals("Pro");
-                    killer.sendMessage(CC.translate("&9You killed &a" + player.getName() + "&9 for &a" + (proKit ? 34 : 17) + " &9credits and &a3 XP."));
+                    killer.sendMessage(CC.translate("&9You killed &a" + player.getName() + "&9 for &a" + credits + " &9credits and &a" + xp +" XP."));
                 }
 
                 if (profile.getEnableKillDeathMessages()) {
@@ -118,6 +127,15 @@ public class PvPListeners implements Listener {
             }
         }
 
+        // Kit progress
+        plugin.getKitProgressManager().handleDeath(profile);
+
+        if (killedByPlayer) {
+            Profile killerProfile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+            plugin.getKitProgressManager().handleKill(killerProfile);
+        }
+
+        // Reset stats
         profile.setCurrentKillstreak(0);
         profile.setDeaths(profile.getDeaths() + 1);
     }
