@@ -13,8 +13,7 @@ import java.util.Map;
 
 public class PerksMenu extends Menu {
 
-    private static final int[] PERK_SLOTS = {19, 22, 25};
-    private static final int INFO_SLOT = 4;
+    private static final int[] PERK_SLOTS = {11, 13, 15};
 
     @Override
     public String getTitle(Player player) {
@@ -30,7 +29,7 @@ public class PerksMenu extends Menu {
             return buttons;
         }
 
-        buttons.put(INFO_SLOT, new InfoPerksButton());
+        buttons.put(0, new InfoPerksButton());
         for (int i = 0; i < PERK_SLOTS.length; i++) {
             int slotNumber = i + 1;
             int guiSlot = PERK_SLOTS[i];
@@ -44,6 +43,6 @@ public class PerksMenu extends Menu {
 
     @Override
     public int size(Map<Integer, Button> buttons) {
-        return 45;
+        return 27;
     }
 }
