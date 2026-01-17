@@ -2,9 +2,6 @@ package kami.gg.souppvp.shop.bartender;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.shop.bartender.button.SplashPotionOfHarmingButton;
-import kami.gg.souppvp.shop.bartender.button.SplashPotionOfPoisonButton;
-import kami.gg.souppvp.shop.bartender.button.SplashPotionOfSlownessButton;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
@@ -25,7 +22,7 @@ public class BartenderMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Select a potion to buy");
+        return "Select a potion to buy";
     }
 
     @Override
@@ -46,9 +43,9 @@ public class BartenderMenu extends Menu {
 
     public static class PotionOfFireResistanceButton extends Button {
 
-        private final Integer costCredits;
+        private final int costCredits;
 
-        public PotionOfFireResistanceButton(Integer costCredits) {
+        public PotionOfFireResistanceButton(int costCredits) {
             this.costCredits = costCredits;
         }
 
@@ -57,39 +54,174 @@ public class BartenderMenu extends Menu {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
             List<String> lore = new ArrayList<>();
             lore.add("");
-            lore.add(CC.translate("&fPrice: &b" + costCredits));
+            lore.add("&fPrice: &b" + costCredits);
             lore.add("");
-            if (profile.getCredits() >= costCredits) {
-                lore.add(CC.translate("&eClick to purchase!"));
-            } else {
-                lore.add(CC.translate("&cInsufficient Credits!"));
-            }
-            return new ItemBuilder(Material.POTION).name("&bPotion Of Fire Resistance").lore(lore).durability(8227).build();
+            lore.add(profile.getCredits() >= costCredits
+                    ? "&eClick to purchase!"
+                    : "&cInsufficient Credits!"
+            );
+
+            return new ItemBuilder(Material.POTION).name("&bPotion Of Fire Resistance").lore(lore).durability(8259).build();
         }
 
         @Override
         public void clicked(Player player, ClickType clickType) {
-            if (clickType.isLeftClick()) {
-                Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-                if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                    PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                    player.sendMessage(CC.translate("&cYou can't do this in spawn."));
-                } else {
-                    if (profile.getCredits() >= costCredits) {
-                        if (player.getInventory().firstEmpty() == -1) {
-                            playFail(player);
-                            player.sendMessage(CC.translate("&cYour inventory is full!"));
-                            return;
-                        }
-                        player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 8227));
-                        PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                        profile.setCredits(profile.getCredits() - costCredits);
-                        player.sendMessage(CC.translate("&aSuccessfully bought the &bPotion Of Fire Resistance&a."));
-                    } else {
-                        PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                    }
-                }
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                sendMessage(player, "&cYou can't do this in spawn.");
+                return;
             }
+
+            if (player.getInventory().firstEmpty() == -1) {
+                playFail(player);
+                sendMessage(player, "&cYour inventory is full!");
+                return;
+            }
+
+            sendMessage(player, "&aSuccessfully bought the &bPotion Of Fire Resistance&a.");
+            player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 8227));
+            profile.setCredits(profile.getCredits() - costCredits);
+            playSuccess(player);
+        }
+    }
+
+    public static class SplashPotionOfHarmingButton extends Button {
+
+        private final int costCredits;
+
+        public SplashPotionOfHarmingButton(int costCredits) {
+            this.costCredits = costCredits;
+        }
+
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+            List<String> lore = new ArrayList<>();
+            lore.add("");
+            lore.add("&fPrice: &b" + costCredits);
+            lore.add("");
+            lore.add(profile.getCredits() >= costCredits
+                    ? "&eClick to purchase!"
+                    : "&cInsufficient Credits!"
+            );
+
+            return new ItemBuilder(Material.POTION).name("&bSplash Potion Of Harming").lore(lore).durability(16428).build();
+        }
+
+        @Override
+        public void clicked(Player player, ClickType clickType) {
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                sendMessage(player, "&cYou can't do this in spawn.");
+                return;
+            }
+
+            if (player.getInventory().firstEmpty() == -1) {
+                playFail(player);
+                sendMessage(player, "&cYour inventory is full!");
+                return;
+            }
+
+            sendMessage(player, "&aSuccessfully bought the &bSplash Potion Of Harming&a.");
+            player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16428));
+            profile.setCredits(profile.getCredits() - costCredits);
+            PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+        }
+    }
+
+    public static class SplashPotionOfPoisonButton extends Button {
+
+        private final int costCredits;
+
+        public SplashPotionOfPoisonButton(int costCredits) {
+            this.costCredits = costCredits;
+        }
+
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+            List<String> lore = new ArrayList<>();
+            lore.add("");
+            lore.add("&fPrice: &b" + costCredits);
+            lore.add("");
+            lore.add(profile.getCredits() >= costCredits
+                    ? "&eClick to purchase!"
+                    : "&cInsufficient Credits!"
+            );
+
+            return new ItemBuilder(Material.POTION).name("&bSplash Potion Of Poison").lore(lore).durability(16420).build();
+        }
+
+        @Override
+        public void clicked(Player player, ClickType clickType) {
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                sendMessage(player, "&cYou can't do this in spawn.");
+                return;
+            }
+
+            if (player.getInventory().firstEmpty() == -1) {
+                playFail(player);
+                sendMessage(player, "&cYour inventory is full!");
+                return;
+            }
+
+            sendMessage(player, "&aSuccessfully bought the &bSplash Potion Of Poison&a.");
+            player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16420));
+            profile.setCredits(profile.getCredits() - costCredits);
+            playSuccess(player);
+        }
+    }
+
+    public static class SplashPotionOfSlownessButton extends Button {
+
+        private final int costCredits;
+
+        public SplashPotionOfSlownessButton(int costCredits) {
+            this.costCredits = costCredits;
+        }
+
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+            List<String> lore = new ArrayList<>();
+            lore.add("");
+            lore.add("&fPrice: &b" + costCredits);
+            lore.add("");
+            lore.add(profile.getCredits() >= costCredits
+                    ? "&eClick to purchase!"
+                    : "&cInsufficient Credits!"
+            );
+
+            return new ItemBuilder(Material.POTION).name("&bSplash Potion Of Slowness").lore(lore).durability(16426).build();
+        }
+
+        @Override
+        public void clicked(Player player, ClickType clickType) {
+            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+                return;
+            }
+
+            if (player.getInventory().firstEmpty() == -1) {
+                playFail(player);
+                player.sendMessage(CC.translate("&cYour inventory is full!"));
+                return;
+            }
+
+            player.sendMessage(CC.translate("&aSuccessfully bought the &bSplash Potion Of Slowness&a."));
+            player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16426));
+            profile.setCredits(profile.getCredits() - costCredits);
+            playSuccess(player);
         }
     }
 }
