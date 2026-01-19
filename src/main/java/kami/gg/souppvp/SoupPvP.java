@@ -10,14 +10,18 @@ import com.mongodb.client.MongoDatabase;
 import kami.gg.souppvp.coinflip.listener.CoinFlipListener;
 import kami.gg.souppvp.coinflip.listener.WagerCustomEventListeners;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
-import kami.gg.souppvp.events.impl.sumo.SumoListener;
+import kami.gg.souppvp.events.impl.sumo.listener.SumoListener;
+import kami.gg.souppvp.events.impl.tnttag.TNTTagHandler;
+import kami.gg.souppvp.events.impl.tnttag.listener.TNTTagListener;
 import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
 import kami.gg.souppvp.feats.staff.StaffManager;
+import kami.gg.souppvp.feats.staff.listener.StaffListener;
 import kami.gg.souppvp.handlers.*;
 import kami.gg.souppvp.feats.hooks.clients.ClientHook;
-import kami.gg.souppvp.feats.hooks.ranks.RankHook;
+import kami.gg.souppvp.feats.hooks.ranks.IRankHook;
 import kami.gg.souppvp.juggernaut.JuggernautListener;
 import kami.gg.souppvp.killstreak.KillstreaksHandler;
+import kami.gg.souppvp.kit.progress.KitProgressManager;
 import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.feats.leaderboard.LeaderboardManager;
 import kami.gg.souppvp.listener.*;
@@ -35,7 +39,7 @@ import kami.gg.souppvp.tasks.CanaPerkAndFiremanKitTask;
 import kami.gg.souppvp.tasks.ClearDropsTask;
 import kami.gg.souppvp.tasks.ClearTimerCacheTask;
 import kami.gg.souppvp.tasks.SaveProfilesTask;
-import kami.gg.souppvp.teleportation.SpawnTeleporatationListener;
+import kami.gg.souppvp.listener.SpawnTeleporatationListener;
 import kami.gg.souppvp.tier.TiersListener;
 import kami.gg.souppvp.timer.TimersHandler;
 import kami.gg.souppvp.timer.TimersListener;
@@ -47,7 +51,6 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.*;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Type;
@@ -80,6 +83,7 @@ public class SoupPvP extends JavaPlugin {
     private ClearTimerCacheTask clearTimerCacheTask;
     private CanaPerkAndFiremanKitTask canaPerkAndFiremanKitTask;
     private SumoHandler sumoHandler;
+    private TNTTagHandler tntTagHandler;
     private NoFallDamageHandler noFallDamageHandler;
     private PerksHandler perksHandler;
     private KillstreaksHandler killstreaksHandler;
@@ -88,15 +92,16 @@ public class SoupPvP extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private Assemble assemble;
     private NametagManager nametagManager;
-    private RankHook rankHook;
+    private IRankHook rankHook;
     private ClientHook clientHook;
     private PlaceholderHook placeholderHook;
     private MapManager mapManager;
     private LeaderboardManager leaderboardManager;
     private StaffManager staffManager;
+    private KitProgressManager kitProgressManager;
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         instance = this;
         SoupPvP.getInstance().saveDefaultConfig();
         isFreeKitsMode = SoupPvP.getInstance().getConfig().getBoolean("FREE-KITS");
@@ -117,6 +122,7 @@ public class SoupPvP extends JavaPlugin {
         coinFlipsHandler = new CoinFlipsHandler();
         spawnHandler = new SpawnHandler();
         sumoHandler = new SumoHandler();
+        tntTagHandler = new TNTTagHandler();
         noFallDamageHandler = new NoFallDamageHandler();
         perksHandler = new PerksHandler();
         killstreaksHandler = new KillstreaksHandler();
@@ -126,11 +132,12 @@ public class SoupPvP extends JavaPlugin {
         clearTimerCacheTask = new ClearTimerCacheTask();
         canaPerkAndFiremanKitTask = new CanaPerkAndFiremanKitTask();
         mapManager = new MapManager();
-        rankHook = new RankHook();
+        rankHook = new IRankHook();
         clientHook = new ClientHook();
         placeholderHook = new PlaceholderHook();
         leaderboardManager = new LeaderboardManager();
         staffManager = new StaffManager(this);
+        kitProgressManager = new KitProgressManager(this);
         (new PacketBorderHandler()).start();
 
         setupAssemble();
@@ -232,6 +239,8 @@ public class SoupPvP extends JavaPlugin {
     }
 
     private void registerListeners() {
+        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new WorldListener(), this);
+        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StaffListener(staffManager), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new NametagListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TablistListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new MenuListener(), this);
@@ -251,13 +260,9 @@ public class SoupPvP extends JavaPlugin {
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new CoinFlipListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new WagerCustomEventListeners(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new SumoListener(), this);
+        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TNTTagListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new JuggernautListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StrengthAndInstantHarmNerfListener(), this);
         SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TimersListener(), this);
-    }
-
-    public static boolean verifyPlugin(String plugin, SoupPvP instance) {
-        PluginManager pm = instance.getServer().getPluginManager();
-        return pm.getPlugin(plugin) != null;
     }
 }
