@@ -3,6 +3,8 @@ package kami.gg.souppvp.feats.scoreboard;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.events.impl.sumo.SumoState;
+import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
+import kami.gg.souppvp.events.impl.tnttag.TNTTagState;
 import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.profile.Profile;
@@ -34,6 +36,9 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final List<String> loadingLines;
     private final List<String> noModMode;
     private final List<String> modMode;
+    private final List<String> waiting_tnttagLines;
+    private final List<String> running_tnttagLines;
+
 
     private final String line;
     private final String dateLine;
@@ -46,6 +51,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final boolean started_sumoEnabled;
     private final boolean spawnEnabled;
     private final boolean staffEnabled;
+    private final boolean tnttagEnabled;
 
     public ScoreboardAdapter() {
         this.plugin = SoupPvP.getInstance();
@@ -60,6 +66,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.loadingLines = getStringList("LOADING.FORMAT");
         this.noModMode = getStringList("STAFF_MODE.VANISH_NO_MODMODE");
         this.modMode = getStringList("STAFF_MODE.MOD_MODE");
+        this.waiting_tnttagLines = getStringList("TNTTAG_EVENT.WAITING_EVENT.LINES");
+        this.running_tnttagLines = getStringList("TNTTAG_EVENT.RUNNING_EVENT.LINES");
 
         this.line = getString("SCOREBOARD_INFO.LINES");
         this.dateLine = getString("SCOREBOARD_INFO.DATE_LINE");
@@ -72,6 +80,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.waiting_sumoEnabled = getBoolean("SUMO_EVENT.WAITING_EVENT.ENABLED");
         this.started_sumoEnabled = getBoolean("SUMO_EVENT.STARTED_EVENT.ENABLED");
         this.spawnEnabled = getBoolean("SPAWN.ENABLED");
+        this.tnttagEnabled = getBoolean("TNTTAG_EVENT.ENABLED");
     }
 
     @Override
@@ -104,11 +113,13 @@ public class ScoreboardAdapter implements AssembleAdapter {
 
         if (profile.getProfileState() == ProfileState.IN_EVENT || profile.getProfileState() == ProfileState.SPECTATING_EVENT) {
             Sumo sumo = profile.getSumoEvent();
+            TNTTagGame tnt = profile.getTntTagGame();
+
             if (showDateBelowTitle) lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
             if (linesEnabled) lines.add(line);
 
             if (sumo != null) {
-                if (sumo.getState() == SumoState.WAITING && waiting_sumoEnabled) {
+                if (sumo.getState() == SumoState.WAITING) {
                     for (String s : waiting_sumoLines) {
                         lines.add(s
                                 .replace("%sumo_players%", String.valueOf(sumo.getRemainingPlayers().size()))
@@ -116,7 +127,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
                                 .replace("%sumo_state%", "Waiting...")
                         );
                     }
-                } else if (sumo.getState() != SumoState.WAITING && started_sumoEnabled) {
+                } else {
                     Player a = Bukkit.getPlayer(sumo.getRoundPlayerA().getUsername());
                     Player b = Bukkit.getPlayer(sumo.getRoundPlayerB().getUsername());
                     int aping = (a instanceof CraftPlayer) ? ((CraftPlayer) a).getHandle().ping : 0;
@@ -134,12 +145,36 @@ public class ScoreboardAdapter implements AssembleAdapter {
                         );
                     }
                 }
-
-                if (footerEnabled) lines.addAll(footerLines);
-                if (linesEnabled && lastLineEnabled) lines.add(line);
-
-                return CC.translate(lines);
             }
+
+            if (tnt != null && tnttagEnabled) {
+                if (tnt.getState() == TNTTagState.WAITING) {
+                    for (String s : waiting_tnttagLines) {
+                        lines.add(s
+                                .replace("%tnt_players%", String.valueOf(tnt.getEventPlayers().size()))
+                                .replace("%tnt_max%", String.valueOf(tnt.getMaxPlayers()))
+
+                        );
+                    }
+                } else {
+                    Player holder = Bukkit.getPlayer(tnt.getTntHolder());
+
+                    for (String s : running_tnttagLines) {
+                        lines.add(s
+                                .replace("%tnt_players%", String.valueOf(tnt.getEventPlayers().size()))
+                                .replace("%tnt_holder%", holder != null ? holder.getName() : "None")
+                                .replace("%tnt_time%", String.valueOf(tnt.getRoundDuration()))
+                                .replace("%tnt_total%", String.valueOf(tnt.getTotalPlayers()))
+                        );
+                    }
+                }
+
+            }
+
+            if (footerEnabled) lines.addAll(footerLines);
+            if (linesEnabled && lastLineEnabled) lines.add(line);
+
+            return CC.translate(lines);
         }
 
         if (staffEnabled && staff) {
@@ -205,6 +240,20 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 }
             }
         }
+
+        if (tnttagEnabled && profile.getTntTagGame() == null && profile.getProfileState() == ProfileState.SPAWN) {
+            TNTTagGame game = plugin.getTntTagHandler().getActiveGame();
+
+            if (game != null && game.getState() == TNTTagState.WAITING) {
+                for (String s : waiting_tnttagLines) {
+                    lines.add(s
+                            .replace("%tnt_players%", String.valueOf(game.getEventPlayers().size()))
+                            .replace("%tnt_max%", String.valueOf(game.getMaxPlayers()))
+                    );
+                }
+            }
+        }
+
         if (staffEnabled && vanish) {
             for (String s : noModMode) {
                 lines.add(s.replace("%vanished%", "&a✔"));

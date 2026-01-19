@@ -59,6 +59,21 @@ SPAWN:
     - "&fTier Level: &b%tier%✫"
     - "&fCurrent Kit: %kit_color%%kit%"
     - ""
+TNTTAG_EVENT:
+  ENABLED: true
+  
+  WAITING_EVENT:
+    LINES:
+      - "&cTNTTag Event"
+      - "&7Players: &c%tnt_players%"
+      - "&7State: &cWaiting..."
+      - ""
+  
+  RUNNING_EVENT:
+    LINES:
+      - "&cTNTTag Event"
+      - "&7Players left: &c%tnt_players%"
+      - "&7Time Left: &c%tnt_time%s"
 
 SUMO_EVENT:
   WAITING_EVENT:
