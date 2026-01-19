@@ -10,11 +10,6 @@ import org.bukkit.command.CommandSender;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author hieu
- * @date 26/09/2023
- */
-
 public class SetKillstreakCommand extends Command {
 
     public SetKillstreakCommand(CommandManager manager) {
