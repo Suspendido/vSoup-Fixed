@@ -1,6 +1,6 @@
 package kami.gg.souppvp.feats.staff.menu;
 
-import kami.gg.souppvp.feats.hooks.ranks.RankHook;
+import kami.gg.souppvp.feats.hooks.ranks.IRankHook;
 import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.ItemUtils;
@@ -55,7 +55,7 @@ public class StaffOnlineMenu extends PaginatedMenu {
         return new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {
-                RankHook rankHook = soupPvP.getRankHook();
+                IRankHook rankHook = soupPvP.getRankHook();
                 boolean staffMode = staffManager.isStaffEnabled(staff);
                 boolean vanish = staffManager.isVanished(staff);
 
