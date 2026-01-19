@@ -4,7 +4,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlip;
 import kami.gg.souppvp.coinflip.menu.animation.sub.GreenMenu;
 import kami.gg.souppvp.coinflip.menu.animation.sub.RedMenu;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
@@ -18,23 +17,23 @@ import java.util.Map;
 
 public class AnimatedMenu extends Menu {
 
-    private CoinFlip coinFlip;
+    private final CoinFlip coinFlip;
 
-    public AnimatedMenu(CoinFlip coinFlip){
+    public AnimatedMenu(CoinFlip coinFlip) {
         this.coinFlip = coinFlip;
         setAutoUpdate(true);
     }
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("&a&lCoinflip Match");
+        return "&a&lCoinflip Match";
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
         HashMap<Integer, Button> buttonHashMap = new HashMap<>();
         new BukkitRunnable(){
-            int i=10;
+            int i = 10;
             @Override
             public void run() {
                 i--;
@@ -48,7 +47,7 @@ public class AnimatedMenu extends Menu {
                     }
                     this.cancel();
                 }
-                if (i % 2 == 0){
+                if (i % 2 == 0) {
                     new GreenMenu(coinFlip).openMenu(player);
                     PlayerUtil.playSound(player, Sound.CLICK);
                 } else {

@@ -1,7 +1,6 @@
 package kami.gg.souppvp.coinflip.menu.animation.sub;
 
 import kami.gg.souppvp.coinflip.CoinFlip;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
@@ -12,14 +11,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class RedMenu extends Menu {
 
-    private CoinFlip coinFlip;
+    private final CoinFlip coinFlip;
 
-    public RedMenu(CoinFlip coinFlip){
+    public RedMenu(CoinFlip coinFlip) {
         this.coinFlip = coinFlip;
         setPlaceholder(true);
         setAutoUpdate(true);
@@ -27,29 +25,38 @@ public class RedMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("&a&lCoinflip Match");
+        return "&a&lCoinflip Match";
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        HashMap<Integer, Button> buttonHashMap = new HashMap<>();
-        buttonHashMap.put(13, new Button() {
+        HashMap<Integer, Button> buttons = new HashMap<>();
+        Player opponent = Bukkit.getPlayer(coinFlip.getOpponent());
+        String name = opponent != null ? opponent.getName() : "Unknown";
 
+        Button skullButton = new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {
-                ItemStack stack = new ItemBuilder(Material.SKULL_ITEM)
-                        .durability((short) 3)
-                        .name(CC.translate("&a&l" + Bukkit.getPlayer(coinFlip.getOpponent()).getName()))
-                        .lore(Collections.singletonList("")).build();
-                return stack;
+                return new ItemBuilder(Material.SKULL_ITEM)
+                        .data(3)
+                        .name("&a&l" + name)
+                        .setSkullOwner(name)
+                        .lore(Collections.singletonList(""))
+                        .build();
             }
 
-        });
-        for (int i=0; i<27; i++) {
-            if (i == 3 || i == 4 || i == 5 || i == 12 || i == 14 || i == 21 || i == 22 || i == 23){
-                buttonHashMap.put(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-            }
+        };
+
+        int[] decorationSlots = {
+                3, 4, 5,
+                12, 13, 14,
+                21, 22, 23
+        };
+
+        for (int slot : decorationSlots) {
+            buttons.put(slot, skullButton);
         }
-        return buttonHashMap;
+
+        return buttons;
     }
 }
