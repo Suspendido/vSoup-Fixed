@@ -18,7 +18,8 @@ public class SumoCommand extends Command {
                 new SumoHostArg(manager),
                 new SumoLeaveArg(manager),
                 new SumoSetSpawnArg(manager),
-                new SumoTpArg(manager)
+                new SumoTpArg(manager),
+                new SumoSpecArg(manager)
         );
     }
 

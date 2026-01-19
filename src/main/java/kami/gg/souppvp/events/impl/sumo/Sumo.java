@@ -181,7 +181,7 @@ public class Sumo {
 
 	public void announce() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			FancyMessage message = new FancyMessage(CC.translate("&b" + getHost().getUsername() + " &7is currently hosting a &bSumo &7Event! "));
+			FancyMessage message = new FancyMessage(CC.translate("&b" + getHost().getUsername() + " &fis currently hosting a &dSumo Event&f! "));
 			message.then("[Click Here]").color(ChatColor.GREEN).command("/sumo join").tooltip(ChatColor.GREEN + "Click to join!").then(" (" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")").color(ChatColor.WHITE);
 			message.send(player);
 		}
@@ -286,6 +286,7 @@ public class Sumo {
 	}
 
 	public void addSpectator(Player player) {
+        eventPlayers.remove(player.getUniqueId());
 		spectators.add(player.getUniqueId());
 		Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 		profile.setSumoEvent(this);

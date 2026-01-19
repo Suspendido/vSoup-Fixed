@@ -25,19 +25,22 @@ public class SumoEventButton extends Button {
         List<String> lore = new ArrayList<>();
         Sumo activeSumo = SoupPvP.getInstance().getSumoHandler().getActiveSumo();
 
-        lore.add("&7Single elimination styled event.");
-        lore.add("&7All players take turns fighting for the platform");
-        lore.add("&7while being spectated by other contestants.");
-        lore.add("&7Win the event by not losing any of your matches.");
+        lore.add("&b┃ &fSingle elimination styled event.");
+        lore.add("&b┃ &fAll players take turns fighting for the platform");
+        lore.add("&b┃ &fwhile being spectated by other contestants.");
+        lore.add("&b┃ &fWin the event by not losing any of your matches.");
+        lore.add("");
+        lore.add("&b┃ &fRewards for winning:");
+        lore.add("&b┃ &b100 credits");
         lore.add("");
 
         if (activeSumo != null) {
             lore.add("&bOngoing Sumo Event:");
-            lore.add("&7• &fHost: &b" + activeSumo.getHost().getUsername());
-            lore.add("&7• &fParticipants: &b" + activeSumo.getEventPlayers().size() + "&f/&b" + activeSumo.getMaxPlayers());
+            lore.add("&b┃ &fHost: &b" + activeSumo.getHost().getUsername());
+            lore.add("&b┃ &fParticipants: &b" + activeSumo.getEventPlayers().size() + "&f/&b" + activeSumo.getMaxPlayers());
             lore.add(activeSumo.getState().equals(SumoState.WAITING)
-                    ? "&7• &fState: &bWaiting..."
-                    : "&7• &fState: &bFighting"
+                    ? "&b┃ &fState: &bWaiting..."
+                    : "&b┃ &fState: &bFighting"
             );
             lore.add("");
 
@@ -49,7 +52,7 @@ public class SumoEventButton extends Button {
             lore.add("&eClick to host!");
         }
         return new ItemBuilder(Events.SUMO.getMaterial())
-                .name("&bSumo Event")
+                .name("&dSumo Event")
                 .lore(lore)
                 .build();
     }
@@ -68,7 +71,7 @@ public class SumoEventButton extends Button {
 
         if (activeSumo == null) {
             if (!player.hasPermission("souppvp.sumohost")) {
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                playFail(player);
                 return;
             }
 

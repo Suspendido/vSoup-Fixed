@@ -49,8 +49,7 @@ public class SumoStartTask extends SumoTask {
     }
 
     private boolean shouldStart(Sumo sumo, int players) {
-        return players == sumo.getMaxPlayers()
-                || (getTicks() >= START_AFTER_TICKS && players >= MIN_PLAYERS);
+        return players == sumo.getMaxPlayers() || (getTicks() >= START_AFTER_TICKS && players >= MIN_PLAYERS);
     }
 
     private void handleStartCountdown(Sumo sumo, int players) {
