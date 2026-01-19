@@ -2,11 +2,13 @@ package kami.gg.souppvp.shop.bartender;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.shop.items.ItemsMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
+import kami.gg.souppvp.util.menu.button.BackButton;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -32,6 +34,7 @@ public class BartenderMenu extends Menu {
         buttonMap.put(12, new SplashPotionOfHarmingButton(500));
         buttonMap.put(14, new SplashPotionOfPoisonButton(750));
         buttonMap.put(16, new SplashPotionOfSlownessButton(1000));
+        buttonMap.put(26, new BackButton(new ItemsMenu()));
         setPlaceholder(true);
         return buttonMap;
     }

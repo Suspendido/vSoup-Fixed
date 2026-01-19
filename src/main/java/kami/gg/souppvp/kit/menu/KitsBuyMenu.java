@@ -4,8 +4,9 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.button.KitButton;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.shop.ShopMenu;
 import kami.gg.souppvp.util.menu.Button;
+import kami.gg.souppvp.util.menu.button.BackButton;
 import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.entity.Player;
 
@@ -18,9 +19,14 @@ public class KitsBuyMenu extends PaginatedMenu {
             1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
     };
 
+    public KitsBuyMenu() {
+        setAutoUpdate(true);
+        setUpdateAfterClick(true);
+    }
+
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return CC.translate("Kits Shop");
+        return "Kits Shop";
     }
 
     @Override
@@ -47,6 +53,8 @@ public class KitsBuyMenu extends PaginatedMenu {
         for (int slot : CORNERS) {
             global.put(slot, filler);
         }
+
+        global.put(49, new BackButton(new ShopMenu()));
 
         return global;
     }

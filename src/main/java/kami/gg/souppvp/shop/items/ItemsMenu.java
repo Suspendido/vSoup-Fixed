@@ -1,8 +1,10 @@
 package kami.gg.souppvp.shop.items;
 
+import kami.gg.souppvp.shop.ShopMenu;
 import kami.gg.souppvp.shop.items.button.*;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
+import kami.gg.souppvp.util.menu.button.BackButton;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -23,6 +25,7 @@ public class ItemsMenu extends Menu {
         buttonMap.put(12, new GoldenApplesButton(300));
         buttonMap.put(13, new MilkBucketButton(100));
         buttonMap.put(14, new BartenderButton());
+        buttonMap.put(26, new BackButton(new ShopMenu()));
         setPlaceholder(true);
         return buttonMap;
     }
