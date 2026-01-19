@@ -66,6 +66,7 @@ public class PvPListeners implements Listener {
 
         Player killer = player.getKiller();
         boolean killedByPlayer = killer != null && killer != player;
+        if (profile.isInEvent()) return;
 
         if (killedByPlayer) {
             Profile killerProfile = plugin.getProfilesHandler().getProfileByUUID(killer.getUniqueId());

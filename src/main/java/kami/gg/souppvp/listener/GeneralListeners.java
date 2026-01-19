@@ -45,6 +45,11 @@ public class GeneralListeners implements Listener {
 
         Profile playerProfile = plugin.getProfilesHandler().getProfileByUUID(victim.getUniqueId());
 
+        if (playerProfile != null && playerProfile.isInEvent()) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> victim.spigot().respawn(), 2L);
+            return;
+        }
+
         // Conartist perk check
         if (playerProfile != null && !playerProfile.getActivePerks().isEmpty() && playerProfile.getActivePerks().size() > 2) {
             Perk profilePerk = plugin.getPerksHandler().getPerkByName(playerProfile.getActivePerks().get(2));
