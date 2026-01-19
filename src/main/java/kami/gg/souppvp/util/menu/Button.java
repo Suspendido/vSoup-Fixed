@@ -3,12 +3,15 @@ package kami.gg.souppvp.util.menu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public abstract class Button {
 
@@ -36,6 +39,20 @@ public abstract class Button {
 
     public void sendMessage(Player player, String s) {
         player.sendMessage(CC.translate(s));
+    }
+
+    public void broadcast(String... s) {
+        for (String string : s) {
+            String finalString = CC.translate(string);
+            Bukkit.getOnlinePlayers().forEach(player -> sendMessage(player, finalString));
+        }
+    }
+
+    public void broadcast(List<String> s) {
+        for (String string : s) {
+            String finalString = CC.translate(string);
+            Bukkit.getOnlinePlayers().forEach(player -> sendMessage(player, finalString));
+        }
     }
 
 	public static void playFail(Player player) {
