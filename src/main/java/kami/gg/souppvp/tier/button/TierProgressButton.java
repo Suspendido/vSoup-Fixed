@@ -27,16 +27,16 @@ public class TierProgressButton extends Button {
         List<String> lore = new ArrayList<>();
 
         lore.add("");
-        lore.add("&fCurrent Tier: &b" + current.getDisplay() + "✫");
-        lore.add("&fExperiences: &b" + profile.getExperiences());
+        lore.add("&b┃ &fCurrent Tier: &b" + current.getDisplay() + "✫");
+        lore.add("&b┃ &fExperiences: &b" + profile.getExperiences());
         lore.add("");
 
         if (next != null) {
-            lore.add("&fNext Tier: &b" + next.getDisplay() + "✫");
-            lore.add("&fRequired XP: &b" + next.getRequiredExperiences());
+            lore.add("&b┃ &fNext Tier: &b" + next.getDisplay() + "✫");
+            lore.add("&b┃ &fRequired XP: &b" + next.getRequiredExperiences());
             lore.add("");
-            lore.add("&fProgress:");
-            lore.add("&b" + Math.min(profile.getExperiences(), next.getRequiredExperiences()) + "&7/&b" + next.getRequiredExperiences());
+            lore.add("&b┃ &fProgress:");
+            lore.add("&b┃ &b" + Math.min(profile.getExperiences(), next.getRequiredExperiences()) + "&7/&b" + next.getRequiredExperiences());
         } else {
             lore.add("&a&lMAX TIER REACHED");
         }

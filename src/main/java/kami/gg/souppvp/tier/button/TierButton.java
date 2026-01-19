@@ -28,13 +28,13 @@ public class TierButton extends Button {
         List<String> lore = new ArrayList<>();
 
         lore.add("");
-        lore.add("&fDisplay: &b" + tier.getDisplay() + "✫");
-        lore.add("&fRequired Experiences: &b" + tier.getRequiredExperiences());
+        lore.add("&b┃ &fDisplay: &b" + tier.getDisplay() + "✫");
+        lore.add("&b┃ &fRequired Experiences: &b" + tier.getRequiredExperiences());
         lore.add("");
-        lore.add("&fYour Progress:");
+        lore.add("&b┃ &fYour Progress:");
         lore.add(profile.getExperiences() >= tier.getRequiredExperiences()
-                ? "&7• &fExperiences: &b" + tier.getRequiredExperiences() + "&f/&b" + tier.getRequiredExperiences()
-                : "&7• &fExperiences: &b" + profile.getExperiences() + "&f/&b" + tier.getRequiredExperiences()
+                ? "&b┃ &fExperiences: &b" + tier.getRequiredExperiences() + "&f/&b" + tier.getRequiredExperiences()
+                : "&b┃ &fExperiences: &b" + profile.getExperiences() + "&f/&b" + tier.getRequiredExperiences()
         );
         lore.add("");
 
