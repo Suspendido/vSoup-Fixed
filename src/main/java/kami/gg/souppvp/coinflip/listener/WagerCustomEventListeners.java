@@ -8,6 +8,7 @@ import kami.gg.souppvp.coinflip.events.WagerStartEvent;
 import kami.gg.souppvp.coinflip.menu.animation.AnimatedMenu;
 import kami.gg.souppvp.profile.Profile;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -15,28 +16,41 @@ import java.util.UUID;
 
 public class WagerCustomEventListeners implements Listener {
 
+    private final SoupPvP plugin = SoupPvP.getInstance();
+
     @EventHandler
-    public void onWagerCreateEvent(WagerCreateEvent event){
-        UUID creator = event.getCreator();
-        Integer amount = event.getAmount();
-        CoinFlip coinFlip = new CoinFlip(creator, amount);
+    public void onWagerCreate(WagerCreateEvent event) {
+        new CoinFlip(event.getCreator(), event.getAmount());
     }
 
     @EventHandler
-    public void onWagerCancelEvent(WagerCancelEvent event){
+    public void onWagerCancel(WagerCancelEvent event) {
         CoinFlip coinFlip = event.getCoinFlip();
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(coinFlip.getCreator());
-        profile.setCredits(profile.getCredits() + coinFlip.getAmount());
-        SoupPvP.getInstance().getCoinFlipsHandler().removeCoinFlip(coinFlip);
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(coinFlip.getCreator());
+
+        if (profile != null) {
+            profile.setCredits(profile.getCredits() + coinFlip.getAmount());
+        }
+
+        plugin.getCoinFlipsHandler().removeCoinFlip(coinFlip);
     }
 
     @EventHandler
-    public void onWagerStartEvent(WagerStartEvent event){
+    public void onWagerStart(WagerStartEvent event) {
         CoinFlip coinFlip = event.getCoinFlip();
-        UUID opponent = event.getOpponent();
-        coinFlip.setOpponent(opponent);
-        new AnimatedMenu(coinFlip).openMenu(Bukkit.getPlayer(coinFlip.getCreator()));
-        new AnimatedMenu(coinFlip).openMenu(Bukkit.getPlayer(coinFlip.getOpponent()));
-    }
+        UUID opponentUUID = event.getOpponent();
 
+        coinFlip.setOpponent(opponentUUID);
+
+        Player creator = Bukkit.getPlayer(coinFlip.getCreator());
+        Player opponent = Bukkit.getPlayer(opponentUUID);
+
+        if (creator != null) {
+            new AnimatedMenu(coinFlip).openMenu(creator);
+        }
+
+        if (opponent != null) {
+            new AnimatedMenu(coinFlip).openMenu(opponent);
+        }
+    }
 }

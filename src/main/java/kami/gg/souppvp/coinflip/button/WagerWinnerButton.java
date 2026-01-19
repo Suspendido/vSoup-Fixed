@@ -19,19 +19,27 @@ public class WagerWinnerButton extends Button {
 
     private CoinFlip coinFlip;
 
-    public WagerWinnerButton(CoinFlip coinFlip){
+    public WagerWinnerButton(CoinFlip coinFlip) {
         this.coinFlip = coinFlip;
     }
 
     @Override
     public ItemStack getButtonItem(Player player) {
         List<String> lore = new ArrayList<>();
+
+        lore.add(CC.MENU_BAR);
+        lore.add("&b&l" + Bukkit.getPlayer(coinFlip.getWinner()).getName() + "'s Won");
+        lore.add("&b┃ &a+" + (coinFlip.getAmount() * 2) + " &fcredits");
         lore.add("");
-        lore.add(CC.translate("&e&l" + Bukkit.getPlayer(coinFlip.getWinner()).getName() + "'s Win:"));
-        lore.add(CC.translate("&c• &a+" + (coinFlip.getAmount() * 2) + " credits"));
-        lore.add("");
-        lore.add(CC.translate("&aA total of &e" + (coinFlip.getAmount()*2) + " &ahas"));
-        lore.add(CC.translate("&abeen added to their account!"));
-        return new ItemBuilder(Material.EMERALD).name(CC.translate("&a&lWINNER")).lore(lore).build();
+        lore.add("&c&l" + Bukkit.getPlayer(coinFlip.getLoser()).getName() + "'s Lost");
+        lore.add("&b┃ &c-" + coinFlip.getAmount() + " &fcredits");
+        lore.add(CC.MENU_BAR);
+
+        return new ItemBuilder(Material.SKULL_ITEM)
+                .data(3)
+                .name("&a&l" + Bukkit.getPlayer(coinFlip.getWinner()).getName() + " WON!")
+                .setSkullOwner(Bukkit.getPlayer(coinFlip.getWinner()).getName())
+                .lore(lore)
+                .build();
     }
 }
