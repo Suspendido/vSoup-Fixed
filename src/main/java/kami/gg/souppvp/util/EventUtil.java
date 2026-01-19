@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffect;
 
 public class EventUtil {
 
-    public static void resetPlayer(Player player){
+    public static void resetPlayer(Player player) {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
@@ -34,7 +34,7 @@ public class EventUtil {
         player.setTotalExperience(0);
         player.setFireTicks(0);
 
-        if (player.hasMetadata("noFall")){
+        if (player.hasMetadata("noFall")) {
             player.removeMetadata("noFall", SoupPvP.getInstance());
         }
 
