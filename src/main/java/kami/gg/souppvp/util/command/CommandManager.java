@@ -9,6 +9,7 @@ import kami.gg.souppvp.command.credit.*;
 import kami.gg.souppvp.command.shop.RepairCommand;
 import kami.gg.souppvp.command.spawn.*;
 import kami.gg.souppvp.events.impl.sumo.command.SumoCommand;
+import kami.gg.souppvp.events.impl.tnttag.command.TNTTagCommand;
 import kami.gg.souppvp.feats.leaderboard.command.LeaderboardCommand;
 import kami.gg.souppvp.feats.staff.command.*;
 import kami.gg.souppvp.map.command.MapCommand;
@@ -70,6 +71,7 @@ public class CommandManager {
 
                 // Event
                 new SumoCommand(this),
+                new TNTTagCommand(this),
 
                 // Credits
                 new CreditsSetCommand(this),
