@@ -166,6 +166,30 @@ public class NametagManager {
                         .replace("%bounty%", String.valueOf(RNG.nextInt(1001)))
                 );
             }
+        } else if (profile.isInEvent()) {
+            if (profile.getTntTagGame() != null) {
+                boolean hasTNT = profile.getTntTagGame().getTntHolder() != null && profile.getTntTagGame().getTntHolder().equals(target.getUniqueId());
+                formatKey = hasTNT ? "NAMETAGS.FORMAT.TNTTAG_HOLDER" : "NAMETAGS.FORMAT.TNTTAG_NORMAL";
+
+                for (String s : nametagConfig.getStringList(formatKey)) {
+                    lines.add(s
+                            .replace("%prefix%", prefix != null ? prefix : "")
+                            .replace("%player%", target.getName())
+                            .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                    );
+                }
+            }
+            else if (profile.getSumoEvent() != null) {
+                formatKey = "NAMETAGS.FORMAT.SUMO";
+
+                for (String s : nametagConfig.getStringList(formatKey)) {
+                    lines.add(s
+                            .replace("%prefix%", prefix != null ? prefix : "")
+                            .replace("%player%", target.getName())
+                            .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                    );
+                }
+            }
         } else {
             formatKey = "NAMETAGS.FORMAT.NORMAL";
 

@@ -17,6 +17,12 @@ NAMETAGS:
       - "&aBounty: &e%bounty%"
       - "&a%player%"
       - "&f%health% &4❤"
+    TNTTAG_HOLDER:
+      - "&c[IT] %player%"
+    TNTTAG_NORMAL:
+      - "&a%player%"
+    SUMO:
+      - "%player%"
     NORMAL:
       - "&a%player%"
       - "&f%health% &4❤"
