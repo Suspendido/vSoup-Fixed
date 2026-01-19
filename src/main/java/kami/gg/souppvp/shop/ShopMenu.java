@@ -7,7 +7,6 @@ import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -35,7 +34,7 @@ public class ShopMenu extends Menu {
             }
             @Override
             public void clicked(Player player, ClickType clickType) {
-                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
+                playNeutral(player);
                 new ItemsMenu().openMenu(player);
             }
         });
@@ -49,7 +48,7 @@ public class ShopMenu extends Menu {
             }
             @Override
             public void clicked(Player player, ClickType clickType) {
-                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
+                playNeutral(player);
                 new PerksMenu().openMenu(player);
             }
         });
@@ -63,7 +62,7 @@ public class ShopMenu extends Menu {
             }
             @Override
             public void clicked(Player player, ClickType clickType) {
-                player.playSound(player.getLocation(), Sound.CLICK, 1F, 1F);
+                playNeutral(player);
                 new KitsBuyMenu().openMenu(player);
             }
         });
