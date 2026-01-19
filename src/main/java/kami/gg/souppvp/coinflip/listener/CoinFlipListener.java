@@ -17,49 +17,55 @@ import java.util.UUID;
 
 public class CoinFlipListener implements Listener {
 
-    @EventHandler
-    public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent event){
+    private final SoupPvP plugin = SoupPvP.getInstance();
 
+    @EventHandler
+    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        if (profile == null) return;
+        if (profile.getCoinFlipState() != CoinFlipState.CREATING) return;
+
+        event.setCancelled(true);
         String message = event.getMessage();
 
-        if (profile.getCoinFlipState().equals(CoinFlipState.CREATING)){
-            event.setCancelled(true);
-            if (MathUtil.isNumeric(message)){
-                Integer amount = Integer.parseInt(message);
-                if (profile.getCredits() < amount){
-                    player.sendMessage(CC.translate("&cInsufficient credits! Try entering a lower amount!"));
-                } else if (amount <= 0){
-                    player.sendMessage(CC.translate("&cThe wager amount has to be greater than zero!"));
-                }  else {
-                    new ConfirmWagerMenu(amount).openMenu(player);
-                    profile.setCoinFlipState(CoinFlipState.NONE);
-                    /*player.sendMessage(CC.translate("&aSuccessfully created a new coin flip wager!"));
-                    WagerCreateEvent wagerCreateEvent = new WagerCreateEvent(player.getUniqueId(), amount);
-                    Bukkit.getPluginManager().callEvent(wagerCreateEvent);
-                    profile.setCredits(profile.getCredits() - amount);
-                    player.sendMessage(CC.translate("&aYou have temporarily been deducted &a" + amount + " &acredits for the wager. To receive back your credits, you can cancel the wager."));*/
-                }
-            } else {
-                profile.setCoinFlipState(CoinFlipState.NONE);
-                player.sendMessage(CC.translate("&aSuccessfully cancelled the coin flip creation procedure."));
-            }
+        if (!MathUtil.isNumeric(message)) {
+            profile.setCoinFlipState(CoinFlipState.NONE);
+            player.sendMessage(CC.translate("&aSuccessfully cancelled the coin flip creation procedure."));
+            return;
         }
 
+        int amount = Integer.parseInt(message);
+
+        if (amount <= 0) {
+            player.sendMessage(CC.translate("&cThe wager amount has to be greater than zero!"));
+            return;
+        }
+
+        if (profile.getCredits() < amount) {
+            player.sendMessage(CC.translate("&cInsufficient credits! Try entering a lower amount!"));
+            return;
+        }
+
+        profile.setCoinFlipState(CoinFlipState.NONE);
+        new ConfirmWagerMenu(amount).openMenu(player);
     }
 
     @EventHandler
-    public void onPlayerQuitEvent(PlayerQuitEvent event){
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (SoupPvP.getInstance().getCoinFlipsHandler().hasCoinFlipWager(uuid)){
-            CoinFlip coinflip = SoupPvP.getInstance().getCoinFlipsHandler().getPlayerCoinFlip(uuid);
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(uuid);
-            profile.setCredits(profile.getCredits() + coinflip.getAmount());
-            profile.saveProfile();
-            SoupPvP.getInstance().getCoinFlipsHandler().removeCoinFlip(coinflip);
-        }
-    }
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
 
+        if (!plugin.getCoinFlipsHandler().hasCoinFlipWager(uuid)) return;
+
+        CoinFlip coinFlip = plugin.getCoinFlipsHandler().getPlayerCoinFlip(uuid);
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(uuid);
+
+        if (profile != null) {
+            profile.setCredits(profile.getCredits() + coinFlip.getAmount());
+            profile.saveProfile();
+        }
+
+        plugin.getCoinFlipsHandler().removeCoinFlip(coinFlip);
+    }
 }

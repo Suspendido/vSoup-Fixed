@@ -4,59 +4,35 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlip;
 import kami.gg.souppvp.coinflip.button.CoinFlipWagerButton;
 import kami.gg.souppvp.coinflip.button.CreateWagerButton;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
-import kami.gg.souppvp.util.menu.Menu;
-import lombok.Getter;
-import org.bukkit.Material;
+import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CoinFlipMenu extends Menu {
+public class CoinFlipMenu extends PaginatedMenu {
 
-    @Getter
-    private int currentPage = 1, totalPages = 1;
+    private static final int[] CORNERS = {
+            1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
+    };
 
-    public CoinFlipMenu(){
-        setAutoUpdate(true);
+    @Override
+    public String getPrePaginatedTitle(Player player) {
+        return "&a&lCoinflip";
     }
 
     @Override
-    public String getTitle(Player player) {
-        return CC.translate("&a&lCoinflip");
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getAllPagesButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
 
-        buttons.put(27, new PageButton(-1, this));
-        buttons.put(35, new PageButton(1, this));
-
-        buttons.put(4, new CreateWagerButton());
-
-        for (int i=0; i<19; i++){
-            buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        }
-
-        buttons.put(26, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        buttons.put(36, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        buttons.put(44, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        buttons.put(45, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-
-        for (int i=46; i<54; i++){
-            buttons.put(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
-        }
-
-        int i=19;
-        for (CoinFlip coinFlip : SoupPvP.getInstance().getCoinFlipsHandler().getCoinFlips()){
-            if (i == 26){
+        int i = 19;
+        for (CoinFlip coinFlip : SoupPvP.getInstance().getCoinFlipsHandler().getCoinFlips()) {
+            if (i == 26) {
                 i = 28;
-            } else if (i == 35){
+            } else if (i == 35) {
                 i = 37;
-            } else if (i == 44){
+            } else if (i == 44) {
                 i = buttons.size();
             }
             buttons.putIfAbsent(i++, new CoinFlipWagerButton(coinFlip));
@@ -64,9 +40,18 @@ public class CoinFlipMenu extends Menu {
 
         return buttons;
     }
+    @Override
+    public Map<Integer, Button> getGlobalButtons(Player player) {
+        Map<Integer, Button> global = new HashMap<>();
+        Button filler = getPlaceholderButton();
 
-    protected void changePage(int mod) {
-        currentPage += mod;
+        for (int slot : CORNERS) {
+            global.put(slot, filler);
+        }
+
+        global.put(4, new CreateWagerButton());
+
+        return global;
     }
 
     @Override

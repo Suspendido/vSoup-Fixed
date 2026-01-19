@@ -17,30 +17,37 @@ import java.util.List;
 
 public class ConfirmSettingsButton extends Button {
 
-    private int amount;
+    private final int amount;
 
-    public ConfirmSettingsButton(int amount){
+    public ConfirmSettingsButton(int amount) {
         this.amount = amount;
     }
 
     @Override
     public ItemStack getButtonItem(Player player) {
         List<String> lore = new ArrayList<>();
-        lore.add("");
-        lore.add(CC.translate("&7Click to &a&lCONFIRM &7and &a&lPOST &7coinflip game!"));
-        lore.add("");
-        return new ItemBuilder(Material.INK_SACK).name(CC.translate("&a&lConfirm Settings")).lore(lore).durability(10).build();
+        lore.add(CC.MENU_BAR);
+        lore.add("&7Click to &a&lCONFIRM &7and &a&lPOST &7coinflip game!");
+        lore.add(CC.MENU_BAR);
+        return new ItemBuilder(Material.INK_SACK)
+                .name("&a&lConfirm Settings")
+                .lore(lore)
+                .durability(10)
+                .build();
     }
 
     @Override
     public void clicked(Player player, ClickType clickType) {
-        if (clickType.isLeftClick()){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-            WagerCreateEvent wagerCreateEvent = new WagerCreateEvent(player.getUniqueId(), amount);
-            Bukkit.getPluginManager().callEvent(wagerCreateEvent);
-            profile.setCredits(profile.getCredits() - amount);
-            player.sendMessage(CC.translate("&7The wager has been collected. (&a" + amount + " &acredits&7)"));
-            player.closeInventory();
-        }
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        WagerCreateEvent wagerCreateEvent = new WagerCreateEvent(player.getUniqueId(), amount);
+        Bukkit.getPluginManager().callEvent(wagerCreateEvent);
+        profile.setCredits(profile.getCredits() - amount);
+        sendMessage(player, "&7The wager has been collected. (&a" + amount + " &acredits&7)");
+        broadcast(
+                "",
+                "&b" + player.getDisplayName() + " &fhas made a CoinFlip game for &b" + amount + " credits&f!",
+                ""
+        );
+        player.closeInventory();
     }
 }

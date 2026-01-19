@@ -35,29 +35,29 @@ public class CoinFlipWagerButton extends Button {
         List<String> lore = new ArrayList<>();
 
         lore.add("");
-        lore.add("&e&lWager:");
-        lore.add("&a" + coinFlip.getAmount() + " credits");
+        lore.add("&b&lWager:");
+        lore.add("&f" + coinFlip.getAmount() + " credits");
         lore.add("");
-        lore.add("&e&l" + creatorName + "'s Stats");
-        lore.add("&c• &eTotal Games: &a" + creatorProfile.getTotalWagerGames());
-        lore.add("&c• &eWon: &a" + creatorProfile.getWagersWon());
-        lore.add("&c• &eLost: &a" + creatorProfile.getWagersLost());
+        lore.add("&b&l" + creatorName + "'s Stats");
+        lore.add("&b┃ &fTotal Games: &b" + creatorProfile.getTotalWagerGames());
+        lore.add("&b┃ &fWon: &b" + creatorProfile.getWagersWon());
+        lore.add("&b┃ &fLost: &b" + creatorProfile.getWagersLost());
 
         int totalGames = creatorProfile.getTotalWagerGames();
         if (totalGames == 0) {
-            lore.add("&c• &eWin Percent: &aN/A");
+            lore.add("&b┃ &fWin Percent: &aN/A");
         } else {
-            lore.add("&c• &eWin Percent: &a" + creatorProfile.getWinPercent() + "%");
+            lore.add("&b┃ &fWin Percent: &b" + creatorProfile.getWinPercent() + "%");
         }
 
         lore.add("");
 
         if (profile.equals(creatorProfile)) {
-            lore.add("&7Right-Click to &c&lCANCEL &7the bet!");
+            lore.add("&eRight-Click to &c&lCANCEL &ethe bet!");
         } else if (profile.getCredits() < coinFlip.getAmount()) {
             lore.add("&cInsufficient Credits!");
         } else {
-            lore.add("&7Click here to &a&lACCEPT &7the bet!");
+            lore.add("&aClick here to &lACCEPT &athe bet!");
         }
 
         return new ItemBuilder(Material.SKULL_ITEM)

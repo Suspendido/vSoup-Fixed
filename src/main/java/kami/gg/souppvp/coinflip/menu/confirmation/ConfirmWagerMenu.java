@@ -1,9 +1,6 @@
 package kami.gg.souppvp.coinflip.menu.confirmation;
 
-import kami.gg.souppvp.coinflip.menu.confirmation.button.CancelSettingsButton;
-import kami.gg.souppvp.coinflip.menu.confirmation.button.ConfirmSettingsButton;
-import kami.gg.souppvp.coinflip.menu.confirmation.button.GameSettingsButton;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.coinflip.menu.confirmation.button.*;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
 import org.bukkit.entity.Player;
@@ -13,9 +10,9 @@ import java.util.Map;
 
 public class ConfirmWagerMenu extends Menu {
 
-    private int amount;
+    private final int amount;
 
-    public ConfirmWagerMenu(int amount){
+    public ConfirmWagerMenu(int amount) {
         this.amount = amount;
         setPlaceholder(true);
     }
@@ -23,7 +20,7 @@ public class ConfirmWagerMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("&a&lConfirm Settings");
+        return "&a&lConfirm Settings";
     }
 
     @Override
