@@ -1,11 +1,12 @@
 package kami.gg.souppvp.perk.menu;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.perk.menu.button.*;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.shop.ShopMenu;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
+import kami.gg.souppvp.util.menu.button.BackButton;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -36,6 +37,8 @@ public class PerksMenu extends Menu {
 
             buttons.put(guiSlot, new PerkSlotButton(slotNumber));
         }
+
+        buttons.put(26, new BackButton(new ShopMenu()));
 
         setPlaceholder(true);
         return buttons;
