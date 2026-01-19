@@ -21,7 +21,7 @@ public class BountyMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return CC.translate("Available Bounties");
+        return "Available Bounties";
     }
 
     @Override
