@@ -5,6 +5,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlipState;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
+import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
 import kami.gg.souppvp.feats.storage.StorageType;
 import kami.gg.souppvp.kit.progress.KitProgress;
 import kami.gg.souppvp.tier.Tiers;
@@ -24,6 +25,7 @@ public class Profile {
     private ProfileState profileState;
     private CoinFlipState coinFlipState;
     private Sumo sumoEvent;
+    private TNTTagGame tntTagGame;
     private Tiers tier;
 
     private Boolean loaded;
@@ -127,6 +129,7 @@ public class Profile {
         this.coinFlipState = CoinFlipState.NONE;
 
         this.sumoEvent = null;
+        this.tntTagGame = null;
         this.eventsWon = 0;
 
         this.juggernaut = false;
@@ -315,7 +318,7 @@ public class Profile {
     }
 
     public boolean isInEvent() {
-        return this.sumoEvent != null;
+        return this.sumoEvent != null || this.tntTagGame != null;
     }
 
     public void removeSpawnTeleportation() {
