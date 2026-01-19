@@ -10,6 +10,7 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,5 +61,10 @@ public class KitsSelectMenu extends PaginatedMenu {
     @Override
     public int size(Map<Integer, Button> buttons) {
         return 54;
+    }
+
+    @Override
+    public boolean shouldUpdateOnClick(Player player, Button button, ClickType clickType) {
+        return false;
     }
 }

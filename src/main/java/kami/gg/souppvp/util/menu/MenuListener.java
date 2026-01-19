@@ -47,14 +47,14 @@ public class MenuListener implements Listener {
                     Menu newMenu = Menu.currentlyOpenedMenus.get(player.getName());
 
                     if (newMenu == openMenu) {
-                        boolean buttonUpdate = button.shouldUpdate(player, event.getClick());
+                        boolean shouldUpdate = openMenu.shouldUpdateOnClick(player, button, event.getClick()) && button.shouldUpdate(player, event.getClick());
 
-                        if (buttonUpdate) {
+                        if (shouldUpdate) {
                             openMenu.setClosedByMenu(true);
                             newMenu.openMenu(player);
                         }
                     }
-                } else if (button.shouldUpdate(player, event.getClick())) {
+                } else if (openMenu.shouldUpdateOnClick(player, button, event.getClick()) && button.shouldUpdate(player, event.getClick())) {
                     openMenu.setClosedByMenu(true);
                     openMenu.openMenu(player);
                 }
