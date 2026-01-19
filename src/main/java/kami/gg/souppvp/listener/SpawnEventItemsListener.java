@@ -67,6 +67,10 @@ public class SpawnEventItemsListener implements Listener {
         }
 
         if (item.isSimilar(EventItems.LEAVE_EVENT)) {
+            if (profile.getTntTagGame() != null) {
+                profile.getTntTagGame().handleLeave(player);
+            }
+
             if (profile.getSumoEvent() != null) {
                 profile.getSumoEvent().handleLeave(player);
             }
