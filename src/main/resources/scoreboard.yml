@@ -4,7 +4,7 @@ SCOREBOARD_INFO:
   LINES_ENABLED: true
   LAST_LINE_ENABLED: true
   SHOW_DATE_BELOW_TITLE: true
-  DATE_LINE: '             &7&o%date%          '
+  DATE_LINE: '            &7&o%date%          '
   DATE_FORMAT: 'dd/MM/YY'
 
 TITLE:
@@ -46,11 +46,12 @@ LOADING:
 
 STATS:
   FORMAT:
-    - "&fKills: &b%kills%"
-    - "&fKillstreak: &b%killstreak%" # Solo se muestra si killstreak > 0
-    - "&fDeaths: &b%deaths%"
-    - "&fCredits: &b%credits%"
-    - "&fBounty: &b%bounty%" # Solo se muestra si bounty > 0
+    - "&b&lStats"
+    - "&b┃ &fKills: &b%kills%"
+    - "&b┃ &fKillstreak: &b%killstreak%" # Solo se muestra si killstreak > 0
+    - "&b┃ &fDeaths: &b%deaths%"
+    - "&b┃ &fCredits: &b%credits%"
+    - "&b┃ &fBounty: &b%bounty%" # Solo se muestra si bounty > 0
     - ""
 
 SPAWN:
@@ -59,37 +60,57 @@ SPAWN:
     - "&fTier Level: &b%tier%✫"
     - "&fCurrent Kit: %kit_color%%kit%"
     - ""
+
 TNTTAG_EVENT:
   ENABLED: true
   
+  DONE_EVENT:
+    ENABLED: true
+    LINES:
+      - "&b&lServer Events"
+      - "&b┃ &fEvent: &4TNTTag"
+      - "&b┃ &cMatch Ended"
+      - "&b┃ &fWinner: &b%winner%"
+      - ""
   WAITING_EVENT:
     LINES:
-      - "&cTNTTag Event"
-      - "&7Players: &c%tnt_players%"
-      - "&7State: &cWaiting..."
+      - "&b&lServer Events"
+      - "&b┃ &fEvent: &4TNTag"
+      - "&b┃ &fPlayers: &b%tnt_players%&7/&b%tnt_max%"
+      - "&b┃ &fState: &bWaiting..."
       - ""
-  
   RUNNING_EVENT:
     LINES:
-      - "&cTNTTag Event"
-      - "&7Players left: &c%tnt_players%"
-      - "&7Time Left: &c%tnt_time%s"
+      - "&b&lServer Events"
+      - "&b┃ &fEvent: &4TNTTag"
+      - "&b┃ &fExplosion in &b%tnt_time%s"
+      - "&b┃ &fPlayers left: &b%tnt_players%&7/&b%tnt_total%"
+      - ""
 
 SUMO_EVENT:
+  DONE_EVENT:
+    ENABLED: true
+    LINES:
+      - "&b&lServer Events"
+      - "&b┃ &fEvent: &dSumo"
+      - "&b┃ &cMatch Ended"
+      - "&b┃ &fWinner: &b%winner%"
+      - ""
   WAITING_EVENT:
     ENABLED: true
     LINES:
-      - "&fEvent: &bSumo"
-      - "&fPlayers: &b%sumo_players%/%sumo_max%"
-      - "&fState: &b%sumo_state%"
+      - "&b&lServer Events"
+      - "&b┃ &fEvent: &dSumo"
+      - "&b┃ &fPlayers: &b%sumo_players%/%sumo_max%"
+      - "&b┃ &fState: &b%sumo_state%"
       - ""
-
   STARTED_EVENT:
     ENABLED: true
     LINES:
-      - "&fEvent: &bSumo"
-      - "&fRemaining: &b%sumo_remaining%/%sumo_total%"
-      - "&fDuration: &b%sumo_duration%"
+      - "&b&lServer Events"
+      - "&b┃ &fEvent: &dSumo"
+      - "&b┃ &fRemaining: &b%sumo_remaining%&7/&b%sumo_total%"
+      - "&b┃ &fDuration: &b%sumo_duration%"
       - ""
       - "&b%sumo_player_a% &f(%sumo_ping_a%ms)"
       - "&fvs"

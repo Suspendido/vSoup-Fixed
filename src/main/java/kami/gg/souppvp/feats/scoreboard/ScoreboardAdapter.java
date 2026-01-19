@@ -38,7 +38,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final List<String> modMode;
     private final List<String> waiting_tnttagLines;
     private final List<String> running_tnttagLines;
-
+    private final List<String> done_sumoLines;
+    private final List<String> done_tnttagLines;
 
     private final String line;
     private final String dateLine;
@@ -52,6 +53,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final boolean spawnEnabled;
     private final boolean staffEnabled;
     private final boolean tnttagEnabled;
+    private final boolean done_sumoEnabled;
+    private final boolean done_tnttagEnabled;
 
     public ScoreboardAdapter() {
         this.plugin = SoupPvP.getInstance();
@@ -68,6 +71,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.modMode = getStringList("STAFF_MODE.MOD_MODE");
         this.waiting_tnttagLines = getStringList("TNTTAG_EVENT.WAITING_EVENT.LINES");
         this.running_tnttagLines = getStringList("TNTTAG_EVENT.RUNNING_EVENT.LINES");
+        this.done_sumoLines = getStringList("SUMO_EVENT.DONE_EVENT.LINES");
+        this.done_tnttagLines = getStringList("TNTTAG_EVENT.DONE_EVENT.LINES");
 
         this.line = getString("SCOREBOARD_INFO.LINES");
         this.dateLine = getString("SCOREBOARD_INFO.DATE_LINE");
@@ -81,6 +86,8 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.started_sumoEnabled = getBoolean("SUMO_EVENT.STARTED_EVENT.ENABLED");
         this.spawnEnabled = getBoolean("SPAWN.ENABLED");
         this.tnttagEnabled = getBoolean("TNTTAG_EVENT.ENABLED");
+        this.done_sumoEnabled = getBoolean("SUMO_EVENT.DONE_EVENT.ENABLED");
+        this.done_tnttagEnabled = getBoolean("TNTTAG_EVENT.DONE_EVENT.ENABLED");
     }
 
     @Override
@@ -118,6 +125,13 @@ public class ScoreboardAdapter implements AssembleAdapter {
             if (showDateBelowTitle) lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
             if (linesEnabled) lines.add(line);
 
+            if (done_sumoEnabled && sumo.getRemainingPlayers().size() == 1) {
+                String winner = sumo.getRemainingPlayers().getFirst().getDisplayName();
+                for (String s : done_sumoLines) {
+                    lines.add(s.replace("%winner%", winner));
+                }
+            }
+
             if (sumo != null) {
                 if (sumo.getState() == SumoState.WAITING) {
                     for (String s : waiting_sumoLines) {
@@ -145,6 +159,15 @@ public class ScoreboardAdapter implements AssembleAdapter {
                         );
                     }
                 }
+            }
+
+            if (done_tnttagEnabled && tnt.getTotalPlayers() == 1) {
+                Player winner = Bukkit.getPlayer(tnt.getWinner().getDisplayName());
+
+                for (String s : done_tnttagLines) {
+                    lines.add(s.replace("%winner%", winner != null ? winner.getName() : "Unknown"));
+                }
+
             }
 
             if (tnt != null && tnttagEnabled) {
