@@ -15,17 +15,21 @@ public class CancelSettingsButton extends Button {
 
     private int amount;
 
-    public CancelSettingsButton(int amount){
+    public CancelSettingsButton(int amount) {
         this.amount = amount;
     }
 
     @Override
     public ItemStack getButtonItem(Player player) {
         List<String> lore = new ArrayList<>();
-        lore.add("");
-        lore.add(CC.translate("&7Click to &c&lCANCEL &7and &c&lCLOSE &7the game menu!"));
-        lore.add("");
-        return new ItemBuilder(Material.INK_SACK).name(CC.translate("&c&lCancel Custom Game")).lore(lore).durability(1).build();
+        lore.add(CC.MENU_BAR);
+        lore.add("&7Click to &c&lCANCEL &7and &c&lCLOSE &7the game menu!");
+        lore.add(CC.MENU_BAR);
+        return new ItemBuilder(Material.INK_SACK)
+                .name("&c&lCancel Custom Game")
+                .lore(lore)
+                .durability(1)
+                .build();
     }
 
     @Override
