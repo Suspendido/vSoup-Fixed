@@ -86,10 +86,9 @@ public abstract class Command {
                     String next = iterator.next();
                     Player player = Bukkit.getPlayer(next);
 
-                    // Descomentar si tienes StaffManager
-                    // if (player != null && getInstance().getStaffManager().isVanished(player)) {
-                    //     iterator.remove();
-                    // }
+                     if (player != null && getInstance().getStaffManager().isVanished(player)) {
+                         iterator.remove();
+                     }
                 }
 
                 return toTab;
@@ -105,10 +104,10 @@ public abstract class Command {
     }
 
     public void unregister() {
-        if (name.equalsIgnoreCase("soupvp")) return;
+        if (name.equalsIgnoreCase("souppvp")) return;
         if (bukkitCommand == null) return;
 
-        HandlerList.unregisterAll((Plugin) getInstance());
+        HandlerList.unregisterAll(getInstance());
 
         for (Argument argument : arguments.values()) {
             HandlerList.unregisterAll((Plugin) argument);
