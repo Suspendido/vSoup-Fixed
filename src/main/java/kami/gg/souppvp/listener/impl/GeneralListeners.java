@@ -1,4 +1,4 @@
-package kami.gg.souppvp.listener;
+package kami.gg.souppvp.listener.impl;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
