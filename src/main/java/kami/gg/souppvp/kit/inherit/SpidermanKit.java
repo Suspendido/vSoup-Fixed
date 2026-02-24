@@ -160,9 +160,7 @@ public class SpidermanKit extends Kit {
         // cooldown
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(p.getUniqueId(), "Web Shooter", true)) {
             long rem = SoupPvP.getInstance().getTimersHandler().getRemaining(p.getUniqueId(), "Web Shooter", true);
-            p.sendMessage(ChatColor.RED + "You can't use this for another "
-                    + ChatColor.YELLOW + DurationFormatter.getRemaining(rem, true)
-                    + ChatColor.RED + ".");
+            p.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
             return;
         }
 
@@ -199,8 +197,7 @@ public class SpidermanKit extends Kit {
                     cancel();
 
                     Location loc = found.getLocation();
-                    if (loc.getBlock().getType() == Material.WEB)
-                        loc.add(0, 1, 0);
+                    if (loc.getBlock().getType() == Material.WEB) loc.add(0, 1, 0);
 
                     List<BlockState> placed = new ArrayList<>();
 
