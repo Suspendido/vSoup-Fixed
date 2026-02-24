@@ -1,6 +1,5 @@
 package kami.gg.souppvp.perk;
 
-import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.inherit.tier1.*;
 import kami.gg.souppvp.perk.inherit.tier2.*;
 import kami.gg.souppvp.perk.inherit.tier3.*;
@@ -50,7 +49,6 @@ public class PerksHandler {
         perks.add(new FireFighterPerk());
         perks.add(new LifeSupportPerk());
         perks.add(new JuggernautPerk());
-        registerPerkListeners();
 
         deathDoUsApartDebuffsList = new ArrayList<>();
         deathDoUsApartDebuffsList.add(new ItemBuilder(Material.POTION).durability(16388).build());
@@ -72,38 +70,6 @@ public class PerksHandler {
             }
         }
         return null;
-    }
-
-    private void registerPerkListeners(){
-        //Bounty Hunter ?
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new SoreLoserPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new MartydomPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new RelinquishPerk(), SoupPvP.getInstance());
-        //Trickster DONE
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new NourishmentPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new RefillerPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new StuntDevilPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new AquamanPerk(), SoupPvP.getInstance());
-
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new DistortionPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new JammerPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new ReverseCopyCatPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new SteadyHandsPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new ArmorerPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new DeathDoUsApartPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new TauntPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new RevengePerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new InfernoPerk(), SoupPvP.getInstance());
-        //Hardline - DONE @Killstreaks
-
-        //Incognito DONE @Everywhere
-        //Conartist - DONE @GeneralListner
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new CreditorPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new CanaPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new BonusHeartsPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new FireFighterPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new LifeSupportPerk(), SoupPvP.getInstance());
-        SoupPvP.getInstance().getServer().getPluginManager().registerEvents(new JuggernautPerk(), SoupPvP.getInstance());
     }
 
 }

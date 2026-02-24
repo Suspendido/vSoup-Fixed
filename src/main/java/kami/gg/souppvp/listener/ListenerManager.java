@@ -9,9 +9,13 @@ import kami.gg.souppvp.feats.nametag.NametagListener;
 import kami.gg.souppvp.feats.staff.listener.StaffListener;
 import kami.gg.souppvp.feats.tablist.TablistListener;
 import kami.gg.souppvp.juggernaut.JuggernautListener;
+import kami.gg.souppvp.killstreak.inherit.*;
 import kami.gg.souppvp.kit.inherit.*;
 import kami.gg.souppvp.kit.kits.*;
 import kami.gg.souppvp.listener.impl.*;
+import kami.gg.souppvp.perk.inherit.tier1.*;
+import kami.gg.souppvp.perk.inherit.tier2.*;
+import kami.gg.souppvp.perk.inherit.tier3.*;
 import kami.gg.souppvp.tier.TiersListener;
 import kami.gg.souppvp.timer.TimersListener;
 import kami.gg.souppvp.util.menu.MenuListener;
@@ -63,7 +67,7 @@ public class ListenerManager {
                 new TimersListener(),
 
                 // Staff
-//                new StaffListener(SoupPvP.getInstance().getStaffManager()),
+                new StaffListener(SoupPvP.getInstance().getStaffManager()),
 
                 // Events
                 new SumoListener(),
@@ -101,7 +105,43 @@ public class ListenerManager {
                 new PhantomKit(),
                 new CopyCatKit(),
                 new DwarfKit(),
-                new YodaKit()
+                new YodaKit(),
+
+                // Perks
+                new SoreLoserPerk(),
+                new MartydomPerk(),
+                new RelinquishPerk(),
+                new NourishmentPerk(),
+                new RefillerPerk(),
+                new StuntDevilPerk(),
+                new AquamanPerk(),
+                new DistortionPerk(),
+                new JammerPerk(),
+                new ReverseCopyCatPerk(),
+                new SteadyHandsPerk(),
+                new ArmorerPerk(),
+                new DeathDoUsApartPerk(),
+                new TauntPerk(),
+                new RevengePerk(),
+                new InfernoPerk(),
+                new CreditorPerk(),
+                new CanaPerk(),
+                new BonusHeartsPerk(),
+                new FireFighterPerk(),
+                new LifeSupportPerk(),
+                new JuggernautPerk(),
+
+                // KillStreaks - This might be optimized bc rn its so ass having this shit like that
+                new FiveKillstreak(),
+                new TenKillstreak(),
+                new FifteenKillstreak(),
+                new TwentyKillstreak(),
+                new TwentyFiveKillstreak(),
+                new ThirtyKillstreak(),
+                new ThirtyFiveKillstreak(),
+                new FortyKillstreak(),
+                new FortyFiveKillstreak(),
+                new FiftyKillstreak()
 
         ));
 
