@@ -39,7 +39,7 @@ public class SumoRoundStartTask extends SumoTask {
     }
 
     private void startRound(Sumo sumo, Player playerA, Player playerB) {
-        sumo.broadcastMessage(CC.translate("&bMatch Started!"));
+        sumo.broadcastMessage(CC.t("&bMatch Started!"));
         sumo.setEventTask(null);
         sumo.setState(SumoState.ROUND_FIGHTING);
         sumo.setRoundStart(System.currentTimeMillis());

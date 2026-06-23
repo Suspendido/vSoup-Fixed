@@ -37,7 +37,7 @@ public class ItemBuilder implements Listener {
 
     public ItemBuilder name(String name) {
         ItemMeta meta = is.getItemMeta();
-        meta.setDisplayName(CC.translate(name));
+        meta.setDisplayName(CC.t(name));
         is.setItemMeta(meta);
         return this;
     }
@@ -50,7 +50,7 @@ public class ItemBuilder implements Listener {
             lore = new ArrayList<>();
         }
 
-        lore.add(CC.translate(name));
+        lore.add(CC.t(name));
         meta.setLore(lore);
 
         is.setItemMeta(meta);
@@ -92,7 +92,7 @@ public class ItemBuilder implements Listener {
         ItemMeta meta = is.getItemMeta();
 
         for (String string : lore) {
-            toSet.add(CC.translate(string));
+            toSet.add(CC.t(string));
         }
 
         meta.setLore(toSet);
@@ -106,12 +106,24 @@ public class ItemBuilder implements Listener {
         ItemMeta meta = is.getItemMeta();
 
         for (String string : lore) {
-            toSet.add(CC.translate(string));
+            toSet.add(CC.t(string));
         }
 
         meta.setLore(toSet);
         is.setItemMeta(meta);
 
+        return this;
+    }
+
+    public ItemBuilder setGlow(boolean glow) {
+        if (glow) {
+            is.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            ItemMeta meta = is.getItemMeta();
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            is.setItemMeta(meta);
+        } else {
+            is.removeEnchantment(Enchantment.DURABILITY);
+        }
         return this;
     }
 

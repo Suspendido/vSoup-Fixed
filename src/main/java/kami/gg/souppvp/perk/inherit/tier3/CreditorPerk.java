@@ -23,9 +23,9 @@ public class CreditorPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Gain an additional 5 credits for"));
-        lore.add(CC.translate("&7every kill, but every death will"));
-        lore.add(CC.translate("&7result in 10 credits lost."));
+        lore.add(CC.t("&7Gain an additional 5 credits for"));
+        lore.add(CC.t("&7every kill, but every death will"));
+        lore.add(CC.t("&7result in 10 credits lost."));
         return lore;
     }
 

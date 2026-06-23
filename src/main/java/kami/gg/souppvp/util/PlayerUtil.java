@@ -142,8 +142,8 @@ public class PlayerUtil {
     }
 
 
-    public static void playSound(Player player, Sound sound){
-        player.playSound(player.getLocation(), sound, 1.0F, 1.0F);
+    public static void playSound(Player player, Sound sound, double pitch) {
+        player.playSound(player.getLocation(), sound, 1.0F, (float) pitch);
     }
 
     public static List<Player> convertUUIDListToPlayerList(List<UUID> list) {

@@ -31,7 +31,7 @@ public class KillstreakCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sendMessage(sender, "&cOnly players can run this command.");
             return;
         }
 

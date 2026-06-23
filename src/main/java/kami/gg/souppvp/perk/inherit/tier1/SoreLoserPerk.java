@@ -26,8 +26,8 @@ public class SoreLoserPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Automatically send salty messages to"));
-        lore.add(CC.translate("&7players when they kill you."));
+        lore.add(CC.t("&7Automatically send salty messages to"));
+        lore.add(CC.t("&7players when they kill you."));
         return lore;
     }
 

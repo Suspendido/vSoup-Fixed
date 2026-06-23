@@ -6,7 +6,6 @@ import kami.gg.souppvp.kit.button.KitButton;
 import kami.gg.souppvp.kit.button.RandomKitButton;
 import kami.gg.souppvp.kit.button.SelectPreviousKitButton;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.entity.Player;
@@ -22,7 +21,7 @@ public class KitsSelectMenu extends PaginatedMenu {
 
     @Override
     public String getPrePaginatedTitle(Player player) {
-        return CC.translate("Kit Selector");
+        return "Kit Selector";
     }
 
     @Override

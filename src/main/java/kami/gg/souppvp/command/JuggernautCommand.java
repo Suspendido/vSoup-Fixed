@@ -35,13 +35,13 @@ public class JuggernautCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /juggernaut <player>"));
+        return Collections.singletonList(CC.t("&cUsage: /juggernaut <player>"));
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sendMessage(sender, "&cOnly players can run this command.");
             return;
         }
 
@@ -53,24 +53,24 @@ public class JuggernautCommand extends Command {
         Player target = Bukkit.getPlayer(args[0]);
 
         if (target == null) {
-            sender.sendMessage(CC.translate("&cCouldn't find that player online."));
+            sendMessage(player, "&cCouldn't find that player online.");
             return;
         }
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
 
         if (profile == null) {
-            sender.sendMessage(CC.translate("&cThat player's profile could not be loaded."));
+            sendMessage(player, "&cThat player's profile could not be loaded.");
             return;
         }
 
         if (profile.getProfileState() != ProfileState.SPAWN) {
-            sender.sendMessage(CC.translate("&cThat player must be in spawn first."));
+            sendMessage(player, "&cThat player must be in spawn first.");
             return;
         }
 
         Juggernaut.setJuggernaut(target);
-        sender.sendMessage(CC.translate("&aYou set &f" + target.getName() + " &aas the Juggernaut."));
-        target.sendMessage(CC.translate("&eYou have been chosen as the Juggernaut!"));
+        sendMessage(player, "&aYou set &f" + target.getName() + " &aas the Juggernaut.");
+        sendMessage(target, "&eYou have been chosen as the Juggernaut!");
     }
 }

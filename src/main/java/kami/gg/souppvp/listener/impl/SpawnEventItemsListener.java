@@ -8,6 +8,7 @@ import kami.gg.souppvp.kit.menu.KitsSelectMenu;
 import kami.gg.souppvp.options.OptionsMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.shop.ShopMenu;
+import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.EventItems;
 import kami.gg.souppvp.util.SpawnItems;
@@ -83,25 +84,26 @@ public class SpawnEventItemsListener implements Listener {
 
     private void displayStatistics(Player player, Profile profile) {
         player.sendMessage(" ");
-        player.sendMessage(CC.translate("&bYour Statistics:"));
-        player.sendMessage(CC.translate(" &fKills: &b" + profile.getKills()));
-        player.sendMessage(CC.translate(" &fDeaths: &b" + profile.getDeaths()));
+        player.sendMessage(CC.t("&bYour Statistics:"));
+        player.sendMessage(CC.t(" &fKills: &b" + profile.getKills()));
+        player.sendMessage(CC.t(" &fDeaths: &b" + profile.getDeaths()));
 
         if (profile.getDeaths() == 0) {
-            player.sendMessage(CC.translate(" &fKDR: &6Infinity"));
+            player.sendMessage(CC.t(" &fKDR: &6Infinity"));
         } else {
             double kdr = (double) profile.getKills() / profile.getDeaths();
             String color = kdr >= 1.0 ? "&a" : "&c";
-            player.sendMessage(CC.translate(" &fKDR: " + color + KDR_FORMAT.format(kdr)));
+            player.sendMessage(CC.t(" &fKDR: " + color + KDR_FORMAT.format(kdr)));
         }
 
-        player.sendMessage(CC.translate(" &fCurrent Killstreak: &b" + profile.getCurrentKillstreak()));
-        player.sendMessage(CC.translate(" &fHighest Killstreak: &b" + profile.getHighestKillstreak()));
-        player.sendMessage(CC.translate(" &fCredits: &b" + profile.getCredits()));
-        player.sendMessage(CC.translate(" &fTier: &7" + profile.getTier().getDisplay() + "✫"));
+        player.sendMessage(CC.t(" &fCurrent Killstreak: &b" + profile.getCurrentKillstreak()));
+        player.sendMessage(CC.t(" &fHighest Killstreak: &b" + profile.getHighestKillstreak()));
+        player.sendMessage(CC.t(" &fCredits: &b" + profile.getCredits()));
+        TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
+        player.sendMessage(CC.t(" &fTier: &7" + profile.getTier().getTierLevel() + category.getFormattedIcon()));
 
         if (profile.getBounty() > 0) {
-            player.sendMessage(CC.translate(" &fBounty: &b" + profile.getBounty()));
+            player.sendMessage(CC.t(" &fBounty: &b" + profile.getBounty()));
         }
 
         player.sendMessage(" ");
@@ -111,7 +113,7 @@ public class SpawnEventItemsListener implements Listener {
         String previousKitName = profile.getPreviousKit();
 
         if (previousKitName == null) {
-            player.sendMessage(CC.translate("&cYou don't have a previous kit."));
+            player.sendMessage(CC.t("&cYou don't have a previous kit."));
             return;
         }
 
@@ -121,7 +123,7 @@ public class SpawnEventItemsListener implements Listener {
         Kit defaultKit = kitsHandler.getKitByName("Default");
 
         if (currentKit == null || defaultKit == null) {
-            player.sendMessage(CC.translate("&cError loading kits. Please try again."));
+            player.sendMessage(CC.t("&cError loading kits. Please try again."));
             return;
         }
 
@@ -131,7 +133,7 @@ public class SpawnEventItemsListener implements Listener {
 
             defaultKit.equipKit(player);
 
-            player.sendMessage(CC.translate("&cYour previous kit is no longer available. You were given the &r" + defaultKit.getRarityType().getColor() + defaultKit.getName()));
+            player.sendMessage(CC.t("&cYour previous kit is no longer available. You were given the &r" + defaultKit.getRarityType().getColor() + defaultKit.getName()));
             return;
         }
 
@@ -139,7 +141,7 @@ public class SpawnEventItemsListener implements Listener {
         profile.setCurrentKit(previousKit.getName());
 
         previousKit.equipKit(player);
-        player.sendMessage(CC.translate("&aSuccessfully equipped your previous kit: &r" + previousKit.getRarityType().getColor() + previousKit.getName()));
+        player.sendMessage(CC.t("&aSuccessfully equipped your previous kit: &r" + previousKit.getRarityType().getColor() + previousKit.getName()));
     }
 
     @EventHandler

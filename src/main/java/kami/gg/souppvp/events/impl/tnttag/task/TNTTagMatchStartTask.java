@@ -28,7 +28,7 @@ public class TNTTagMatchStartTask extends TNTTagTask {
     }
 
     private void startRound(TNTTagGame game) {
-        game.broadcastMessage(CC.translate("&bMatch Started!"));
+        game.broadcastMessage(CC.t("&bMatch Started!"));
         game.setState(TNTTagState.RUNNING);
         game.setRoundStartTime(System.currentTimeMillis());
         game.pickNewTNT();

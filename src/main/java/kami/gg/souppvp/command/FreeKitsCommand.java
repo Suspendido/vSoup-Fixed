@@ -38,6 +38,6 @@ public class FreeKitsCommand extends Command {
         SoupPvP.getInstance().saveConfig();
         SoupPvP.getInstance().reloadConfig();
         String status = SoupPvP.getIsFreeKitsMode() ? "&a&lenabled" : "&c&ldisabled";
-        player.sendMessage(CC.translate("&aSuccessfully " + status + " &afree kits mode!"));
+        sendMessage(player, "&aSuccessfully " + status + " &afree kits mode!");
     }
 }

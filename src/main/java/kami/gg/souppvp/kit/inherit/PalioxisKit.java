@@ -119,14 +119,14 @@ public class PalioxisKit extends Kit {
         }
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(killer.getLocation())) {
-            killer.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            killer.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
         int boostDuration = 20 * 10;
         PotionEffect currentSpeed3 = killer.getActivePotionEffects().stream().filter(pe -> pe.getType() == PotionEffectType.SPEED && pe.getAmplifier() == 2).findFirst().orElse(null);
         int duration = currentSpeed3 != null ? currentSpeed3.getDuration() + boostDuration : boostDuration;
-        killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, duration, 2), true);
+        killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, duration, 3), true);
 
         new BukkitRunnable() {
             @Override
@@ -135,7 +135,7 @@ public class PalioxisKit extends Kit {
                 if (!profile.getCurrentKit().equals(getName())) return;
                 if (profile.getProfileState() == ProfileState.SPAWN || profile.isInEvent()) return;
 
-                killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
+                killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
             }
         }.runTaskLater(plugin, duration);
 

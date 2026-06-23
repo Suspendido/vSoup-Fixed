@@ -5,7 +5,6 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -57,7 +56,7 @@ public class ZeusKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         List<ItemStack> itemStacks = new ArrayList<>();
         itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).build());
-        itemStacks.add(new ItemBuilder(Material.GLOWSTONE_DUST).name(CC.translate("&6Lightning Bolt")).build());
+        itemStacks.add(new ItemBuilder(Material.GLOWSTONE_DUST).name(CC.t("&6Lightning Bolt")).build());
         return itemStacks;
     }
 
@@ -96,13 +95,13 @@ public class ZeusKit extends Kit {
         event.setCancelled(true);
         player.updateInventory();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Lightning Bolt", true)) {
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Lightning Bolt", true), true) + "&c."));
+        if (hasTimer(player.getUniqueId())) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
             return;
         }
 
-        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+        if (isInSpawn(player, profile)) {
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
@@ -121,16 +120,13 @@ public class ZeusKit extends Kit {
         }
 
         if (!hit) {
-            player.sendMessage(CC.translate("&cNo players nearby."));
+            player.sendMessage(CC.t("&cNo players nearby."));
+            return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                player.getUniqueId(),
-                new Timer("Lightning Bolt", TimeUnit.SECONDS.toMillis(45)),
-                true
-        );
+        addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(45));
 
         XPBarTimer.runXpBar(player, 45);
-        PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER);
+        PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER, 1.0);
     }
 }

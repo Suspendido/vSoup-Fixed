@@ -63,7 +63,7 @@ public class KangarooKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         return Arrays.asList(
                 new ItemBuilder(Material.DIAMOND_SWORD).build(),
-                new ItemBuilder(Material.FIREWORK).name(CC.translate("&cKangaroo Boost")).build()
+                new ItemBuilder(Material.FIREWORK).name(CC.t("&cKangaroo Boost")).build()
         );
     }
 
@@ -136,12 +136,12 @@ public class KangarooKit extends Kit {
 
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, "Kangaroo", true)) {
             long remain = SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, "Kangaroo", true);
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remain, true) + "&c."));
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remain, true) + "&c."));
             return;
         }
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 

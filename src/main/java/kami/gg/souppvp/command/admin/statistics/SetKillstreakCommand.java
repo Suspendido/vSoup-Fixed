@@ -27,7 +27,7 @@ public class SetKillstreakCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /setkillstreak <player> <value>"));
+        return Collections.singletonList(CC.t("&cUsage: /setkillstreak <player> <value>"));
     }
 
     @Override
@@ -41,13 +41,13 @@ public class SetKillstreakCommand extends Command {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
         if (profile == null){
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
             return;
         }
 
         int value = Integer.parseInt(args[1]);
         profile.setCurrentKillstreak(value);
-        sender.sendMessage(CC.translate("&aSuccessfully updated!"));
+        sender.sendMessage(CC.t("&aSuccessfully updated!"));
         profile.saveProfile();
     }
 }

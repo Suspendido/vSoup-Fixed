@@ -31,7 +31,7 @@ public class Juggernaut {
         player.getInventory().setItem(8, new ItemBuilder(Material.GOLDEN_APPLE).amount(32).build());
         PlayerUtil.giveSoup(player);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
-        Bukkit.broadcastMessage(CC.translate("&a" + player.getName() + " &eis now a Juggernaut, kill them to receive their bounty of &a" + profile.getBounty() + " &ecredits!"));
+        Bukkit.broadcastMessage(CC.t("&a" + player.getName() + " &eis now a Juggernaut, kill them to receive their bounty of &a" + profile.getBounty() + " &ecredits!"));
     }
 
     private static final ItemStack[] getArmor = new ItemStack[]{

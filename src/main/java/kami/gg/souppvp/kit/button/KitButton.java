@@ -76,7 +76,7 @@ public class KitButton extends Button {
         boolean unlocked = profile.getUnlockedKits().contains(kitName);
 
         if (clickType.isRightClick()) {
-            PlayerUtil.playSound(player, Sound.CLICK);
+            PlayerUtil.playSound(player, Sound.CLICK, 1.0);
             new KitViewMenu(kit).openMenu(player);
             return;
         }
@@ -85,25 +85,25 @@ public class KitButton extends Button {
 
         if (freeMode || unlocked) {
             kit.equipKit(player);
-            PlayerUtil.playSound(player, Sound.CLICK);
+            PlayerUtil.playSound(player, Sound.CLICK, 1.0);
             profile.setPreviousKit(profile.getCurrentKit());
             profile.setCurrentKit(kitName);
             player.closeInventory();
-            player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kitName + "&a kit."));
+            sendMessage(player, "&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kitName + "&a kit.");
             return;
         }
 
         if (profile.getCredits() < kit.getPrice()) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            player.sendMessage(CC.translate("&cNot enough credits!"));
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+            sendMessage(player, "&cNot enough credits!");
             return;
         }
 
-        PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+        PlayerUtil.playSound(player, Sound.NOTE_PIANO, 1.0);
         profile.setCredits(profile.getCredits() - kit.getPrice());
         profile.getUnlockedKits().add(kitName);
-        PlayerUtil.playSound(player, Sound.VILLAGER_YES);
-        player.sendMessage(CC.translate("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
+        PlayerUtil.playSound(player, Sound.VILLAGER_YES, 1.0);
+        player.sendMessage(CC.t("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
     }
 
     private boolean hasExactPermission(Player player, String permission) {

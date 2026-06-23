@@ -14,8 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-
 public class FiveKillstreak extends Killstreak implements Listener {
 
     @Override
@@ -60,7 +58,7 @@ public class FiveKillstreak extends Killstreak implements Listener {
         int requiredKills = hasHardline ? getRequired() - 1 : getRequired();
         if (profile.getCurrentKillstreak() != requiredKills) return;
 
-        event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
+        event.getEntity().getKiller().sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
         PlayerUtil.repairPlayer(event.getEntity().getKiller());
     }
 

@@ -59,7 +59,7 @@ public class TenKillstreak extends Killstreak implements Listener {
         if (profile.getCurrentKillstreak() != requiredKills) return;
         var killer = event.getEntity().getKiller();
 
-        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
+        killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
         giveItemReplacingSoup(killer, KillstreakReward.GOLDEN_APPLES);
     }
 

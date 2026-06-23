@@ -21,7 +21,7 @@ public class StaffOnlineMenu extends PaginatedMenu {
 
     private final StaffManager staffManager;
 
-    public StaffOnlineMenu(Player player) {
+    public StaffOnlineMenu() {
         this.staffManager = soupPvP.getStaffManager();
     }
 

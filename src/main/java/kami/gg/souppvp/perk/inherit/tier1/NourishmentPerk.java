@@ -24,8 +24,8 @@ public class NourishmentPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Every kill has a 25% chance to"));
-        lore.add(CC.translate("&7replenish your hotbar."));
+        lore.add(CC.t("&7Every kill has a 25% chance to"));
+        lore.add(CC.t("&7replenish your hotbar."));
         return lore;
     }
 

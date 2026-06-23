@@ -42,17 +42,17 @@ public class MapCommand extends Command {
         switch (subcommand) {
             case "setstart":
                 mapManager.setStartDate();
-                player.sendMessage(CC.translate("&aMap start date set to now."));
+                player.sendMessage(CC.t("&aMap start date set to now."));
                 break;
 
             case "setduration":
                 if (args.length < 2) {
-                    player.sendMessage(CC.translate("&cUsage: /map setduration <duration> (e.g., 1d12h)"));
+                    player.sendMessage(CC.t("&cUsage: /map setduration <duration> (e.g., 1d12h)"));
                     return;
                 }
                 String duration = args[1];
                 mapManager.setDuration(duration);
-                player.sendMessage(CC.translate("&aMap duration set to " + duration + "."));
+                player.sendMessage(CC.t("&aMap duration set to " + duration + "."));
                 break;
             default:
                 sendUsage(player);

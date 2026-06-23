@@ -28,8 +28,8 @@ public class InfernoPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7After being on fire for 10 seconds"));
-        lore.add(CC.translate("&7You will be extinguished."));
+        lore.add(CC.t("&7After being on fire for 10 seconds"));
+        lore.add(CC.t("&7You will be extinguished."));
         return lore;
     }
 

@@ -24,7 +24,7 @@ public class CanaPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Water acts as lava, and lava acts as water"));
+        lore.add(CC.t("&7Water acts as lava, and lava acts as water"));
         return lore;
     }
 

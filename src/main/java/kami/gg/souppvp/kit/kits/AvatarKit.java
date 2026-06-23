@@ -82,7 +82,7 @@ public class AvatarKit extends Kit {
         return Arrays.asList(
                 new ItemBuilder(Material.DIAMOND_SWORD).build(),
                 new ItemBuilder(Material.INK_SACK)
-                        .name(CC.translate("&bWater Gun"))
+                        .name(CC.t("&bWater Gun"))
                         .durability((short) 12)
                         .build()
         );
@@ -259,7 +259,7 @@ public class AvatarKit extends Kit {
         // cd
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(p.getUniqueId(), "Avatar Jump", false)) {
             long rem = SoupPvP.getInstance().getTimersHandler().getRemaining(p.getUniqueId(), "Avatar Jump", false);
-            p.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
+            p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
             return;
         }
 

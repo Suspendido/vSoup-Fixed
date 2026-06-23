@@ -33,7 +33,7 @@ public class FifteenKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.POTION)
                 .durability(8259)
-                .name(CC.translate("&a" + getName()))
+                .name(CC.t("&a" + getName()))
                 .lore(
                         CC.MENU_BAR,
                         "&7Gives you a potion that will apply",
@@ -54,7 +54,7 @@ public class FifteenKillstreak extends Killstreak implements Listener {
         int required = getRequiredKillstreak(profile);
         if (profile.getCurrentKillstreak() != required) return;
 
-        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+        killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
         giveItem(killer, KillstreakReward.FIRE_RESISTANCE_POTION);
     }
 

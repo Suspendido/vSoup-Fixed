@@ -26,8 +26,8 @@ public class MartydomPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Have a small chance of"));
-        lore.add(CC.translate("&7spawning a creeper where you die."));
+        lore.add(CC.t("&7Have a small chance of"));
+        lore.add(CC.t("&7spawning a creeper where you die."));
         return lore;
     }
 
@@ -56,7 +56,7 @@ public class MartydomPerk extends Perk implements Listener {
         if (currentPerk == soreLoserPerk){
             Creeper creeper = (Creeper) event.getEntity().getWorld().spawnEntity(event.getEntity().getEyeLocation(), EntityType.CREEPER);
             creeper.setPowered(true);
-            creeper.setCustomName(CC.translate("&b&lMartydom"));
+            creeper.setCustomName(CC.t("&b&lMartydom"));
         }
     }
 

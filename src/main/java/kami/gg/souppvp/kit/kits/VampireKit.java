@@ -68,7 +68,7 @@ public class VampireKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         List<ItemStack> itemStacks = new ArrayList<>();
         itemStacks.add(new ItemBuilder(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).enchantment(Enchantment.DURABILITY, 1).build());
-        itemStacks.add(new ItemBuilder(Material.MONSTER_EGG).durability(65).name(CC.translate("&9Bat Blast")).build());
+        itemStacks.add(new ItemBuilder(Material.MONSTER_EGG).durability(65).name(CC.t("&9Bat Blast")).build());
         return itemStacks;
     }
 
@@ -108,7 +108,7 @@ public class VampireKit extends Kit {
         event.setCancelled(true);
 
         if (profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-            player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in Spawn."));
             return;
         }
 

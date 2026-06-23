@@ -55,7 +55,7 @@ public class TwentyKillstreak extends Killstreak implements Listener {
         int required = getRequiredKillstreak(profile);
         if (profile.getCurrentKillstreak() != required) return;
 
-        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+        killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
         giveGrandmaSoups(killer);
     }
 

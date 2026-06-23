@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EskimoKit extends Kit {
 
-    private final ItemStack ICE_ITEM = new ItemBuilder(Material.PACKED_ICE).name(CC.translate("&5Ice Dome")).build();
+    private final ItemStack ICE_ITEM = new ItemBuilder(Material.PACKED_ICE).name(CC.t("&5Ice Dome")).build();
 
     @Override
     public String getName() {
@@ -115,13 +115,13 @@ public class EskimoKit extends Kit {
         event.setCancelled(true);
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Ice Dome", true)) {
             long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Ice Dome", true);
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
             return;
         }
 

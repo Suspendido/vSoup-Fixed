@@ -33,7 +33,7 @@ public class FreezeCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /freeze <player>"));
+        return Collections.singletonList(CC.t("&cUsage: /freeze <player>"));
     }
 
     @Override

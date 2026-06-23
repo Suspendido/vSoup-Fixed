@@ -58,7 +58,7 @@ public class ThirtyFiveKillstreak extends Killstreak implements Listener {
         if (profile.getCurrentKillstreak() != requiredKills) return;
 
         profile.setCredits(profile.getCredits() + 1000);
-        event.getEntity().getKiller().sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
+        event.getEntity().getKiller().sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
     }
 
 }

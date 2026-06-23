@@ -33,7 +33,7 @@ public class BarbarianKit extends Kit {
 
     private final ItemStack swarmItem =
             new ItemBuilder(Material.INK_SACK)
-                    .name(CC.translate("&9Silverfish Swarm"))
+                    .name(CC.t("&9Silverfish Swarm"))
                     .durability(6)
                     .build();
 
@@ -113,14 +113,14 @@ public class BarbarianKit extends Kit {
 
         // Spawn check
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-            player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in Spawn."));
             return;
         }
 
         // Cooldown check
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
             long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
             return;
         }
 

@@ -34,7 +34,7 @@ public class TwentyFiveKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.IRON_INGOT)
-                .name(CC.translate("&a" + getName()))
+                .name(CC.t("&a" + getName()))
                 .lore(Arrays.asList(
                         CC.MENU_BAR,
                         "&7Fully repairs your armor, giving",
@@ -55,7 +55,7 @@ public class TwentyFiveKillstreak extends Killstreak implements Listener {
 
         if (profile.getCurrentKillstreak() != required) return;
 
-        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+        killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
         PlayerUtil.repairPlayer(killer);
     }
 

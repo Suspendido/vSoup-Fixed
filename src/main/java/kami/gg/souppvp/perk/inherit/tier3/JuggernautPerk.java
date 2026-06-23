@@ -26,8 +26,8 @@ public class JuggernautPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Enemy kills give you Regeneration I"));
-        lore.add(CC.translate("&7for up to 10 seconds."));
+        lore.add(CC.t("&7Enemy kills give you Regeneration I"));
+        lore.add(CC.t("&7for up to 10 seconds."));
         return lore;
     }
 

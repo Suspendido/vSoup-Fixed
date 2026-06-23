@@ -4,8 +4,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
@@ -86,7 +84,7 @@ public class StomperKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         if (stomperItem == null) {
             stomperItem = new ItemBuilder(Material.ANVIL)
-                    .name(CC.translate("&6Stomper"))
+                    .name("&6Stomper")
                     .build();
         }
 
@@ -167,7 +165,7 @@ public class StomperKit extends Kit {
         if (profile == null || !profile.getCurrentKit().equals(getName())) return;
 
         if (profile.isInEvent() || isInSpawn(player, profile)) {
-            player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in Spawn."));
             return;
         }
 
@@ -176,9 +174,7 @@ public class StomperKit extends Kit {
 
         if (hasTimer(uuid)) {
             long remaining = getRemaining(uuid);
-            player.sendMessage(ChatColor.RED + "You can't use this for another " +
-                    ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) +
-                    ChatColor.RED + ".");
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
             return;
         }
 
@@ -187,7 +183,7 @@ public class StomperKit extends Kit {
 
         player.setVelocity(LAUNCH_VECTOR.clone());
 
-        addTimer(uuid);
+        addTimer(uuid, COOLDOWN_MILLIS);
         XPBarTimer.runXpBar(player, COOLDOWN_SECONDS);
 
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1.0F, 1.0F);
@@ -224,7 +220,7 @@ public class StomperKit extends Kit {
         if (profile.isInEvent() || isInSpawn(player, profile)) return;
 
         if (player.getLocation().getBlockY() >= MAX_Y_LEVEL) {
-            player.sendMessage(ChatColor.RED + "Stomper is blocked at this y level.");
+            player.sendMessage(CC.t("&cStomper is blocked at this y level."));
             return;
         }
 
@@ -267,22 +263,6 @@ public class StomperKit extends Kit {
 
     private Profile getProfile(Player player) {
         return SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-    }
-
-    private boolean isInSpawn(Player player, Profile profile) {
-        return profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player);
-    }
-
-    private boolean hasTimer(UUID uuid) {
-        return SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, KIT_NAME + " Charge", true);
-    }
-
-    private long getRemaining(UUID uuid) {
-        return SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, KIT_NAME + " Charge", true);
-    }
-
-    private void addTimer(UUID uuid) {
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(uuid, new Timer(KIT_NAME + " Charge", COOLDOWN_MILLIS), true);
     }
 
     public static void cleanup(UUID uuid) {

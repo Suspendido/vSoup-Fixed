@@ -28,7 +28,7 @@ public class AdjustPerksMenu extends Menu {
         if (tier == 1) color = "&e";
         if (tier == 2) color = "&c";
         if (tier == 3) color = "&5";
-        return CC.translate(color + "Tier " + tier + " Perks");
+        return CC.t(color + "Tier " + tier + " Perks");
     }
 
     @Override

@@ -44,7 +44,7 @@ public class FortyFiveKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.SNOW_BALL)
-                .name(CC.translate("&a" + getName()))
+                .name(CC.t("&a" + getName()))
                 .lore(
                         CC.MENU_BAR,
                         "&fSpawns an Angry Snowman",
@@ -65,7 +65,7 @@ public class FortyFiveKillstreak extends Killstreak implements Listener {
         int required = getRequiredKillstreak(profile);
 
         if (profile.getCurrentKillstreak() == required) {
-            killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+            killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
             spawnSnowman(killer);
         }
     }
@@ -80,7 +80,7 @@ public class FortyFiveKillstreak extends Killstreak implements Listener {
 
         snowman.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), owner.getUniqueId().toString()));
 
-        snowman.setCustomName(CC.translate("&b&l" + owner.getName() + "'s Angry Snowman"));
+        snowman.setCustomName(CC.t("&b&l" + owner.getName() + "'s Angry Snowman"));
         snowman.setMaxHealth(500);
         snowman.setHealth(500);
 

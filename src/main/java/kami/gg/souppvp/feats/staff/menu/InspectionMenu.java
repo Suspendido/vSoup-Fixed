@@ -26,7 +26,7 @@ public class InspectionMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("&cInspecting &f" + target.getName());
+        return CC.t("&cInspecting &f" + target.getName());
     }
 
     @Override

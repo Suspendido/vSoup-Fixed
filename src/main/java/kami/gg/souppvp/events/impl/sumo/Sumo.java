@@ -25,7 +25,7 @@ import java.util.UUID;
 @Getter @Setter
 public class Sumo {
 
-	public static String EVENT_PREFIX = CC.translate("");
+	public static String EVENT_PREFIX = CC.t("");
 
 	private String name;
 	private SumoState state = SumoState.WAITING;
@@ -102,7 +102,7 @@ public class Sumo {
 
 	public void handleJoin(Player player) {
 		eventPlayers.put(player.getUniqueId(), new SumoPlayer(player));
-		broadcastMessage(CC.translate("&b" + player.getName() + " &7has joined the &bSumo &7Event! &f(" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")"));
+		broadcastMessage(CC.t("&b" + player.getName() + " &7has joined the &bSumo &7Event! &f(" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")"));
 		Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 		profile.setSumoEvent(this);
 		profile.setProfileState(ProfileState.IN_EVENT);
@@ -117,7 +117,7 @@ public class Sumo {
 		}
 		eventPlayers.remove(player.getUniqueId());
 		if (state == SumoState.WAITING) {
-			broadcastMessage(CC.translate("&b" + player.getName() + " &7has left the &bSumo &7Event! &f(" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")"));
+			broadcastMessage(CC.t("&b" + player.getName() + " &7has left the &bSumo &7Event! &f(" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")"));
 		}
 		Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 		profile.setProfileState(ProfileState.SPAWN);
@@ -140,12 +140,12 @@ public class Sumo {
 		setEventTask(null);
 		Player winner = this.getWinner();
 		if (winner == null) {
-			Bukkit.broadcastMessage(CC.translate("&cThe Sumo Event has been cancelled."));
+			Bukkit.broadcastMessage(CC.t("&cThe Sumo Event has been cancelled."));
 		} else {
 			Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(winner.getUniqueId());
 			profile.setEventsWon(profile.getEventsWon() + 1);
 			profile.setCredits(profile.getCredits() + 100);
-			Bukkit.broadcastMessage(CC.translate("&b" + winner.getName() + " &7has won the &bSumo &7Event!"));
+			Bukkit.broadcastMessage(CC.t("&b" + winner.getName() + " &7has won the &bSumo &7Event!"));
 		}
 		for (SumoPlayer sumoPlayer : eventPlayers.values()) {
 			Player player = sumoPlayer.getPlayer();
@@ -181,7 +181,7 @@ public class Sumo {
 
 	public void announce() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			FancyMessage message = new FancyMessage(CC.translate("&b" + getHost().getUsername() + " &fis currently hosting a &dSumo Event&f! "));
+			FancyMessage message = new FancyMessage(CC.t("&b" + getHost().getUsername() + " &fis currently hosting a &dSumo Event&f! "));
 			message.then("[Click Here]").color(ChatColor.GREEN).command("/sumo join").tooltip(ChatColor.GREEN + "Click to join!").then(" (" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")").color(ChatColor.WHITE);
 			message.send(player);
 		}
@@ -189,7 +189,7 @@ public class Sumo {
 
 	public void broadcastMessage(String message) {
 		for (Player player : getPlayers()) {
-			player.sendMessage(EVENT_PREFIX + CC.translate(message));
+			player.sendMessage(EVENT_PREFIX + CC.t(message));
 		}
 	}
 
@@ -242,7 +242,7 @@ public class Sumo {
 		winner.setState(SumoPlayerState.WAITING);
 		winner.incrementRoundWins();
 		winner.getPlayer().teleport(SoupPvP.getInstance().getSumoHandler().getSpectatorSpawn());
-		broadcastMessage(CC.translate("&b" + winner.getUsername()  + "&7 eliminated &b" + player.getName() + "&7!"));
+		broadcastMessage(CC.t("&b" + winner.getUsername()  + "&7 eliminated &b" + player.getName() + "&7!"));
 		setState(SumoState.ROUND_ENDING);
 		setEventTask(new SumoRoundEndTask(this));
 	}

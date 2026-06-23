@@ -32,19 +32,19 @@ public class CoinFlipListener implements Listener {
 
         if (!MathUtil.isNumeric(message)) {
             profile.setCoinFlipState(CoinFlipState.NONE);
-            player.sendMessage(CC.translate("&aSuccessfully cancelled the coin flip creation procedure."));
+            player.sendMessage(CC.t("&aSuccessfully cancelled the coin flip creation procedure."));
             return;
         }
 
         int amount = Integer.parseInt(message);
 
         if (amount <= 0) {
-            player.sendMessage(CC.translate("&cThe wager amount has to be greater than zero!"));
+            player.sendMessage(CC.t("&cThe wager amount has to be greater than zero!"));
             return;
         }
 
         if (profile.getCredits() < amount) {
-            player.sendMessage(CC.translate("&cInsufficient credits! Try entering a lower amount!"));
+            player.sendMessage(CC.t("&cInsufficient credits! Try entering a lower amount!"));
             return;
         }
 

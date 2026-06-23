@@ -27,7 +27,7 @@ public class CreditsAddCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /addcredits <player> <int>"));
+        return Collections.singletonList(CC.t("&cUsage: /addcredits <player> <int>"));
     }
 
     @Override
@@ -41,13 +41,13 @@ public class CreditsAddCommand extends Command {
         Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
         if (targetProfile == null) {
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
             return;
         }
 
         int amount = Integer.parseInt(args[1]);
         targetProfile.setCredits(targetProfile.getCredits() + amount);
         targetProfile.saveProfile();
-        sender.sendMessage(CC.translate("&aSuccessfully add &e" + amount + "&a credits to &e" + targetProfile.getUsername() + "'s &abalance."));
+        sender.sendMessage(CC.t("&aSuccessfully add &e" + amount + "&a credits to &e" + targetProfile.getUsername() + "'s &abalance."));
     }
 }

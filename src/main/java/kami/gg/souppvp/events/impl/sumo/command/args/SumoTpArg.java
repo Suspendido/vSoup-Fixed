@@ -1,7 +1,6 @@
 package kami.gg.souppvp.events.impl.sumo.command.args;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Argument;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -24,11 +23,11 @@ public class SumoTpArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sendMessage(sender, "&cOnly players can run this command.");
             return;
         }
 
         player.teleport(SoupPvP.getInstance().getSumoHandler().getSpectatorSpawn());
-        player.sendMessage(CC.translate("&aSuccessfully teleported to the sumo system's spectator spawn location."));
+        sendMessage(player,"&aSuccessfully teleported to the sumo system's spectator spawn location.");
     }
 }

@@ -5,7 +5,6 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -58,7 +57,7 @@ public class YodaKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         List<ItemStack> itemStacks = new ArrayList<>();
         itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).build());
-        itemStacks.add(new ItemBuilder(Material.INK_SACK).durability(2).name(CC.translate("&aThe Force")).build());
+        itemStacks.add(new ItemBuilder(Material.INK_SACK).durability(2).name("&aThe Force").build());
         return itemStacks;
     }
 
@@ -85,53 +84,60 @@ public class YodaKit extends Kit {
     }
 
     @EventHandler
-    public void onPlayerInteractEvent(PlayerInteractEvent event){
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(getName())){
-            if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
-                event.setCancelled(true);
-                player.updateInventory();
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "The Force", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "The Force", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("The Force", TimeUnit.SECONDS.toMillis(45)), true);
-                XPBarTimer.runXpBar(player, 45);
-                PlayerUtil.playSound(player, Sound.ENDERMAN_STARE);
-                for (Entity entity : player.getNearbyEntities(10, 10, 10)){
-                    if (entity instanceof Player){
-                        PlayerUtil.playSound((Player) entity, Sound.ENDERMAN_STARE);
-                        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(entity)) return;
-                        entity.sendMessage(CC.translate("&cYou are being pulled by The Force."));
-                    }
-                }
-                Location location = player.getLocation();
-                new BukkitRunnable() {
-                    int i = 0;
-                    @Override
-                    public void run() {
-                        if(i >= 50) {
-                            cancel();
-                        }
-                        ++i;
-                        for (Player player1 : Bukkit.getOnlinePlayers()){
-                            if (player1.getLocation().distance(location) <= 10 && player1 != player){
-                                Profile profile1 = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player1.getUniqueId());
-                                if (profile1.getProfileState() == ProfileState.SPAWN){
-                                    return;
-                                }
-                                moveToward(player1, location);
-                            }
-                        }
-                    }
-                }.runTaskTimer(SoupPvP.getInstance(), 2L, 2L);
+        if (!profile.getCurrentKit().equals(getName())) return;
+
+        if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+            event.setCancelled(true);
+            player.updateInventory();
+
+            if (profile.isInEvent() || isInSpawn(player, profile)) {
+                player.sendMessage(CC.t("&cYou can't use this while in spawn."));
+                return;
             }
+
+            if (hasTimer(player.getUniqueId())) {
+                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
+                return;
+            }
+
+            addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(45));
+            XPBarTimer.runXpBar(player, 45);
+            PlayerUtil.playSound(player, Sound.ENDERMAN_STARE, 1.0);
+
+            for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
+                if (entity instanceof Player) {
+                    PlayerUtil.playSound((Player) entity, Sound.ENDERMAN_STARE, 1.0);
+                    if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(entity)) return;
+                    entity.sendMessage(CC.t("&cYou are being pulled by The Force."));
+                }
+            }
+
+            Location location = player.getLocation();
+            new BukkitRunnable() {
+                int i = 0;
+                @Override
+                public void run() {
+                    if(i >= 50) {
+                        cancel();
+                    }
+                    ++i;
+                    for (Player targets : Bukkit.getOnlinePlayers()) {
+                        if (targets.getLocation().distance(location) <= 10 && targets != player) {
+                            Profile targetsprofile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(targets.getUniqueId());
+                            if (targetsprofile.getProfileState() == ProfileState.SPAWN) return;
+                            moveToward(targets, location);
+                        }
+                    }
+                }
+            }.runTaskTimer(SoupPvP.getInstance(), 2L, 2L);
         }
     }
 
-    private void moveToward(Entity entity, Location to){
+
+    private void moveToward(Entity entity, Location to) {
         Location loc = entity.getLocation();
         double x = loc.getX() - to.getX();
         double y = loc.getY() - to.getY();

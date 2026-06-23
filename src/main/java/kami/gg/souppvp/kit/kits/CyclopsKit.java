@@ -5,7 +5,6 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -66,7 +65,7 @@ public class CyclopsKit extends Kit {
                         .enchantment(Enchantment.DAMAGE_ALL, 1)
                         .enchantment(Enchantment.DURABILITY, 3)
                         .build(),
-                new ItemBuilder(Material.REDSTONE).name(CC.translate("&cLaser Beam")).build()
+                new ItemBuilder(Material.REDSTONE).name("&cLaser Beam").build()
         );
     }
 
@@ -110,27 +109,24 @@ public class CyclopsKit extends Kit {
         event.setCancelled(true);
         player.updateInventory();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), LASER_NAME, true)) {
-            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), LASER_NAME, true);
+        if (isInSpawn(player, profile)) {
+            player.sendMessage("&cYou can't use this while in spawn!");
+            return;
+        }
 
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), LASER_NAME, true)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
             return;
         }
 
         // Apply cooldown
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                player.getUniqueId(),
-                new Timer(LASER_NAME, TimeUnit.SECONDS.toMillis(LASER_COOLDOWN)),
-                true
-        );
-
+        addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(LASER_COOLDOWN));
         XPBarTimer.runXpBar(player, LASER_COOLDOWN);
-
-        PlayerUtil.playSound(player, Sound.GHAST_SCREAM);
+        PlayerUtil.playSound(player, Sound.GHAST_SCREAM, 1.0);
         player.getNearbyEntities(5, 5, 5)
                 .stream()
                 .filter(e -> e instanceof Player)
-                .forEach(e -> PlayerUtil.playSound((Player) e, Sound.ZOMBIE_REMEDY));
+                .forEach(e -> PlayerUtil.playSound((Player) e, Sound.ZOMBIE_REMEDY, 1.0));
 
         // Start laser bursts
         new BukkitRunnable() {

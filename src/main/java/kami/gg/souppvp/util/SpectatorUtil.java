@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffect;
 
 public class SpectatorUtil {
 
-    public static void resetPlayer(Player player){
+    public static void resetPlayer(Player player) {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
@@ -26,7 +26,7 @@ public class SpectatorUtil {
 
         player.getInventory().setItem(0, SpawnItems.KITS_SELECTOR);
         player.getInventory().setItem(1, SpawnItems.HOST_EVENTS);
-        player.getInventory().setItem(4, SpawnItems.YOUR_STATISTICS);
+        player.getInventory().setItem(4, SpawnItems.SHOP);
         player.getInventory().setItem(7, SpawnItems.PREVIOUS_KIT);
         player.getInventory().setItem(8, SpawnItems.YOUR_OPTIONS);
 
@@ -36,7 +36,7 @@ public class SpectatorUtil {
         player.setTotalExperience(0);
         player.setFireTicks(0);
 
-        if (player.hasMetadata("noFall")){
+        if (player.hasMetadata("noFall")) {
             player.removeMetadata("noFall", SoupPvP.getInstance());
         }
 

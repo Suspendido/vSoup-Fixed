@@ -38,19 +38,19 @@ public abstract class Button {
     }
 
     public void sendMessage(Player player, String s) {
-        player.sendMessage(CC.translate(s));
+        player.sendMessage(CC.t(s));
     }
 
     public void broadcast(String... s) {
         for (String string : s) {
-            String finalString = CC.translate(string);
+            String finalString = CC.t(string);
             Bukkit.getOnlinePlayers().forEach(player -> sendMessage(player, finalString));
         }
     }
 
     public void broadcast(List<String> s) {
         for (String string : s) {
-            String finalString = CC.translate(string);
+            String finalString = CC.t(string);
             Bukkit.getOnlinePlayers().forEach(player -> sendMessage(player, finalString));
         }
     }

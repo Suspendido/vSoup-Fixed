@@ -3,7 +3,6 @@ package kami.gg.souppvp.command;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.shop.ShopMenu;
-import kami.gg.souppvp.shop.items.ItemsMenu;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
@@ -32,14 +31,14 @@ public class ShopCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sendMessage(sender, "&cOnly players can run this command.");
             return;
         }
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        if (profile.isJuggernaut()){
-            sender.sendMessage(CC.translate("&cYou may not visit the shop whilst in Juggernaut."));
+        if (profile.isJuggernaut()) {
+            sendMessage(player, "&cYou may not visit the shop whilst in Juggernaut.");
             return;
         }
 

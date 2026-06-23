@@ -103,13 +103,13 @@ public class CopyCatKit extends Kit {
         Kit victimKit = plugin.getKitsHandler().getKitByName(victimProfile.getCurrentKit());
 
         if (victimKit == null) {
-            killer.sendMessage(CC.translate("&cFailed to CopyCat " + victim.getName() + "'s kit (invalid kit)."));
+            killer.sendMessage(CC.t("&cFailed to CopyCat " + victim.getName() + "'s kit (invalid kit)."));
             killer.playSound(killer.getLocation(), Sound.DIG_GRASS, 1F, 1F);
             return;
         }
 
         if (!isKitUnlocked(killerProfile, victimKit)) {
-            killer.sendMessage(CC.translate("&cYou don't have " + victim.getName() + "'s &f" + victimKit.getName() + " &ckit unlocked!"));
+            killer.sendMessage(CC.t("&cYou don't have " + victim.getName() + "'s &f" + victimKit.getName() + " &ckit unlocked!"));
             killer.playSound(killer.getLocation(), Sound.DIG_GRASS, 1F, 1F);
             return;
         }

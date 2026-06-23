@@ -4,10 +4,7 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -107,7 +104,7 @@ public class EnhancerKit extends Kit {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (profile.isInEvent()) return;
         if (!profile.getCurrentKit().equals(getName())) return;
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
@@ -118,24 +115,19 @@ public class EnhancerKit extends Kit {
         event.setCancelled(true);
         player.updateInventory();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Stim Beacon", true)) {
-            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Stim Beacon", true);
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+        if (hasTimer(player.getUniqueId())) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
             return;
         }
 
-        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+        if (isInSpawn(player, profile)) {
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                player.getUniqueId(),
-                new Timer("Stim Beacon", TimeUnit.SECONDS.toMillis(60)),
-                true
-        );
+        addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(60));
         XPBarTimer.runXpBar(player, 60);
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
         BlockUtil.generateTemporaryStimBeacon(event.getClickedBlock().getLocation().add(0, 1, 0));
 
         new BukkitRunnable() {

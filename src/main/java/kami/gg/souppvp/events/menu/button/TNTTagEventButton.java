@@ -101,7 +101,7 @@ public class TNTTagEventButton extends Button {
         }
 
         game.handleJoin(player);
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
         player.closeInventory();
         sendMessage(player, "&aYou joined the TNTTag game!");
     }

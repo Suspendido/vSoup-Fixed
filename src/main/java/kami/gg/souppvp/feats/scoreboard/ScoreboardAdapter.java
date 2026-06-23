@@ -9,6 +9,7 @@ import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
+import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.TimeUtil;
 import kami.gg.souppvp.util.assemble.AssembleAdapter;
@@ -49,7 +50,6 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final boolean lastLineEnabled;
     private final boolean showDateBelowTitle;
     private final boolean waiting_sumoEnabled;
-    private final boolean started_sumoEnabled;
     private final boolean spawnEnabled;
     private final boolean staffEnabled;
     private final boolean tnttagEnabled;
@@ -83,7 +83,6 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.lastLineEnabled = getBoolean("SCOREBOARD_INFO.LAST_LINE_ENABLED");
         this.showDateBelowTitle = getBoolean("SCOREBOARD_INFO.SHOW_DATE_BELOW_TITLE");
         this.waiting_sumoEnabled = getBoolean("SUMO_EVENT.WAITING_EVENT.ENABLED");
-        this.started_sumoEnabled = getBoolean("SUMO_EVENT.STARTED_EVENT.ENABLED");
         this.spawnEnabled = getBoolean("SPAWN.ENABLED");
         this.tnttagEnabled = getBoolean("TNTTAG_EVENT.ENABLED");
         this.done_sumoEnabled = getBoolean("SUMO_EVENT.DONE_EVENT.ENABLED");
@@ -113,7 +112,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
         }
 
         if (!profile.getLoaded()) {
-            return CC.translate(new ArrayList<>(loadingLines));
+            return CC.t(new ArrayList<>(loadingLines));
         }
 
         List<String> lines = new ArrayList<>();
@@ -125,7 +124,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
             if (showDateBelowTitle) lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
             if (linesEnabled) lines.add(line);
 
-            if (done_sumoEnabled && sumo.getRemainingPlayers().size() == 1) {
+            if (done_sumoEnabled && sumo != null && sumo.getRemainingPlayers().size() == 1) {
                 String winner = sumo.getRemainingPlayers().getFirst().getDisplayName();
                 for (String s : done_sumoLines) {
                     lines.add(s.replace("%winner%", winner));
@@ -161,11 +160,11 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 }
             }
 
-            if (done_tnttagEnabled && tnt.getTotalPlayers() == 1) {
-                Player winner = Bukkit.getPlayer(tnt.getWinner().getDisplayName());
+            if (done_tnttagEnabled && tnt != null && tnt.getTotalPlayers() == 1) {
+                String winner = tnt.getRemainingPlayers().getFirst().getDisplayName();
 
                 for (String s : done_tnttagLines) {
-                    lines.add(s.replace("%winner%", winner != null ? winner.getName() : "Unknown"));
+                    lines.add(s.replace("%winner%", winner));
                 }
 
             }
@@ -197,7 +196,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
             if (footerEnabled) lines.addAll(footerLines);
             if (linesEnabled && lastLineEnabled) lines.add(line);
 
-            return CC.translate(lines);
+            return CC.t(lines);
         }
 
         if (staffEnabled && staff) {
@@ -223,7 +222,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
             if (footerEnabled) lines.addAll(footerLines);
             if (linesEnabled && lastLineEnabled) lines.add(line);
 
-            return CC.translate(lines);
+            return CC.t(lines);
         }
 
         for (String s : statsLines) {
@@ -241,9 +240,10 @@ public class ScoreboardAdapter implements AssembleAdapter {
 
         if (spawnEnabled && isInSpawn) {
             Kit current = plugin.getKitsHandler().getKitByName(profile.getCurrentKit());
+            TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
             for (String s : spawnLines) {
                 lines.add(s
-                        .replace("%tier%", profile.getTier().getDisplay())
+                        .replace("%tier%", category.getColor() + profile.getTier().getTierLevel() + category.getFormattedIcon())
                         .replace("%kit%", profile.getCurrentKit())
                         .replace("%kit_color%", String.valueOf(current.getRarityType().getColor()))
                 );
@@ -291,7 +291,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 String format = scoreboardManager.getScoreboardConfig().getString("TIMERS.SPAWN");
                 if (format != null) {
                     String line = format.replace("%time%", TimeUtil.convertToHhMmSs((tp - System.currentTimeMillis()) / 1000));
-                    lines.add(CC.translate(line));
+                    lines.add(CC.t(line));
                     lines.add("");
                 }
             }
@@ -302,7 +302,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 String format = scoreboardManager.getScoreboardConfig().getString("TIMERS.COMBAT");
                 if (format != null) {
                     String line = format.replace("%time%", TimeUtil.convertToHhMmSs((combatTime - System.currentTimeMillis()) / 1000));
-                    lines.add(CC.translate(line));
+                    lines.add(CC.t(line));
                     lines.add("");
                 }
             }
@@ -373,7 +373,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
             }
         }
 
-        return CC.translate(lines);
+        return CC.t(lines);
     }
 
     public String getString(String path) {

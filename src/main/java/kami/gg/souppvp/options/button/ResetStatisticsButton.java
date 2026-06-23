@@ -66,7 +66,7 @@ public class ResetStatisticsButton extends Button {
 
         playSuccess(player);
         TaskUtil.runLater(player::closeInventory, 1L);
-        PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+        PlayerUtil.playSound(player, Sound.NOTE_PIANO, 1.0);
 
         // Reset kit
         profile.setCurrentKit(instance.getKitsHandler().getKitByName("Default").getName());

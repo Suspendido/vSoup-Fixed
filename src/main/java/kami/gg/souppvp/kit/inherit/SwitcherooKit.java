@@ -4,10 +4,7 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -63,7 +60,7 @@ public class SwitcherooKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         List<ItemStack> itemStacks = new ArrayList<>();
         itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build());
-        itemStacks.add(new ItemBuilder(Material.SNOW_BALL).name(CC.translate("&9Switcheroo")).amount(3).build());
+        itemStacks.add(new ItemBuilder(Material.SNOW_BALL).name("&9Switcheroo").amount(3).build());
         return itemStacks;
     }
 
@@ -71,7 +68,7 @@ public class SwitcherooKit extends Kit {
     public ItemStack[] getArmor() {
         return new ItemStack[]{
                 new ItemBuilder(Material.CHAINMAIL_BOOTS).build(),
-                new ItemBuilder(Material.CHAINMAIL_BOOTS).build(),
+                new ItemBuilder(Material.CHAINMAIL_LEGGINGS).build(),
                 new ItemBuilder(Material.DIAMOND_CHESTPLATE).build(),
                 new ItemBuilder(Material.IRON_HELMET).build()
         };
@@ -93,25 +90,17 @@ public class SwitcherooKit extends Kit {
     public void execute(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(getName())){
-            if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-                if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1))) {
-                    if (profile.getProfileState() == ProfileState.SPAWN) {
-                        player.sendMessage(CC.translate("&cYou can't do this in Spawn."));
-                    }
-                    if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Switcheroo", true)) {
-                        player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Switcheroo", true), true) + ChatColor.RED + ".");
-                        event.setCancelled(true);
-                        event.setUseItemInHand(Event.Result.DENY);
-                        player.updateInventory();
-                        return;
-                    }
-                    PlayerUtil.playSound(player, Sound.NOTE_PLING);
-                } else {
-                    return;
+        if (profile.isInEvent() || isInSpawn(player, profile)) return;
+        if (!profile.getCurrentKit().equals(getName())) return;
+
+        if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if (event.getPlayer().getItemInHand().isSimilar(getCombatEquipments().get(1))) {
+                if (hasTimer(player.getUniqueId())) {
+                    player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
+                    event.setCancelled(true);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    player.updateInventory();
                 }
-                player.updateInventory();
             }
         }
     }
@@ -124,20 +113,21 @@ public class SwitcherooKit extends Kit {
             if (!(snowball.getShooter() instanceof Player shooter)) return;
 
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(shooter.getUniqueId());
+            Profile damagedprofile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damaged.getUniqueId());
 
-            if (!profile.isInEvent()){
-                if (profile.getCurrentKit().equals(getName())){
-                    if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damaged)){
-                        shooter.sendMessage(CC.translate("&cYou cannot switch players into spawn."));
-                    }
-                    SoupPvP.getInstance().getTimersHandler().addPlayerTimer(shooter.getUniqueId(), new Timer("Switcheroo", TimeUnit.SECONDS.toMillis(45)), true);
-                    XPBarTimer.runXpBar(shooter, 45);
-                    Location location = damaged.getLocation();
-                    damaged.teleport(shooter);
-                    shooter.teleport(location);
-                    PlayerUtil.playSound(shooter, Sound.CHICKEN_EGG_POP);
-                    PlayerUtil.playSound(damaged, Sound.CHICKEN_EGG_POP);
+            if (!profile.isInEvent() && profile.getCurrentKit().equals(getName())) {
+                if (isInSpawn(damaged, damagedprofile)) {
+                    shooter.sendMessage(CC.t("&cYou cannot switch players in spawn."));
+                    return;
                 }
+
+                addTimer(shooter.getUniqueId(), TimeUnit.SECONDS.toMillis(45));
+                XPBarTimer.runXpBar(shooter, 45);
+                Location location = damaged.getLocation();
+                damaged.teleport(shooter);
+                shooter.teleport(location);
+                PlayerUtil.playSound(shooter, Sound.CHICKEN_EGG_POP, 1.0);
+                PlayerUtil.playSound(damaged, Sound.CHICKEN_EGG_POP, 1.0);
             }
         }
     }
@@ -145,23 +135,18 @@ public class SwitcherooKit extends Kit {
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){
         Player killer = event.getEntity().getKiller();
-        if (killer == null){
-            return;
-        }
+        if (killer == null) return;
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
-        if (!profile.isInEvent()){
-            if (profile.getCurrentKit().equals(getName())){
-                for (ItemStack itemStack : killer.getInventory().getContents()){
-                    if (itemStack.isSimilar(this.getCombatEquipments().get(1))){
-                        if (itemStack.getAmount() == 3){
-                            return;
-                        }
-                    } else {
-                        killer.getInventory().setItem(1, this.getCombatEquipments().get(1));
-                    }
+
+        if (!profile.isInEvent() && profile.getCurrentKit().equals(getName())) {
+            for (ItemStack itemStack : killer.getInventory().getContents()) {
+                if (itemStack.isSimilar(getCombatEquipments().get(1))) {
+                    if (itemStack.getAmount() == 3) return;
+
+                } else {
+                    killer.getInventory().setItem(1, getCombatEquipments().get(1));
                 }
             }
         }
     }
-
 }

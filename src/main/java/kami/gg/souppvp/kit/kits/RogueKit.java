@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class RogueKit extends Kit {
 
     private final ItemStack BACKSTAB_DAGGER = new ItemBuilder(Material.GOLD_SWORD)
-            .name(CC.translate("&6Backstab Dagger"))
+            .name(CC.t("&6Backstab Dagger"))
             .enchantment(Enchantment.DURABILITY, 10)
             .build();
 
@@ -113,12 +113,12 @@ public class RogueKit extends Kit {
         final String timerId = "Back Stabber";
 
         if (timers.hasTimer(damager.getUniqueId(), timerId, true)) {
-            damager.sendMessage(CC.translate("&cYou can't use this for another " + DurationFormatter.getRemaining(timers.getRemaining(damager.getUniqueId(), timerId, true), true) + "&c."));
+            damager.sendMessage(CC.t("&cYou can't use this for another " + DurationFormatter.getRemaining(timers.getRemaining(damager.getUniqueId(), timerId, true), true) + "&c."));
             return;
         }
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damager.getLocation())) {
-            damager.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            damager.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
@@ -129,7 +129,7 @@ public class RogueKit extends Kit {
         boolean isBehind = dot > 0.15;
 
         if (!isBehind) {
-            damager.sendMessage(CC.translate("&cBackstab failed!"));
+            damager.sendMessage(CC.t("&cBackstab failed!"));
             return;
         }
 

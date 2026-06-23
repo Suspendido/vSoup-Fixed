@@ -27,7 +27,7 @@ public class SumoJoinArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sender.sendMessage(CC.t("&cOnly players can run this command."));
             return;
         }
 
@@ -35,22 +35,22 @@ public class SumoJoinArg extends Argument {
         Sumo activeSumo = SoupPvP.getInstance().getSumoHandler().getActiveSumo();
 
         if (!profile.getProfileState().equals(ProfileState.SPAWN)) {
-            player.sendMessage(CC.translate("&cYou cannot join the sumo event right now. You need to be at spawn."));
+            player.sendMessage(CC.t("&cYou cannot join the sumo event right now. You need to be at spawn."));
             return;
         }
 
         if (activeSumo == null) {
-            player.sendMessage(CC.translate("&cThere isn't an active sumo event."));
+            player.sendMessage(CC.t("&cThere isn't an active sumo event."));
             return;
         }
 
         if (activeSumo.getState() != SumoState.WAITING) {
-            player.sendMessage(CC.translate("&cThat sumo event is currently on-going and cannot be joined."));
+            player.sendMessage(CC.t("&cThat sumo event is currently on-going and cannot be joined."));
             return;
         }
 
         if (profile.getSumoEvent() != null){
-            player.sendMessage(CC.translate("&cYou are already in a sumo event."));
+            player.sendMessage(CC.t("&cYou are already in a sumo event."));
             return;
         }
 

@@ -23,8 +23,8 @@ public class ArmorerPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Gain an extra 10 durability every"));
-        lore.add(CC.translate("&7time you kill another player."));
+        lore.add(CC.t("&7Gain an extra 10 durability every"));
+        lore.add(CC.t("&7time you kill another player."));
         return lore;
     }
 

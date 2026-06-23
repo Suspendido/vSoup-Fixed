@@ -27,7 +27,7 @@ public class CreditsSetCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /setcredits <player> <int>"));
+        return Collections.singletonList(CC.t("&cUsage: /setcredits <player> <int>"));
     }
 
     @Override
@@ -41,13 +41,13 @@ public class CreditsSetCommand extends Command {
         Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
         if (targetProfile == null) {
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
             return;
         }
 
         int amount = Integer.parseInt(args[1]);
         targetProfile.setCredits(amount);
         targetProfile.saveProfile();
-        sender.sendMessage(CC.translate("&aSuccessfully set &e" + targetProfile.getUsername() + "'s &abalance to &b" + amount + " &acredits."));
+        sender.sendMessage(CC.t("&aSuccessfully set &e" + targetProfile.getUsername() + "'s &abalance to &b" + amount + " &acredits."));
     }
 }

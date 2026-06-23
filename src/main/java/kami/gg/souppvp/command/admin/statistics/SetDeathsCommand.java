@@ -32,7 +32,7 @@ public class SetDeathsCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /setdeaths <profile> <int>"));
+        return Collections.singletonList(CC.t("&cUsage: /setdeaths <profile> <int>"));
     }
 
     @Override
@@ -46,13 +46,13 @@ public class SetDeathsCommand extends Command {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
         if (profile == null){
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
             return;
         }
 
         int value = Integer.parseInt(args[1]);
         profile.setDeaths(value);
-        sender.sendMessage(CC.translate("&aSuccessfully updated!"));
+        sender.sendMessage(CC.t("&aSuccessfully updated!"));
         profile.saveProfile();
     }
 }

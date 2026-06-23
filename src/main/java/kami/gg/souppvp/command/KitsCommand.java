@@ -31,14 +31,14 @@ public class KitsCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sendMessage(sender, "&cOnly players can run this command.");
             return;
         }
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         boolean isInSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile.getProfileState() == ProfileState.SPAWN;
 
         if (!isInSpawn) {
-            sender.sendMessage(CC.translate("&cYou cannot open the kits menu while not being on spawn!"));
+            sendMessage(player, "&cYou cannot open the kits menu while not being on spawn!");
             return;
         }
 

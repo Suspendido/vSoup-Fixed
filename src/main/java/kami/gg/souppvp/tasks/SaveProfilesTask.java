@@ -14,7 +14,7 @@ public class SaveProfilesTask {
                 profile.saveProfile();
             }
             Long ended = System.currentTimeMillis();
-            Bukkit.getLogger().info((CC.translate("&a&lSuccessfully &asaved a total of &a&l" + SoupPvP.getInstance().getProfilesHandler().getProfiles().size() + "&a profiles within &a&l" + (ended - started) + "&ams.")));
+            Bukkit.getLogger().info((CC.t("&a&lSuccessfully &asaved a total of &a&l" + SoupPvP.getInstance().getProfilesHandler().getProfiles().size() + "&a profiles within &a&l" + (ended - started) + "&ams.")));
         }, 0L, (120 * 20));
     }
 

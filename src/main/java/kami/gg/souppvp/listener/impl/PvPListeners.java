@@ -34,7 +34,7 @@ public class PvPListeners implements Listener {
         // Cancel spawn teleport if damaged
         if (profile.isTeleportingToSpawn()) {
             profile.removeSpawnTeleportation();
-            player.sendMessage(CC.translate("&cYour spawn teleportation was cancelled because you were combat-tagged."));
+            player.sendMessage(CC.t("&cYour spawn teleportation was cancelled because you were combat-tagged."));
         }
 
         // No tag if player is in spawn
@@ -78,7 +78,7 @@ public class PvPListeners implements Listener {
                 killerProfile.setCurrentKillstreak(killerProfile.getCurrentKillstreak() + 1);
 
                 if (killerProfile.getCurrentKillstreak() > killerProfile.getHighestKillstreak()) {
-                    killer.sendMessage(CC.translate("&aNew Highest Killstreak! &fYou're now at &a" + killerProfile.getCurrentKillstreak()));
+                    killer.sendMessage(CC.t("&aNew Highest Killstreak! &fYou're now at &a" + killerProfile.getCurrentKillstreak()));
                     killerProfile.setHighestKillstreak(killerProfile.getCurrentKillstreak());
                 }
 
@@ -95,11 +95,11 @@ public class PvPListeners implements Listener {
 
                 // Kill messages
                 if (killerProfile.getEnableKillDeathMessages()) {
-                    killer.sendMessage(CC.translate("&9You killed &a" + player.getName() + "&9 for &a" + credits + " &9credits and &a" + xp +" XP."));
+                    killer.sendMessage(CC.t("&9You killed &a" + player.getName() + "&9 for &a" + credits + " &9credits and &a" + xp +" XP."));
                 }
 
                 if (profile.getEnableKillDeathMessages()) {
-                    player.sendMessage(CC.translate("&cYou were killed by &a" + killer.getName()));
+                    player.sendMessage(CC.t("&cYou were killed by &a" + killer.getName()));
                 }
 
                 // Broadcasts
@@ -110,7 +110,7 @@ public class PvPListeners implements Listener {
                     if (online == null) continue;
 
                     if (profile.getCurrentKillstreak() >= 10) {
-                        online.sendMessage(CC.translate("&e" + profile.getUsername() + " &adied with a &e" + profile.getCurrentKillstreak() + " &akillstreak!"));
+                        online.sendMessage(CC.t("&e" + profile.getUsername() + " &adied with a &e" + profile.getCurrentKillstreak() + " &akillstreak!"));
                     }
                 }
             }
@@ -123,7 +123,7 @@ public class PvPListeners implements Listener {
                 if (online == null) continue;
 
                 if (p.equals(profile)) {
-                    online.sendMessage(CC.translate("&cYou died."));
+                    online.sendMessage(CC.t("&cYou died."));
                 }
             }
         }
@@ -158,7 +158,7 @@ public class PvPListeners implements Listener {
         if (!sign.getLine(0).contains("Free") || !sign.getLine(1).contains("Soup")) return;
 
         if (profile.isJuggernaut()) {
-            player.sendMessage(CC.translate("&cYou cannot refill soups while in Juggernaut."));
+            player.sendMessage(CC.t("&cYou cannot refill soups while in Juggernaut."));
             return;
         }
 

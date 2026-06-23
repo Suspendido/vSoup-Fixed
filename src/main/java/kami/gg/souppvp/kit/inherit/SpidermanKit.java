@@ -5,7 +5,6 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
@@ -28,12 +27,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SpidermanKit extends Kit {
 
-    private final ItemStack WEB_SHOOTER = new ItemBuilder(Material.WEB).name(CC.translate("&dWeb Shooter")).build();
+    private final ItemStack WEB_SHOOTER = new ItemBuilder(Material.WEB).name("&dWeb Shooter").build();
 
     @Override
     public String getName() {
@@ -157,19 +158,24 @@ public class SpidermanKit extends Kit {
 
         e.setCancelled(true);
 
-        // cooldown
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(p.getUniqueId(), "Web Shooter", true)) {
-            long rem = SoupPvP.getInstance().getTimersHandler().getRemaining(p.getUniqueId(), "Web Shooter", true);
-            p.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
+        if (profile.isInEvent() || isInSpawn(p, profile)) {
+            p.sendMessage(CC.t("&cYou can't use this right now."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(p.getUniqueId(), new Timer("Web Shooter", TimeUnit.SECONDS.toMillis(45)), true);
+        // cooldown
+        if (hasTimer(p.getUniqueId())) {
+            long rem = getRemaining(p.getUniqueId());
+            p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
+            return;
+        }
+
+        addTimer(p.getUniqueId(), TimeUnit.SECONDS.toMillis(45));
         XPBarTimer.runXpBar(p, 45);
 
         FallingBlock fb = p.getWorld().spawnFallingBlock(
                 p.getEyeLocation(),
-                Material.STAINED_GLASS,
+                Material.WEB,
                 (byte) 0
         );
 

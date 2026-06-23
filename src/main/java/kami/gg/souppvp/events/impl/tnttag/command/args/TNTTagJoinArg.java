@@ -35,7 +35,7 @@ public class TNTTagJoinArg extends Argument {
         TNTTagGame activeTNTTag = SoupPvP.getInstance().getTntTagHandler().getActiveGame();
 
         if (!profile.getProfileState().equals(ProfileState.SPAWN)) {
-            player.sendMessage(CC.translate("&cYou cannot join the tnttag event right now. You need to be at spawn."));
+            player.sendMessage(CC.t("&cYou cannot join the tnttag event right now. You need to be at spawn."));
             return;
         }
 

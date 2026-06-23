@@ -18,8 +18,8 @@ public class BountyHunterPerk extends Perk {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7See all bounties as red and bold,"));
-        lore.add(CC.translate("&7including trickters."));
+        lore.add(CC.t("&7See all bounties as red and bold,"));
+        lore.add(CC.t("&7including trickters."));
         return lore;
     }
 

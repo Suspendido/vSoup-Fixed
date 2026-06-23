@@ -1,8 +1,7 @@
-package kami.gg.souppvp.command.shop;
+package kami.gg.souppvp.command;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
@@ -38,22 +37,25 @@ public class RepairCommand extends Command {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile.isJuggernaut()) {
-            sender.sendMessage(CC.translate("&cYou may not repair whilst in Juggernaut."));
+            sendMessage(player, "&cYou may not repair whilst in Juggernaut.");
             return;
         }
 
-        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)){
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
-        } else {
-            if (profile.getCredits() >= 150){
-                PlayerUtil.playSound(player, Sound.NOTE_PIANO);
-                profile.setCredits(profile.getCredits() - 150);
-                PlayerUtil.repairPlayer(player);
-                player.sendMessage(CC.translate("&aSuccessfully bought the &dRepair Durability &afeature."));
-            } else {
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            }
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+            sendMessage(player, "&cYou can't do this in spawn.");
+            return;
         }
+
+        if (profile.getCredits() < 150) {
+            sendMessage(player, "&cInsufficient credits! You're " + (profile.getCredits() - 150) + " credits short.");
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+            return;
+        }
+
+        profile.setCredits(profile.getCredits() - 150);
+        PlayerUtil.playSound(player, Sound.NOTE_PIANO, 1.0);
+        PlayerUtil.repairPlayer(player);
+        sendMessage(player, "&aSuccessfully bought the &dRepair Durability &afeature.");
     }
 }

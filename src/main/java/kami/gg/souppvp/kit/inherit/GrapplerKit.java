@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 public class GrapplerKit extends Kit {
 
-    private final ItemStack grapplerRod = new ItemBuilder(Material.FISHING_ROD).name(CC.translate("&aGrappler")).build();
+    private final ItemStack grapplerRod = new ItemBuilder(Material.FISHING_ROD).name(CC.t("&aGrappler")).build();
 
     @Override
     public String getName() {
@@ -105,16 +105,13 @@ public class GrapplerKit extends Kit {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null || isInvalid(profile) || !isGrappler(profile)) return;
 
-        var timers = SoupPvP.getInstance().getTimersHandler();
-
-        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+        if (isInSpawn(player, profile)) {
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
-        if (timers.hasTimer(player.getUniqueId(), "Grappler", true)) {
-            long remaining = timers.getRemaining(player.getUniqueId(), "Grappler", true);
-            player.sendMessage(CC.translate("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+        if (hasTimer(player.getUniqueId())) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
             event.setCancelled(true);
         }
     }
@@ -150,10 +147,9 @@ public class GrapplerKit extends Kit {
         hooked.remove();
 
         // Add cooldown
-        var timers = SoupPvP.getInstance().getTimersHandler();
-        timers.addPlayerTimer(player.getUniqueId(), new Timer("Grappler", TimeUnit.SECONDS.toMillis(30)), true);
+        addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(30));
         XPBarTimer.runXpBar(player, 30);
 
-        PlayerUtil.playSound(player, Sound.ORB_PICKUP);
+        PlayerUtil.playSound(player, Sound.ORB_PICKUP, 1.0);
     }
 }

@@ -24,7 +24,7 @@ public class TNTTagSetSpawnArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sender.sendMessage(CC.t("&cOnly players can run this command."));
             return;
         }
 
@@ -33,13 +33,13 @@ public class TNTTagSetSpawnArg extends Argument {
         switch (type) {
             case "event":
                 SoupPvP.getInstance().getTntTagHandler().setEventSpawn(player.getLocation());
-                player.sendMessage(CC.translate("&aSuccessfully updated the tnttag system's event spawn a location."));
+                player.sendMessage(CC.t("&aSuccessfully updated the tnttag system's event spawn a location."));
                 SoupPvP.getInstance().getTntTagHandler().save();
                 break;
             case "spectator":
             case "spec":
                 SoupPvP.getInstance().getTntTagHandler().setSpectatorSpawn(player.getLocation());
-                player.sendMessage(CC.translate("&aSuccessfully updated the tnttag system's spectator spawn location."));
+                player.sendMessage(CC.t("&aSuccessfully updated the tnttag system's spectator spawn location."));
                 SoupPvP.getInstance().getTntTagHandler().save();
                 break;
             default:

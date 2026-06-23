@@ -25,8 +25,8 @@ public class RelinquishPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Every attack, have a 20% chance"));
-        lore.add(CC.translate("&7of removing a bowl in your inventory."));
+        lore.add(CC.t("&7Every attack, have a 20% chance"));
+        lore.add(CC.t("&7of removing a bowl in your inventory."));
         return lore;
     }
 

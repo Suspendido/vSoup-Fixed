@@ -48,7 +48,7 @@ public class FortyKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.SKULL_ITEM)
                 .durability(2)
-                .name(CC.translate("&a" + getName()))
+                .name(CC.t("&a" + getName()))
                 .lore(
                         CC.MENU_BAR,
                         "&7Spawns a Security Guard",
@@ -68,7 +68,7 @@ public class FortyKillstreak extends Killstreak implements Listener {
         int required = getRequiredKillstreak(profile);
 
         if (profile.getCurrentKillstreak() == required) {
-            killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+            killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
             spawnGuard(killer);
         }
     }
@@ -83,7 +83,7 @@ public class FortyKillstreak extends Killstreak implements Listener {
         Zombie zombie = (Zombie) owner.getWorld().spawnEntity(owner.getLocation(), EntityType.ZOMBIE);
 
         zombie.setMetadata("owner", new FixedMetadataValue(plugin, owner.getUniqueId().toString()));
-        zombie.setCustomName(CC.translate("&b&l" + owner.getName() + "'s Security Guard"));
+        zombie.setCustomName(CC.t("&b&l" + owner.getName() + "'s Security Guard"));
         zombie.setMaxHealth(1000);
         zombie.setHealth(1000);
 

@@ -25,7 +25,7 @@ public class BountyCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /addbounty <target> <int>"));
+        return Collections.singletonList(CC.t("&cUsage: /addbounty <target> <int>"));
     }
 
     @Override
@@ -42,21 +42,21 @@ public class BountyCommand extends Command {
         Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
         if (targetProfile == null){
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
             return;
         }
         int amount = Integer.parseInt(args[1]);
         if (setterProfile.getCredits() < amount) {
-            sender.sendMessage(CC.translate("&cInsufficient credits!"));
+            sender.sendMessage(CC.t("&cInsufficient credits!"));
         } else {
             if (amount <= 0){
-                sender.sendMessage(CC.translate("&cThe amount has to be greater than zero!"));
+                sender.sendMessage(CC.t("&cThe amount has to be greater than zero!"));
             } else {
                 Integer beforeBounty = targetProfile.getBounty();
                 setterProfile.setCredits(setterProfile.getCredits() - amount);
                 targetProfile.setBounty(amount + targetProfile.getBounty());
                 Integer afterBounty = targetProfile.getBounty();
-                Bukkit.broadcastMessage(CC.translate("&a" + sender.getName() + " &ehas upped the bounty on &a" + targetProfile.getUsername() + " &eto &a" + targetProfile.getBounty() + " (+" + (afterBounty - beforeBounty) + ") &ecredits."));
+                Bukkit.broadcastMessage(CC.t("&a" + sender.getName() + " &ehas upped the bounty on &a" + targetProfile.getUsername() + " &eto &a" + targetProfile.getBounty() + " (+" + (afterBounty - beforeBounty) + ") &ecredits."));
             }
         }
     }

@@ -29,7 +29,7 @@ public abstract class Argument {
 
     public void sendMessage(CommandSender sender, String... s) {
         for (String string : s) {
-            sender.sendMessage(CC.translate(string));
+            sender.sendMessage(CC.t(string));
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class Argument {
 
     public void sendUsage(CommandSender sender) {
         if (usage == null) usage = usage();
-        sender.sendMessage(CC.translate(usage()));
+        sender.sendMessage(CC.t(usage()));
     }
 
     public void execute(CommandSender sender, String[] args) {

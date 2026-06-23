@@ -33,7 +33,7 @@ public class MarketCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sendMessage(sender, "&cOnly players can run this command.");
             return;
         }
 
@@ -41,7 +41,7 @@ public class MarketCommand extends Command {
         boolean isInSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile.getProfileState() == ProfileState.SPAWN;
 
         if (!isInSpawn) {
-            sender.sendMessage(CC.translate("&cYou cannot open the kits menu while not being on spawn!"));
+            sendMessage(player, "&cYou cannot open the kits menu while not being on spawn!");
             return;
         }
 

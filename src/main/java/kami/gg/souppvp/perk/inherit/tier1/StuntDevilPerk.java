@@ -25,9 +25,9 @@ public class StuntDevilPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7If you fall from 25 blocks or more,"));
-        lore.add(CC.translate("&7there is a 50% chance you will not"));
-        lore.add(CC.translate("&7take any fall damage."));
+        lore.add(CC.t("&7If you fall from 25 blocks or more,"));
+        lore.add(CC.t("&7there is a 50% chance you will not"));
+        lore.add(CC.t("&7take any fall damage."));
         return lore;
     }
 

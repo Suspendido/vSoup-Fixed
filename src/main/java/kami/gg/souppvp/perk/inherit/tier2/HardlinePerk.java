@@ -18,8 +18,8 @@ public class HardlinePerk extends Perk {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Require 1 less kill for your killstreaks."));
-        lore.add(CC.translate("&c&lNOTE: &7Resets your current killstreak when removed."));
+        lore.add(CC.t("&7Require 1 less kill for your killstreaks."));
+        lore.add(CC.t("&c&lNOTE: &7Resets your current killstreak when removed."));
         return lore;
     }
 

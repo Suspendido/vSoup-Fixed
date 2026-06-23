@@ -6,7 +6,7 @@ import java.util.*;
 
 public class CC {
 
-    public static String translate(String string){
+    public static String t(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
@@ -95,7 +95,7 @@ public class CC {
         return color;
     }
 
-    public static List<String> translate(List<String> lines) {
+    public static List<String> t(List<String> lines) {
         List<String> toReturn = new ArrayList<>();
 
         for (String line : lines) {
@@ -105,7 +105,7 @@ public class CC {
         return toReturn;
     }
 
-    public static List<String> translate(String[] lines) {
+    public static List<String> t(String[] lines) {
         List<String> toReturn = new ArrayList<>();
 
         for (String line : lines) {

@@ -22,6 +22,7 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class GeneralListeners implements Listener {
 
@@ -30,7 +31,8 @@ public class GeneralListeners implements Listener {
 
     @EventHandler
     public void onPlayerItemDamage(PlayerItemDamageEvent event) {
-        if (RANDOM.nextInt(100) < 50) {
+        int random = ThreadLocalRandom.current().nextInt(100 + 1);
+        if (random < 50) {
             event.setCancelled(true);
         }
     }
@@ -97,7 +99,10 @@ public class GeneralListeners implements Listener {
         if (player.hasMetadata("build")) {
             event.setCancelled(false);
             event.setUseItemInHand(Event.Result.DEFAULT);
-        } else if (plugin.getSpawnHandler().getCuboid().contains(player)) {
+            return;
+        }
+
+        if (plugin.getSpawnHandler().getCuboid().contains(player)) {
             event.setCancelled(true);
         }
     }
@@ -150,14 +155,14 @@ public class GeneralListeners implements Listener {
 
         // Prevent dropping weapons
         if (typeName.contains("sword") || typeName.contains("axe") || type == Material.BOW) {
-            player.sendMessage(CC.translate("&cYou can't drop your attacking weapon."));
+            player.sendMessage(CC.t("&cYou can't drop your attacking weapon."));
             event.setCancelled(true);
             return;
         }
 
         // Prevent dropping armor
         if (typeName.contains("helmet") || typeName.contains("chestplate") || typeName.contains("leggings") || typeName.contains("boots")) {
-            player.sendMessage(CC.translate("&cYou can't drop your armor."));
+            player.sendMessage(CC.t("&cYou can't drop your armor."));
             event.setCancelled(true);
             return;
         }
@@ -202,7 +207,7 @@ public class GeneralListeners implements Listener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             String[] lines = event.getLines();
             for (int i = 0; i < lines.length; i++) {
-                event.setLine(i, CC.translate(lines[i]));
+                event.setLine(i, CC.t(lines[i]));
             }
         }
     }
@@ -269,7 +274,7 @@ public class GeneralListeners implements Listener {
 
         if (plugin.getSpawnHandler().getCuboid().contains(event.getTo())) {
             player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL));
-            player.sendMessage(CC.translate("&cYou may not pearl into spawn."));
+            player.sendMessage(CC.t("&cYou may not pearl into spawn."));
             event.setCancelled(true);
         }
     }

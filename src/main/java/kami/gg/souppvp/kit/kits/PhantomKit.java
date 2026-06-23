@@ -4,10 +4,7 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PhantomKit extends Kit {
 
-    private static final ItemStack PHANTOM_FEATHER = new ItemBuilder(Material.FEATHER).name(CC.translate("&7Phantom")).build();
+    private static final ItemStack PHANTOM_FEATHER = new ItemBuilder(Material.FEATHER).name(CC.t("&7Phantom")).build();
 
     @Override
     public String getName() {
@@ -99,7 +96,7 @@ public class PhantomKit extends Kit {
         if (act != Action.RIGHT_CLICK_AIR && act != Action.RIGHT_CLICK_BLOCK) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (profile.isInEvent()) return;
 
         Kit phantom = SoupPvP.getInstance().getKitsHandler().getKitByName("Phantom");
         Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
@@ -107,16 +104,17 @@ public class PhantomKit extends Kit {
 
         event.setCancelled(true);
 
-        var timers = SoupPvP.getInstance().getTimersHandler();
-        if (timers.hasTimer(player.getUniqueId(), "Phantom", true)) {
-            long remain = timers.getRemaining(player.getUniqueId(), "Phantom", true);
-            player.sendMessage(ChatColor.RED + "You can't use this for another "
-                    + ChatColor.YELLOW + DurationFormatter.getRemaining(remain, true)
-                    + ChatColor.RED + ".");
+        if (isInSpawn(player, profile)) {
+            player.sendMessage(CC.t("&cYou can't use this while in spawn."));
             return;
         }
 
-        timers.addPlayerTimer(player.getUniqueId(), new Timer("Phantom", TimeUnit.SECONDS.toMillis(30)), true);
+        if (hasTimer(player.getUniqueId())) {
+            player.sendMessage(CC.t("&cYou can't use this for another " + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
+            return;
+        }
+
+        addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(30));
         XPBarTimer.runXpBar(player, 30);
 
         player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
@@ -126,7 +124,7 @@ public class PhantomKit extends Kit {
 
         for (Entity e : player.getNearbyEntities(5, 5, 5)) {
             if (e instanceof Player nearby) {
-                PlayerUtil.playSound(nearby, Sound.ENDERMAN_STARE);
+                PlayerUtil.playSound(nearby, Sound.ENDERMAN_STARE, 1.0);
             }
         }
 

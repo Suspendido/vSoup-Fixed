@@ -43,10 +43,10 @@ public class BuildCommand extends Command {
 
         if (player.hasMetadata("build")) {
             player.removeMetadata("build", SoupPvP.getInstance());
-            player.sendMessage(CC.translate("&cYou are no longer in builder mode."));
+            player.sendMessage(CC.t("&cYou are no longer in builder mode."));
         } else {
             player.setMetadata("build", new FixedMetadataValue(SoupPvP.getInstance(), "build"));
-            player.sendMessage(CC.translate("&aYou are now in builder mode."));
+            player.sendMessage(CC.t("&aYou are now in builder mode."));
             player.setGameMode(GameMode.CREATIVE);
         }
     }

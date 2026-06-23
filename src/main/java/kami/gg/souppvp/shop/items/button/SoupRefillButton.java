@@ -46,13 +46,13 @@ public class SoupRefillButton extends Button {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
             sendMessage(player, "&cYou can't do this in spawn.");
             return;
         }
 
         if (profile.getCredits() < costCredits) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
             sendMessage(player, "&cInsufficient credits.");
             return;
         }

@@ -18,8 +18,8 @@ public class ConartistPerk extends Perk {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7There is a 50% chance you do not"));
-        lore.add(CC.translate("&7drop any soup on death."));
+        lore.add(CC.t("&7There is a 50% chance you do not"));
+        lore.add(CC.t("&7drop any soup on death."));
         return lore;
     }
 

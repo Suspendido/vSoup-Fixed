@@ -5,7 +5,9 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +26,7 @@ public class SetExperience extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /setexperience <profile> <int>"));
+        return Collections.singletonList(CC.t("&cUsage: /setexperience <profile> <int>"));
     }
 
     @Override
@@ -35,16 +37,17 @@ public class SetExperience extends Command {
         }
 
         String s = args[0];
+        Player player = Bukkit.getPlayer(s);
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
-        if (profile == null){
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+        if (player == null || profile == null) {
+            sendMessage(player, "&cCouldn't resolve that player's name.");
             return;
         }
 
         int value = Integer.parseInt(args[1]);
         profile.setExperiences(value);
-        sender.sendMessage(CC.translate("&aSuccessfully updated!"));
+        sendMessage(player, "&aSuccessfully updated!");
         profile.saveProfile();
     }
 }

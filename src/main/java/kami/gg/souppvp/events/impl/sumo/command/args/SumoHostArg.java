@@ -26,7 +26,7 @@ public class SumoHostArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sender.sendMessage(CC.t("&cOnly players can run this command."));
             return;
         }
 

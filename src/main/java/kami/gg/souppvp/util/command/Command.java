@@ -61,7 +61,7 @@ public abstract class Command {
             @Override
             public boolean execute(@NotNull CommandSender sender, @NotNull String s, String[] args) {
                 if (permissible != null && !permissible.isEmpty() && !sender.hasPermission(permissible)) {
-                    sendMessage(sender, CC.translate("&cYou dont have permission to do this!"));
+                    sendMessage(sender, CC.t("&cYou dont have permission to do this!"));
                     return true;
                 }
 
@@ -148,7 +148,7 @@ public abstract class Command {
 
     public void sendMessage(CommandSender sender, String... s) {
         for (String msg : s) {
-            sender.sendMessage(CC.translate(msg));
+            sender.sendMessage(CC.t(msg));
         }
     }
 
@@ -156,7 +156,7 @@ public abstract class Command {
         if (usage == null) usage = usage();
 
         for (String string : usage) {
-            sender.sendMessage(CC.translate(string));
+            sender.sendMessage(CC.t(string));
         }
     }
 
@@ -196,12 +196,12 @@ public abstract class Command {
             Argument arg = arguments.get(args[0]);
 
             if (permissible != null && !permissible.isEmpty() && !sender.hasPermission(permissible)) {
-                sendMessage(sender, CC.translate("&cYou dont have permission to do this!"));
+                sendMessage(sender, CC.t("&cYou dont have permission to do this!"));
                 return;
             }
 
             if (arg.permissible != null && !arg.permissible.isEmpty() && !sender.hasPermission(arg.permissible)) {
-                sendMessage(sender, CC.translate("&cYou dont have permission to do this!"));
+                sendMessage(sender, CC.t("&cYou dont have permission to do this!"));
                 return;
             }
 

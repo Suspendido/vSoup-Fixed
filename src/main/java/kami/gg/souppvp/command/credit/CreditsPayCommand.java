@@ -25,7 +25,7 @@ public class CreditsPayCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /paycredits <player> <int>"));
+        return Collections.singletonList(CC.t("&cUsage: /paycredits <player> <int>"));
     }
 
     @Override
@@ -42,25 +42,25 @@ public class CreditsPayCommand extends Command {
         int amount = Integer.parseInt(args[1]);
 
         if (targetProfile == null) {
-            sender.sendMessage(CC.translate("Couldn't resolve that player's name."));
+            sender.sendMessage(CC.t("Couldn't resolve that player's name."));
             return;
         }
 
         if (profile == targetProfile){
-            sender.sendMessage(CC.translate("&cYou can't send credits to yourself."));
+            sender.sendMessage(CC.t("&cYou can't send credits to yourself."));
         } else {
             if (profile.getCredits() < amount){
-                sender.sendMessage(CC.translate("&cInsufficient credits!"));
+                sender.sendMessage(CC.t("&cInsufficient credits!"));
             } else {
                 if (amount > 0){
                     targetProfile.setCredits(targetProfile.getCredits() + amount);
-                    sender.sendMessage(CC.translate("&aSuccessfully sent &e" + targetProfile.getUsername() + " &b" + amount + " &acredits."));
+                    sender.sendMessage(CC.t("&aSuccessfully sent &e" + targetProfile.getUsername() + " &b" + amount + " &acredits."));
                     if (Bukkit.getPlayer(targetProfile.getUuid()) != null){
-                        Bukkit.getPlayer(targetProfile.getUuid()).sendMessage(CC.translate("&aYou've received &b" + amount + " &acredits from &e" + sender.getName() + "&a."));
+                        Bukkit.getPlayer(targetProfile.getUuid()).sendMessage(CC.t("&aYou've received &b" + amount + " &acredits from &e" + sender.getName() + "&a."));
                     }
                     profile.setCredits(profile.getCredits() - amount);
                 } else {
-                    sender.sendMessage(CC.translate("&cThe amount has to be greater than zero!"));
+                    sender.sendMessage(CC.t("&cThe amount has to be greater than zero!"));
                 }
             }
         }

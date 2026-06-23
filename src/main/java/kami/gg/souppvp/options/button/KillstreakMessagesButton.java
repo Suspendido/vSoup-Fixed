@@ -42,6 +42,6 @@ public class KillstreakMessagesButton extends Button {
     public void clicked(Player player, ClickType clickType) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         profile.setEnableKillstreakMessages(!profile.getEnableKillstreakMessages());
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
     }
 }

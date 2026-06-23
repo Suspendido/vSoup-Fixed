@@ -52,7 +52,7 @@ public abstract class Menu {
 		Inventory inventory = null;
 		int size = this.getSize() == -1 ? this.size(this.buttons) : this.getSize();
 		boolean update = false;
-		String title = CC.translate(this.getTitle(player));
+		String title = CC.t(this.getTitle(player));
 
 		if (title.length() > 32) {
 			title = title.substring(0, 32);

@@ -25,7 +25,7 @@ public class SumoLeaveArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sender.sendMessage(CC.t("&cOnly players can run this command."));
             return;
         }
 
@@ -33,12 +33,12 @@ public class SumoLeaveArg extends Argument {
         Sumo activeSumo = SoupPvP.getInstance().getSumoHandler().getActiveSumo();
 
         if (activeSumo == null) {
-            player.sendMessage(CC.translate("&cThere isn't an active sumo event."));
+            player.sendMessage(CC.t("&cThere isn't an active sumo event."));
             return;
         }
 
         if (profile.getSumoEvent() == null || !activeSumo.getEventPlayers().containsKey(player.getUniqueId())) {
-            player.sendMessage(CC.translate("&cYou are not apart of the active sumo event."));
+            player.sendMessage(CC.t("&cYou are not apart of the active sumo event."));
             return;
         }
 

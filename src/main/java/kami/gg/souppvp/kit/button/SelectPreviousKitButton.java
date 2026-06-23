@@ -2,9 +2,7 @@ package kami.gg.souppvp.kit.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
-import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
@@ -34,7 +32,7 @@ public class SelectPreviousKitButton extends Button {
         lore.add("&7Receive your previous kit!");
         lore.add("");
 
-        lore.add(previous == null ? CC.translate("&fPrevious Kit: &cNone") : CC.translate("&fPrevious Kit: &r" + previous.getRarityType().getColor() + previous.getName()));
+        lore.add(previous == null ? "&fPrevious Kit: &cNone" : "&fPrevious Kit: &r" + previous.getRarityType().getColor() + previous.getName());
 
         lore.add("&fCurrent Kit: &r" + current.getRarityType().getColor() + current.getName());
         lore.add("");
@@ -55,18 +53,18 @@ public class SelectPreviousKitButton extends Button {
 
         if (previous == null) {
             playFail(player);
-            player.sendMessage(CC.translate("&cYou don't have a previous kit."));
+            sendMessage(player, "&cYou don't have a previous kit.");
             return;
         }
 
         Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
 
         // swap
         profile.setCurrentKit(previous.getName());
         profile.setPreviousKit(current.getName());
 
-        player.sendMessage(CC.translate("&aSuccessfully equipped the &r" + previous.getRarityType().getColor() + previous.getName() + "&a kit."));
+        sendMessage(player, "&aSuccessfully equipped the &r" + previous.getRarityType().getColor() + previous.getName() + "&a kit.");
     }
 }

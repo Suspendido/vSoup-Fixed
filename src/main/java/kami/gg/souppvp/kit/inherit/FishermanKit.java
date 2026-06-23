@@ -56,7 +56,7 @@ public class FishermanKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         List<ItemStack> itemStacks = new ArrayList<>();
         itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).build());
-        itemStacks.add(new ItemBuilder(Material.FISHING_ROD).name(CC.translate("&aFishing Rod")).build());
+        itemStacks.add(new ItemBuilder(Material.FISHING_ROD).name(CC.t("&aFishing Rod")).build());
         return itemStacks;
     }
 
@@ -87,20 +87,21 @@ public class FishermanKit extends Kit {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(getName())){
-            if (event.getPlayer().getItemInHand().getType() == this.getCombatEquipments().get(1).getType()) {
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Fishing Rod", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Fishing Rod", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                if (event.getCaught() instanceof Player) {
-                    SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Fishing Rod", TimeUnit.SECONDS.toMillis(20)), true);
-                    XPBarTimer.runXpBar(player, 20);
-                    event.getCaught().teleport(event.getPlayer().getLocation());
-                    PlayerUtil.playSound(event.getPlayer(), Sound.ORB_PICKUP);
-                    PlayerUtil.playSound(((Player) event.getCaught()).getPlayer(), Sound.ORB_PICKUP);
-                    ((Player) event.getCaught()).getPlayer().sendMessage(CC.translate("&cYou were hooked!"));
-                }
+        if (!profile.getCurrentKit().equals(getName())) return;
+
+        if (event.getPlayer().getItemInHand().getType() == this.getCombatEquipments().get(1).getType()) {
+            if (hasTimer(player.getUniqueId())) {
+                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
+                return;
+            }
+
+            if (event.getCaught() instanceof Player) {
+                addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(20));
+                XPBarTimer.runXpBar(player, 20);
+                event.getCaught().teleport(event.getPlayer().getLocation());
+                PlayerUtil.playSound(event.getPlayer(), Sound.ORB_PICKUP, 1.0);
+                PlayerUtil.playSound(((Player) event.getCaught()).getPlayer(), Sound.ORB_PICKUP, 1.0);
+                ((Player) event.getCaught()).getPlayer().sendMessage(CC.t("&cYou were hooked!"));
             }
         }
     }

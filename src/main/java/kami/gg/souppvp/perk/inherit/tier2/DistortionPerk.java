@@ -27,8 +27,8 @@ public class DistortionPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Attacking players has a 5% chance of"));
-        lore.add(CC.translate("&7blinding your enemies."));
+        lore.add(CC.t("&7Attacking players has a 5% chance of"));
+        lore.add(CC.t("&7blinding your enemies."));
         return lore;
     }
 

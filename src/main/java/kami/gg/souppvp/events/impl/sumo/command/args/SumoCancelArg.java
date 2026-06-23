@@ -23,7 +23,7 @@ public class SumoCancelArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (SoupPvP.getInstance().getSumoHandler().getActiveSumo() == null) {
-            sender.sendMessage(CC.translate("&cThere isn't an active sumo event."));
+            sender.sendMessage(CC.t("&cThere isn't an active sumo event."));
             return;
         }
         SoupPvP.getInstance().getSumoHandler().getActiveSumo().end();

@@ -224,7 +224,11 @@ public class TablistManager {
 
         text = text.replace("%online%", String.valueOf(online));
         text = text.replace("%max_online%", String.valueOf(max));
-        text = CC.translate(text);
+        text = text.replace("%rank_color%", SoupPvP.getInstance().getRankHook().getRankColor(player));
+        text = text.replace("%rank_prefix%", SoupPvP.getInstance().getRankHook().getRankPrefix(player));
+        text = text.replace("%rank_suffix%", SoupPvP.getInstance().getRankHook().getRankSuffix(player));
+        text = text.replace("%rank_name%", SoupPvP.getInstance().getRankHook().getRankName(player));
+        text = CC.t(text);
 
         return text;
     }

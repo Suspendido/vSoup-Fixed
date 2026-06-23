@@ -29,7 +29,7 @@ public class SetCuboidCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /setcuboid <a/b>"));
+        return Collections.singletonList(CC.t("&cUsage: /setcuboid <a/b>"));
     }
 
     @Override
@@ -47,16 +47,16 @@ public class SetCuboidCommand extends Command {
             SoupPvP.getInstance().getConfig().set("SPAWN.LOCATION-A", LocationUtil.convertLocationToString(SoupPvP.getInstance().getSpawnHandler().getA()));
             SoupPvP.getInstance().saveConfig();
             SoupPvP.getInstance().reloadConfig();
-            player.sendMessage(CC.translate("&aSuccessfully updated the spawn's location a."));
+            player.sendMessage(CC.t("&aSuccessfully updated the spawn's location a."));
         } else if (position.equalsIgnoreCase("b")) {
             SoupPvP.getInstance().getSpawnHandler().setB(player.getLocation());
             SoupPvP.getInstance().getSpawnHandler().setCuboid(new Cuboid(SoupPvP.getInstance().getSpawnHandler().getA(), SoupPvP.getInstance().getSpawnHandler().getB()));
             SoupPvP.getInstance().getConfig().set("SPAWN.LOCATION-B", LocationUtil.convertLocationToString(SoupPvP.getInstance().getSpawnHandler().getB()));
             SoupPvP.getInstance().saveConfig();
             SoupPvP.getInstance().reloadConfig();
-            player.sendMessage(CC.translate("&aSuccessfully updated the spawn's location b."));
+            player.sendMessage(CC.t("&aSuccessfully updated the spawn's location b."));
         } else {
-            player.sendMessage(CC.translate("&cAvailable Positions: a, b"));
+            player.sendMessage(CC.t("&cAvailable Positions: a, b"));
         }
     }
 }

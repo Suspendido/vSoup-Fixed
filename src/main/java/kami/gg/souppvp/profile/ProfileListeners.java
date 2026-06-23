@@ -18,13 +18,13 @@ public class ProfileListeners implements Listener {
 
             if (profile == null || !profile.getLoaded()) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(CC.translate("&cFailed to load your profile."));
+                event.setKickMessage(CC.t("&cFailed to load your profile."));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(CC.translate("&cFailed to load your profile."));
+            event.setKickMessage(CC.t("&cFailed to load your profile."));
         }
     }
 

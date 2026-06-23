@@ -29,27 +29,28 @@ public class TimersHandler {
     }
 
     public void clearTimersCache(){
-        for (UUID uuid: this.getPrimaryAbilitiesHashMap().keySet()){
-            if (Bukkit.getPlayer(uuid) == null){
-                this.getPrimaryAbilitiesHashMap().remove(uuid);
+        for (UUID uuid: getPrimaryAbilitiesHashMap().keySet()) {
+            if (Bukkit.getPlayer(uuid) == null) {
+                getPrimaryAbilitiesHashMap().remove(uuid);
                 return;
             }
-            if (this.getPrimaryAbilitiesHashMap().get(uuid).getCooldown() <= System.currentTimeMillis()){
-                Bukkit.getPlayer(uuid).sendMessage(CC.translate("&eYou may now use &d" + this.getPrimaryAbilitiesHashMap().get(uuid).getAbilityName() + "&e!"));
-                PlayerUtil.playSound(Bukkit.getPlayer(uuid), Sound.CHICKEN_EGG_POP);
-                this.getPrimaryAbilitiesHashMap().remove(uuid);
+
+            if (getPrimaryAbilitiesHashMap().get(uuid).getCooldown() <= System.currentTimeMillis()) {
+                Bukkit.getPlayer(uuid).sendMessage(CC.t("&eYou may now use &d" + getPrimaryAbilitiesHashMap().get(uuid).getAbilityName() + "&e!"));
+                PlayerUtil.playSound(Bukkit.getPlayer(uuid), Sound.CHICKEN_EGG_POP, 1.0);
+                getPrimaryAbilitiesHashMap().remove(uuid);
                 return;
             }
         }
-        for (UUID uuid: this.getSecondaryAbilitiesHashMap().keySet()){
-            if (Bukkit.getPlayer(uuid) == null){
-                this.getSecondaryAbilitiesHashMap().remove(uuid);
+        for (UUID uuid: getSecondaryAbilitiesHashMap().keySet()) {
+            if (Bukkit.getPlayer(uuid) == null) {
+                getSecondaryAbilitiesHashMap().remove(uuid);
                 return;
             }
-            if (this.getSecondaryAbilitiesHashMap().get(uuid).getCooldown() <= System.currentTimeMillis()){
-                Bukkit.getPlayer(uuid).sendMessage(CC.translate("&eYou may now use &d" + this.getSecondaryAbilitiesHashMap().get(uuid).getAbilityName() + "&e!"));
-                PlayerUtil.playSound(Bukkit.getPlayer(uuid), Sound.CHICKEN_EGG_POP);
-                this.getSecondaryAbilitiesHashMap().remove(uuid);
+            if (getSecondaryAbilitiesHashMap().get(uuid).getCooldown() <= System.currentTimeMillis()) {
+                Bukkit.getPlayer(uuid).sendMessage(CC.t("&eYou may now use &d" + getSecondaryAbilitiesHashMap().get(uuid).getAbilityName() + "&e!"));
+                PlayerUtil.playSound(Bukkit.getPlayer(uuid), Sound.CHICKEN_EGG_POP, 1.0);
+                getSecondaryAbilitiesHashMap().remove(uuid);
                 return;
             }
         }
@@ -67,10 +68,10 @@ public class TimersHandler {
         }
     }
 
-    public boolean hasTimer(UUID uuid, String abilityName, boolean primaryAbility){
-        if (primaryAbility){
+    public boolean hasTimer(UUID uuid, String abilityName, boolean primaryAbility) {
+        if (primaryAbility) {
             for (UUID uuid1 : this.getPrimaryAbilitiesHashMap().keySet()){
-                if (this.getPrimaryAbilitiesHashMap().get(uuid1).getAbilityName().equals(abilityName)){
+                if (this.getPrimaryAbilitiesHashMap().get(uuid1).getAbilityName().equals(abilityName)) {
                     return true;
                 }
             }

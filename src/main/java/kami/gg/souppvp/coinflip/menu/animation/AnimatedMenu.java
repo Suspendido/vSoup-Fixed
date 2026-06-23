@@ -49,10 +49,10 @@ public class AnimatedMenu extends Menu {
                 }
                 if (i % 2 == 0) {
                     new GreenMenu(coinFlip).openMenu(player);
-                    PlayerUtil.playSound(player, Sound.CLICK);
+                    PlayerUtil.playSound(player, Sound.CLICK, 1.0);
                 } else {
                     new RedMenu(coinFlip).openMenu(player);
-                    PlayerUtil.playSound(player, Sound.CLICK);
+                    PlayerUtil.playSound(player, Sound.CLICK, 1.0);
                 }
             }
         }.runTaskTimer(SoupPvP.getInstance(), 0L, 10L);

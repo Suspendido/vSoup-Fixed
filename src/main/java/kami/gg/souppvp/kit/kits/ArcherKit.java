@@ -95,7 +95,7 @@ public class ArcherKit extends Kit {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null || profile.getProfileState() == ProfileState.SPAWN) {
-            player.sendMessage(CC.translate("&cYou can't shoot arrows in spawn."));
+            player.sendMessage(CC.t("&cYou can't shoot arrows in spawn."));
             event.setCancelled(true);
             return;
         }
@@ -121,7 +121,7 @@ public class ArcherKit extends Kit {
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(damaged)) {
             event.setCancelled(true);
-            shooter.sendMessage(CC.translate("&cYou can't damage players in spawn."));
+            shooter.sendMessage(CC.t("&cYou can't damage players in spawn."));
             return;
         }
 
@@ -140,6 +140,6 @@ public class ArcherKit extends Kit {
         double newHp = damaged.getHealth() - damage;
         damaged.setHealth(Math.max(0, newHp));
 
-        shooter.sendMessage(CC.translate("&c[&e" + distance + " Blocks&c] &fYou dealt &4" + damage + "❤ &fto &c" + damaged.getName() + "&f!"));
+        shooter.sendMessage(CC.t("&c[&e" + distance + " Blocks&c] &fYou dealt &4" + damage + "❤ &fto &c" + damaged.getName() + "&f!"));
     }
 }

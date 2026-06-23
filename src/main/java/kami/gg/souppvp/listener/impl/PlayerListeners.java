@@ -45,7 +45,7 @@ public class PlayerListeners implements Listener {
         if (profile.getProfileState() != ProfileState.SPAWN) return;
         if (plugin.getSpawnHandler().getCuboid().contains(player)) return;
 
-        player.sendMessage(CC.translate("&7You no longer have spawn protection!"));
+        player.sendMessage(CC.t("&7You no longer have spawn protection!"));
         profile.setProfileState(ProfileState.COMBAT);
 
         TaskUtil.runLater(() -> player.removeMetadata("noFall", plugin), 20L);
@@ -80,7 +80,7 @@ public class PlayerListeners implements Listener {
 
         TasksUtility.runTaskLater(() -> {
             player.setVelocity(player.getVelocity().setY(2.5));
-            PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP);
+            PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP, 1.0);
         }, 2L);
     }
 

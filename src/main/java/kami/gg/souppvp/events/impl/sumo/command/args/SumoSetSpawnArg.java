@@ -24,7 +24,7 @@ public class SumoSetSpawnArg extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(CC.translate("&cOnly players can run this command."));
+            sender.sendMessage(CC.t("&cOnly players can run this command."));
             return;
         }
 
@@ -33,21 +33,21 @@ public class SumoSetSpawnArg extends Argument {
         switch (position) {
             case "a":
                 SoupPvP.getInstance().getSumoHandler().setSpawnA(player.getLocation());
-                player.sendMessage(CC.translate("&aSuccessfully updated the sumo system's spawn a location."));
+                player.sendMessage(CC.t("&aSuccessfully updated the sumo system's spawn a location."));
                 SoupPvP.getInstance().getSumoHandler().save();
                 break;
             case "b":
                 SoupPvP.getInstance().getSumoHandler().setSpawnB(player.getLocation());
-                player.sendMessage(CC.translate("&aSuccessfully updated the sumo system's spawn b location."));
+                player.sendMessage(CC.t("&aSuccessfully updated the sumo system's spawn b location."));
                 SoupPvP.getInstance().getSumoHandler().save();
                 break;
             case "spec":
                 SoupPvP.getInstance().getSumoHandler().setSpectatorSpawn(player.getLocation());
-                player.sendMessage(CC.translate("&aSuccessfully updated the sumo system's spectator spawn location."));
+                player.sendMessage(CC.t("&aSuccessfully updated the sumo system's spectator spawn location."));
                 SoupPvP.getInstance().getSumoHandler().save();
                 break;
             default:
-                player.sendMessage(CC.translate("&cAvailable Positions: a,b,spec"));
+                player.sendMessage(CC.t("&cAvailable Positions: a,b,spec"));
                 break;
         }
     }

@@ -59,7 +59,7 @@ public class CoinFlip {
         Player nameWinner = Bukkit.getPlayer(winner);
         Player nameLosser = Bukkit.getPlayer(loser);
 
-        List<String> message = CC.translate(Arrays.asList(
+        List<String> message = CC.t(Arrays.asList(
                 "",
                 "&b" + nameWinner.getDisplayName() + " &fbeat &a" + nameLosser.getDisplayName() + " &fin a coinflip for &b" + amount + " credits&f!",
                 ""
@@ -69,8 +69,8 @@ public class CoinFlip {
             Bukkit.broadcastMessage(s);
         }
 
-        nameWinner.sendMessage(CC.translate("&a&l+" + amount * 2 + (amount != 1 ? " credits" : " credit")));
-        nameLosser.sendMessage(CC.translate("&c&l-" + amount + (amount != 1 ? " credits" : " credit")));
+        nameWinner.sendMessage(CC.t("&a&l+" + amount * 2 + (amount != 1 ? " credits" : " credit")));
+        nameLosser.sendMessage(CC.t("&c&l-" + amount + (amount != 1 ? " credits" : " credit")));
 
         TaskUtil.runLater(() -> {
             plugin.getCoinFlipsHandler().removeCoinFlip(this);

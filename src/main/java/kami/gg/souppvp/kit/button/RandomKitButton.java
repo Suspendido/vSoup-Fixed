@@ -53,7 +53,7 @@ public class RandomKitButton extends Button {
         profile.setPreviousKit(profile.getCurrentKit());
         profile.setCurrentKit(kit.getName());
 
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
         sendMessage(player, "&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kit.getName() + "&a kit.");
     }
 }

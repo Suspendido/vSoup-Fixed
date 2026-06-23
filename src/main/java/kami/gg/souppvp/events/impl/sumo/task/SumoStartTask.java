@@ -66,7 +66,7 @@ public class SumoStartTask extends SumoTask {
     private void startCooldown(Sumo sumo, int players) {
         sumo.setCooldown(new Cooldown(11_000));
 
-        FancyMessage message = new FancyMessage(CC.translate("&7The &bSumo &7Event will start in &b00:10&7! "));
+        FancyMessage message = new FancyMessage(CC.t("&7The &bSumo &7Event will start in &b00:10&7! "));
 
         message.then("[Click Here]")
                 .color(ChatColor.GREEN)

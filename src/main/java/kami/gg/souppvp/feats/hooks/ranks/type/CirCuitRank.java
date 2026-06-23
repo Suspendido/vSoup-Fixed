@@ -5,8 +5,8 @@ import com.sylluxpvp.circuit.shared.profile.Profile;
 import com.sylluxpvp.circuit.shared.rank.Rank;
 import com.sylluxpvp.circuit.shared.service.ServiceContainer;
 import com.sylluxpvp.circuit.shared.service.impl.ProfileService;
-import com.sylluxpvp.circuit.shared.tools.string.CC;
 import kami.gg.souppvp.feats.hooks.ranks.IRank;
+import kami.gg.souppvp.util.CC;
 import org.bukkit.entity.Player;
 
 public class CirCuitRank implements IRank {
@@ -17,7 +17,7 @@ public class CirCuitRank implements IRank {
             return "";
         } else {
             Grant<Rank> grant = profile.getCurrentGrant();
-            Rank rank = grant != null ? (Rank)grant.getData() : null;
+            Rank rank = grant != null ? grant.getData() : null;
             return rank != null ? rank.getName() : "Default";
         }
     }
@@ -29,7 +29,7 @@ public class CirCuitRank implements IRank {
         } else {
             Grant<Rank> grant = profile.getCurrentGrant();
             Rank rank = grant != null ? grant.getData() : null;
-            return rank != null ? CC.translate(rank.getPrefix() + rank.getColor()) : "";
+            return rank != null ? CC.t(rank.getPrefix() + rank.getColor()) : "";
         }
     }
 
@@ -40,7 +40,7 @@ public class CirCuitRank implements IRank {
         } else {
             Grant<Rank> grant = profile.getCurrentGrant();
             Rank rank = grant != null ? grant.getData() : null;
-            return rank != null ? CC.translate(rank.getSuffix()) : "";
+            return rank != null ? CC.t(rank.getSuffix()) : "";
         }
     }
 
@@ -51,7 +51,7 @@ public class CirCuitRank implements IRank {
         } else {
             Grant<Rank> grant = profile.getCurrentGrant();
             Rank rank = grant != null ? grant.getData() : null;
-            return rank != null ? CC.translate(rank.getColor()) : "&7";
+            return rank != null ? CC.t(rank.getColor()) : "&7";
         }
     }
 

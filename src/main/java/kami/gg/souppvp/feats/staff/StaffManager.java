@@ -3,6 +3,7 @@ package kami.gg.souppvp.feats.staff;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.staff.extra.StaffItem;
 import kami.gg.souppvp.feats.staff.extra.StaffItemAction;
+import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.ItemUtils;
 import kami.gg.souppvp.util.Pair;
@@ -38,7 +39,6 @@ public class StaffManager {
     private static final String CONFIG_FILE = "staff.yml";
 
     public StaffManager(SoupPvP instance) {
-        super();
         this.instance = instance;
 
         this.staffMembers = new ConcurrentHashMap<>();
@@ -120,8 +120,8 @@ public class StaffManager {
 
         for (StaffItem item : staffItems.values()) {
             // They are always vanished when u enable staff mode.
-            if (item.getAction() == StaffItemAction.VANISH_ON) continue;
-            player.getInventory().setItem(item.getSlot() - 1, item.getItem());
+            if (item.action() == StaffItemAction.VANISH_ON) continue;
+            player.getInventory().setItem(item.slot() - 1, item.item());
         }
 
         enableStaffModules(player);
@@ -162,8 +162,8 @@ public class StaffManager {
 
         if (isStaffEnabled(player)) {
             for (StaffItem item : staffItems.values()) {
-                if (item.getAction() == StaffItemAction.VANISH_OFF) {
-                    player.getInventory().setItem(item.getSlot() - 1, item.getItem());
+                if (item.action() == StaffItemAction.VANISH_OFF) {
+                    player.getInventory().setItem(item.slot() - 1, item.item());
                 }
             }
         }
@@ -181,8 +181,8 @@ public class StaffManager {
 
         if (isStaffEnabled(player)) {
             for (StaffItem item : staffItems.values()) {
-                if (item.getAction() == StaffItemAction.VANISH_ON) {
-                    player.getInventory().setItem(item.getSlot() - 1, item.getItem());
+                if (item.action() == StaffItemAction.VANISH_ON) {
+                    player.getInventory().setItem(item.slot() - 1, item.item());
                 }
             }
         }
@@ -220,11 +220,11 @@ public class StaffManager {
             ItemMeta meta = item.getItemMeta();
 
             if (meta.hasLore()) {
-                lore = meta.getLore();
+                lore = CC.t(meta.getLore());
             }
 
             if (meta.hasDisplayName()) {
-                name = meta.getDisplayName();
+                name = CC.t(meta.getDisplayName());
             }
         }
 

@@ -7,7 +7,6 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -47,7 +46,7 @@ public class ThirtyKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.MONSTER_EGG)
                 .durability(95)
-                .name(CC.translate("&a" + getName()))
+                .name(CC.t("&a" + getName()))
                 .lore(
                         CC.MENU_BAR,
                         "&7Spawns a squad of loyal wolves",
@@ -67,7 +66,7 @@ public class ThirtyKillstreak extends Killstreak implements Listener {
         int required = getRequiredKillstreak(profile);
 
         if (profile.getCurrentKillstreak() == required) {
-            killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
+            killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + required + " &akillstreak!"));
             spawnWolves(killer);
         }
     }
@@ -84,7 +83,7 @@ public class ThirtyKillstreak extends Killstreak implements Listener {
             Wolf wolf = owner.getWorld().spawn(owner.getLocation(), Wolf.class);
 
             wolf.setOwner(owner);
-            wolf.setCustomName(CC.translate(owner.getDisplayName() + "&c's Attack Dog"));
+            wolf.setCustomName(CC.t(owner.getDisplayName() + "&c's Attack Dog"));
             wolf.setCustomNameVisible(false);
 
             wolf.setTamed(true);

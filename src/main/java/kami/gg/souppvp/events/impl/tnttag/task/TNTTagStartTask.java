@@ -68,7 +68,7 @@ public class TNTTagStartTask extends TNTTagTask {
         game.setCooldown(new Cooldown(11_000));
 
         FancyMessage message = new FancyMessage(
-                CC.translate("&7The &4TNTTag &7Event will start in &b00:10&7! ")
+                CC.t("&7The &4TNTTag &7Event will start in &b00:10&7! ")
         );
 
         message.then("[Click Here]")

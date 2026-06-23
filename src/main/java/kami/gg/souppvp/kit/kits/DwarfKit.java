@@ -115,7 +115,7 @@ public class DwarfKit extends Kit {
                         charge = Math.min(1.0F, charge + 0.1F);
 
                         if (charge >= 1.0F && !wasFullyCharged) {
-                            player.sendMessage(CC.translate("&6&lYou are fully Charged Up!"));
+                            player.sendMessage(CC.t("&6&lYou are fully Charged Up!"));
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1f);
                             fullChargeNotified.put(player.getUniqueId(), true);
                         } else if (charge < 1.0F) {
@@ -149,12 +149,12 @@ public class DwarfKit extends Kit {
         if (chargeUp.getOrDefault(damager.getUniqueId(), 0F) < 1.0F) return;
 
         if (SoupPvP.getInstance().getTimersHandler().hasTimer(damager.getUniqueId(), "Charged Up", true)) {
-            damager.sendMessage(CC.translate("&cYou can't use this yet!"));
+            damager.sendMessage(CC.t("&cYou can't use this yet!"));
             return;
         }
 
         if (profile.getProfileState() == ProfileState.SPAWN) {
-            damager.sendMessage(CC.translate("&cYou can't use this in Spawn."));
+            damager.sendMessage(CC.t("&cYou can't use this in Spawn."));
             return;
         }
 

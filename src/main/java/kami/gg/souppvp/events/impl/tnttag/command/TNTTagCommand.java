@@ -31,7 +31,7 @@ public class TNTTagCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return CC.translate(Arrays.asList(
+        return CC.t(Arrays.asList(
                 CC.CHAT_BAR,
                 "&4&lTNTTag Event",
                 "",

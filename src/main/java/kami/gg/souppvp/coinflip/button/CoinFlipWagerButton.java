@@ -84,7 +84,7 @@ public class CoinFlipWagerButton extends Button {
                 sendMessage(player, "&cYou cancelled your coinflip game.");
 
                 Bukkit.getPluginManager().callEvent(new WagerCancelEvent(coinFlip));
-                PlayerUtil.playSound(player, Sound.CLICK);
+                PlayerUtil.playSound(player, Sound.CLICK, 1.0);
             }
             return;
         }
@@ -92,12 +92,12 @@ public class CoinFlipWagerButton extends Button {
         if (!clickType.isLeftClick()) return;
 
         if (profile.getCredits() < coinFlip.getAmount()) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
             return;
         }
 
         if (coinFlip.getOpponent() != null) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
             return;
         }
 
@@ -107,7 +107,7 @@ public class CoinFlipWagerButton extends Button {
         }
 
         Bukkit.getPluginManager().callEvent(new WagerStartEvent(coinFlip, player.getUniqueId()));
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
     }
 
 }

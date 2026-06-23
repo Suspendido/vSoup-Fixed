@@ -122,15 +122,15 @@ public class StaffListener implements Listener {
         );
 
         for (String s : message) {
-            player.sendMessage(CC.translate(s));
+            player.sendMessage(CC.t(s));
         }
 
-        String rankPrefix = CC.translate(instance.getRankHook().getRankPrefix(player));
-        String rankColor = CC.translate(instance.getRankHook().getRankColor(player));
+        String rankPrefix = CC.t(instance.getRankHook().getRankPrefix(player));
+        String rankColor = CC.t(instance.getRankHook().getRankColor(player));
 
         if (instance.getStaffManager().isStaffEnabled(player)) {
             for (String s : message) {
-                player.sendMessage(CC.translate(s
+                player.sendMessage(CC.t(s
                         .replace("%prefix%", rankPrefix)
                         .replace("%color%", rankColor)
                         .replace("%player%", player.getName())
@@ -185,19 +185,19 @@ public class StaffListener implements Listener {
             StaffItem staffItem = instance.getStaffManager().getItem(hand);
 
             if (staffItem == null) return;
-            if (staffItem.getAction() == null) return;
+            if (staffItem.action() == null) return;
             if (interactCooldown.hasCooldown(player)) return;
 
             interactCooldown.applyCooldownTicks(player, 100); // 0.1s
 
-            if (staffItem.getAction() == StaffItemAction.INSPECTION) {
+            if (staffItem.action() == StaffItemAction.INSPECTION) {
                 new InspectionMenu(player).openMenu(player);
 
-            } else if (staffItem.getAction() == StaffItemAction.FREEZE) {
+            } else if (staffItem.action() == StaffItemAction.FREEZE) {
                 player.chat("/freeze " + clicked.getName());
 
-            } else if (!staffItem.getCommand().isEmpty() && staffItem.getAction() == StaffItemAction.INTERACT_PLAYER) {
-                player.chat(staffItem.getCommand()
+            } else if (!staffItem.command().isEmpty() && staffItem.action() == StaffItemAction.INTERACT_PLAYER) {
+                player.chat(staffItem.command()
                         .replace("%player%", clicked.getName())
                 );
             }
@@ -228,7 +228,7 @@ public class StaffListener implements Listener {
 
         if (!instance.getStaffManager().isStaffBuild(player) && instance.getStaffManager().isStaffEnabled(player)) {
             e.setCancelled(true);
-            player.sendMessage(CC.translate("&cYou cannot break blocks while on staff mode!"));
+            player.sendMessage(CC.t("&cYou cannot break blocks while on staff mode!"));
         }
     }
 
@@ -238,7 +238,7 @@ public class StaffListener implements Listener {
 
         if (!instance.getStaffManager().isStaffBuild(player) && instance.getStaffManager().isStaffEnabled(player)) {
             e.setCancelled(true);
-            player.sendMessage(CC.translate("&cYou cannot place blocks while on staff mode!"));
+            player.sendMessage(CC.t("&cYou cannot place blocks while on staff mode!"));
         }
     }
 
@@ -250,7 +250,7 @@ public class StaffListener implements Listener {
 
         if (instance.getStaffManager().isStaffEnabled(player) || instance.getStaffManager().isVanished(player)) {
             e.setCancelled(true);
-            player.sendMessage(CC.translate("&cYou cannot drop items while on staff mode!"));
+            player.sendMessage(CC.t("&cYou cannot drop items while on staff mode!"));
         }
     }
 
@@ -349,23 +349,19 @@ public class StaffListener implements Listener {
             if (staffItem == null) return;
 
             // Handle replacing of hand
-            if (staffItem.getReplacement() != null) {
+            if (staffItem.replacement() != null) {
                 for (StaffItem item : instance.getStaffManager().getStaffItems().values()) {
-                    if (!item.getName().equals(staffItem.getReplacement())) continue;
-                    setItemInHand(player, item.getItem());
+                    if (!item.name().equals(staffItem.replacement())) continue;
+                    setItemInHand(player, item.item());
                 }
             }
 
-            if (!staffItem.getCommand().isEmpty()) {
-                player.chat(staffItem.getCommand());
+            if (!staffItem.command().isEmpty()) {
+                player.chat(staffItem.command());
             }
-            Bukkit.broadcastMessage("ITEM: " + hand.getItemMeta().getDisplayName());
-            Bukkit.broadcastMessage(
-                    instance.getStaffManager().getItem(hand) == null ? "NULL" : "FOUND"
-            );
 
-            if (staffItem.getAction() != null) {
-                switch (staffItem.getAction()) {
+            if (staffItem.action() != null) {
+                switch (staffItem.action()) {
                     case VANISH_OFF:
                         instance.getStaffManager().disableVanish(player);
                         break;
@@ -379,10 +375,7 @@ public class StaffListener implements Listener {
     }
     public ItemStack getItemInHand(Player player) {
         ItemStack hand = player.getInventory().getItemInHand();
-
-        if (hand.getType() == Material.AIR) {
-            return null;
-        }
+        if (hand.getType() == Material.AIR) return null;
 
         return hand;
     }

@@ -23,7 +23,7 @@ public class StorageStatsCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&c/storagestats - View storage statistics"));
+        return Collections.singletonList(CC.t("&c/storagestats - View storage statistics"));
     }
 
     @Override

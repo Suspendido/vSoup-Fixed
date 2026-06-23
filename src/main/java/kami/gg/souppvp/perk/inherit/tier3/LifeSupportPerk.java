@@ -26,8 +26,8 @@ public class LifeSupportPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Chance to be saved from death by"));
-        lore.add(CC.translate("&7receiving bonus hearts."));
+        lore.add(CC.t("&7Chance to be saved from death by"));
+        lore.add(CC.t("&7receiving bonus hearts."));
         return lore;
     }
 
@@ -56,7 +56,7 @@ public class LifeSupportPerk extends Perk implements Listener {
                 if (((Player) event.getEntity()).getHealth() < 3.0){
                     if (new Random().nextDouble() <= 0.3){
                         ((Player) event.getEntity()).setHealth(((Player) event.getEntity()).getMaxHealth());
-                        ((Player) event.getEntity()).sendMessage(CC.translate("&cYour Life Support Perk came in clutch."));
+                        ((Player) event.getEntity()).sendMessage(CC.t("&cYour Life Support Perk came in clutch."));
                     }
                 }
             }

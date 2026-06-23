@@ -200,18 +200,18 @@ public class TNTTagGame {
         for (TNTGamePlayer player : eventPlayers.values()) {
             Player p = Bukkit.getPlayer(player.getUuid());
             if (p != null) {
-                p.sendMessage(CC.translate(message));
+                p.sendMessage(CC.t(message));
             }
         }
     }
 
     public void sendMessage(Player player, String s) {
-        player.sendMessage(CC.translate(s));
+        player.sendMessage(CC.t(s));
     }
 
     public void announce() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            FancyMessage message = new FancyMessage(CC.translate("&b" + getHost().getUsername() + " &7is currently hosting a &4TNTTag Event&f! "));
+            FancyMessage message = new FancyMessage(CC.t("&b" + getHost().getUsername() + " &7is currently hosting a &4TNTTag Event&f! "));
             message.then("[Click Here]").color(ChatColor.GREEN).command("/tnttag join").tooltip(ChatColor.GREEN + "Click to join!").then(" (" + getRemainingPlayers().size() + "/" + getMaxPlayers() + ")").color(ChatColor.WHITE);
             message.send(player);
         }
@@ -303,7 +303,7 @@ public class TNTTagGame {
         Player winner = this.getWinner();
 
         if (winner == null) {
-            Bukkit.broadcastMessage(CC.translate("&cThe TNTTag Event has been cancelled."));
+            Bukkit.broadcastMessage(CC.t("&cThe TNTTag Event has been cancelled."));
 
             for (TNTGamePlayer tntGamePlayer : eventPlayers.values()) {
                 Player player = tntGamePlayer.getPlayer();
@@ -320,7 +320,7 @@ public class TNTTagGame {
             winnerProfile.setEventsWon(winnerProfile.getEventsWon() + 1);
             winnerProfile.setCredits(winnerProfile.getCredits() + 100);
 
-            Bukkit.broadcastMessage(CC.translate("&b" + winner.getName() + " &fhas won the &4TNTTag &fEvent!"));
+            Bukkit.broadcastMessage(CC.t("&b" + winner.getName() + " &fhas won the &4TNTTag &fEvent!"));
             playVictoryEffects(winner);
 
             Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
@@ -347,7 +347,7 @@ public class TNTTagGame {
         winner.playEffect(loc.clone().add(0, 1, 0), Effect.FIREWORKS_SPARK, 1);
         winner.playEffect(loc.clone().add(0, 2, 0), Effect.HEART, 1);
 
-        winner.sendTitle(CC.translate("&b&lVICTORY!"), CC.translate("&b+100 Credits"));
+        winner.sendTitle(CC.t("&b&lVICTORY!"), CC.t("&b+100 Credits"));
 
         sendMessage(winner, "");
         sendMessage(winner, "&b&lCONGRATULATIONS!");

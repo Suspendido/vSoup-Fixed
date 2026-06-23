@@ -18,8 +18,8 @@ public class IncognitoPerk extends Perk {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Prevent your enemies from keeping"));
-        lore.add(CC.translate("&7track of your kill streak."));
+        lore.add(CC.t("&7Prevent your enemies from keeping"));
+        lore.add(CC.t("&7track of your kill streak."));
         return lore;
     }
 

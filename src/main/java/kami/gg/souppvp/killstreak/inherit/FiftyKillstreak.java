@@ -41,7 +41,7 @@ public class FiftyKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.TNT)
-                .name(CC.translate("&a" + getName()))
+                .name(CC.t("&a" + getName()))
                 .lore(Arrays.asList(
                         CC.MENU_BAR,
                         "&7Will start a 10 second timer and upon finish,",
@@ -70,8 +70,8 @@ public class FiftyKillstreak extends Killstreak implements Listener {
     }
 
     private void giveNuke(Player killer) {
-        killer.sendMessage(CC.translate("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
-        Bukkit.broadcastMessage(CC.translate("&a" + killer.getName() + " &ehas unlocked a &cNuke&e!"));
+        killer.sendMessage(CC.t("&aYou've received the &d" + getName() + " &aperk for reaching a &d" + getRequired() + " &akillstreak!"));
+        Bukkit.broadcastMessage(CC.t("&a" + killer.getName() + " &ehas unlocked a &cNuke&e!"));
         startNukeCountdown(killer);
     }
 
@@ -94,7 +94,7 @@ public class FiftyKillstreak extends Killstreak implements Listener {
             );
 
             for (Player p : Bukkit.getOnlinePlayers()) {
-                PlayerUtil.playSound(p, Sound.CHICKEN_EGG_POP);
+                PlayerUtil.playSound(p, Sound.CHICKEN_EGG_POP, 1.0);
             }
         });
 
@@ -123,7 +123,7 @@ public class FiftyKillstreak extends Killstreak implements Listener {
         }
 
         String context = nuked == 1 ? "player" : "players";
-        Bukkit.broadcastMessage(CC.translate("&eThe nuke eliminated a total of &c" + nuked + " &e" + context + "."));
+        Bukkit.broadcastMessage(CC.t("&eThe nuke eliminated a total of &c" + nuked + " &e" + context + "."));
     }
 
     private boolean hasHardline(Profile profile) {

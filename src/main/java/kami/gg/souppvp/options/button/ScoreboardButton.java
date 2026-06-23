@@ -42,7 +42,7 @@ public class ScoreboardButton extends Button {
         if (clickType.isLeftClick()){
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
             profile.setEnableScoreboard(!profile.getEnableScoreboard());
-            PlayerUtil.playSound(player, Sound.CLICK);
+            PlayerUtil.playSound(player, Sound.CLICK, 1.0);
         }
     }
 

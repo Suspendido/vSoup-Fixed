@@ -48,18 +48,18 @@ public class RepairDurabilityButton extends Button {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
         if (profile.getCredits() < costCredits) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            player.sendMessage(CC.translate("&cInsufficient credits."));
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+            player.sendMessage(CC.t("&cInsufficient credits."));
             return;
         }
 
-        player.sendMessage(CC.translate("&aSuccessfully bought the &dRepair Durability&a."));
+        player.sendMessage(CC.t("&aSuccessfully bought the &dRepair Durability&a."));
         profile.setCredits(profile.getCredits() - costCredits);
         PlayerUtil.repairPlayer(player);
         playSuccess(player);

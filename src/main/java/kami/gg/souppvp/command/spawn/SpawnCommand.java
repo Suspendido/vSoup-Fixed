@@ -35,17 +35,17 @@ public class SpawnCommand extends Command {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile.isCombatTagged()) {
-            player.sendMessage(CC.translate("&cYou're currently combat-tagged."));
+            player.sendMessage(CC.t("&cYou're currently combat-tagged."));
             return;
         }
 
         if (profile.getSumoEvent() != null) {
-            player.sendMessage(CC.translate("&cYou're currently in a sumo event."));
+            player.sendMessage(CC.t("&cYou're currently in a sumo event."));
             return;
         }
 
         if (profile.isTeleportingToSpawn()) {
-            player.sendMessage(CC.translate("&cYou're already teleporting."));
+            player.sendMessage(CC.t("&cYou're already teleporting."));
             return;
         }
 

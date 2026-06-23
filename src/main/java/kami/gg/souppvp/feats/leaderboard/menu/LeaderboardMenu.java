@@ -4,7 +4,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.leaderboard.LeaderboardManager;
 import kami.gg.souppvp.feats.leaderboard.LeaderboardType;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
@@ -20,7 +19,7 @@ public class LeaderboardMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Server Leaderboard");
+        return "Server Leaderboard";
     }
 
     @Override
@@ -32,7 +31,6 @@ public class LeaderboardMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
 
-        buttons.put(0, new CloseButton());
         buttons.put(10, new PlayerStatsButton());
         buttons.put(12, new LeaderboardCategoryButton(LeaderboardType.KILLS, Material.DIAMOND_SWORD));
         buttons.put(13, new LeaderboardCategoryButton(LeaderboardType.DEATHS, Material.SKULL_ITEM));
@@ -40,10 +38,16 @@ public class LeaderboardMenu extends Menu {
         buttons.put(15, new LeaderboardCategoryButton(LeaderboardType.KILLSTREAK, Material.BLAZE_POWDER));
         buttons.put(16, new LeaderboardCategoryButton(LeaderboardType.CREDITS, Material.GOLD_NUGGET));
 
+        setPlaceholder(true);
         return buttons;
     }
 
     private static class PlayerStatsButton extends Button {
+        @Override
+        public void clicked(Player player, ClickType clickType) {
+            playNeutral(player);
+        }
+
         @Override
         public ItemStack getButtonItem(Player player) {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
@@ -88,6 +92,11 @@ public class LeaderboardMenu extends Menu {
         private final Material icon;
 
         @Override
+        public void clicked(Player player, ClickType clickType) {
+            playNeutral(player);
+        }
+
+        @Override
         public ItemStack getButtonItem(Player player) {
             LeaderboardManager lbManager = SoupPvP.getInstance().getLeaderboardManager();
             List<LeaderboardManager.LeaderboardEntry> top10 = lbManager.getTop(type, 10);
@@ -105,7 +114,7 @@ public class LeaderboardMenu extends Menu {
                     String position = color + (i + 1) + ".";
                     String name = "&f" + entry.getName();
 
-                    lore.add(" " + position + " " + name + " &8- &f" + entry.getFormattedValue(type));
+                    lore.add(" " + position + " " + name + " &8- " + type.getColor() + entry.getFormattedValue(type));
                 }
             }
 
@@ -114,7 +123,7 @@ public class LeaderboardMenu extends Menu {
 
             ItemBuilder builder = new ItemBuilder(icon)
                     .name("&b&l" + type.getDisplayName())
-                    .lore(lore.toArray(new String[0]));
+                    .lore(lore);
 
             // Configuración especial para skulls
             if (icon == Material.SKULL_ITEM) {
@@ -122,20 +131,6 @@ public class LeaderboardMenu extends Menu {
             }
 
             return builder.build();
-        }
-    }
-
-    private static class CloseButton extends Button {
-        @Override
-        public void clicked(Player player, ClickType clickType) {
-            player.closeInventory();
-        }
-
-        @Override
-        public ItemStack getButtonItem(Player player) {
-            return new ItemBuilder(Material.BED)
-                    .name("&c&lClose Menu")
-                    .build();
         }
     }
 }

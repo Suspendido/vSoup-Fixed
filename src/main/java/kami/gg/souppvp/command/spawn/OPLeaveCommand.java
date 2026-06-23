@@ -39,7 +39,7 @@ public class OPLeaveCommand extends Command {
         if (profile.getSumoEvent() == null) {
             PlayerUtil.resetPlayer(player);
         } else {
-            player.sendMessage(CC.translate("&cYou're currently in a sumo event."));
+            player.sendMessage(CC.t("&cYou're currently in a sumo event."));
         }
     }
 }

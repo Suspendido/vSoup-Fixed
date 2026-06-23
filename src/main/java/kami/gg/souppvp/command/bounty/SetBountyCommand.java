@@ -2,7 +2,6 @@ package kami.gg.souppvp.command.bounty;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -45,14 +44,15 @@ public class SetBountyCommand extends Command {
         Player player = (Player) sender;
         String s = args[0];
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
-        if (profile == null){
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+
+        if (profile == null) {
+            sendMessage(player, "&cCouldn't resolve that player's name.");
             return;
         }
 
         int value = Integer.parseInt(args[1]);
         profile.setBounty(value);
         profile.saveProfile();
-        sender.sendMessage(CC.translate("&aSuccessfully updated!"));
+        sendMessage(player, "&aSuccessfully updated!");
     }
 }

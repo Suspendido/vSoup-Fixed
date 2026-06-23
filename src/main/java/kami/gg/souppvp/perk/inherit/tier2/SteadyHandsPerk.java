@@ -24,8 +24,8 @@ public class SteadyHandsPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7A chance to prevent yourself"));
-        lore.add(CC.translate("&7from dropping soup on the ground."));
+        lore.add(CC.t("&7A chance to prevent yourself"));
+        lore.add(CC.t("&7from dropping soup on the ground."));
         return lore;
     }
 

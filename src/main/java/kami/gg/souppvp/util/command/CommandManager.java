@@ -6,7 +6,7 @@ import kami.gg.souppvp.command.admin.*;
 import kami.gg.souppvp.command.admin.statistics.*;
 import kami.gg.souppvp.command.bounty.*;
 import kami.gg.souppvp.command.credit.*;
-import kami.gg.souppvp.command.shop.RepairCommand;
+import kami.gg.souppvp.command.RepairCommand;
 import kami.gg.souppvp.command.spawn.*;
 import kami.gg.souppvp.events.impl.sumo.command.SumoCommand;
 import kami.gg.souppvp.events.impl.tnttag.command.TNTTagCommand;

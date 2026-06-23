@@ -2,11 +2,8 @@ package kami.gg.souppvp.kit.button.view;
 
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.util.menu.Button;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class CombatEquipmentButton extends Button {
 

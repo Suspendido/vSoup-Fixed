@@ -28,7 +28,7 @@ public class NinjaKit extends Kit {
 
     private final String TIMER_NAME = "Shuriken";
     private final int SHURIKEN_COOLDOWN = 10;
-    private final ItemStack SHURIKEN_ITEM = new ItemBuilder(Material.NETHER_STAR).name(CC.translate("&bShuriken")).amount(4).build();
+    private final ItemStack SHURIKEN_ITEM = new ItemBuilder(Material.NETHER_STAR).name(CC.t("&bShuriken")).amount(4).build();
 
     @Override
     public String getName() {
@@ -140,7 +140,7 @@ public class NinjaKit extends Kit {
         }
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player.getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 

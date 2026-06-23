@@ -72,7 +72,7 @@ public class BartenderMenu extends Menu {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
             if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
                 sendMessage(player, "&cYou can't do this in spawn.");
                 return;
             }
@@ -118,7 +118,7 @@ public class BartenderMenu extends Menu {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
             if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
                 sendMessage(player, "&cYou can't do this in spawn.");
                 return;
             }
@@ -132,7 +132,7 @@ public class BartenderMenu extends Menu {
             sendMessage(player, "&aSuccessfully bought the &bSplash Potion Of Harming&a.");
             player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16428));
             profile.setCredits(profile.getCredits() - costCredits);
-            PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+            PlayerUtil.playSound(player, Sound.NOTE_PIANO, 1.0);
         }
     }
 
@@ -164,7 +164,7 @@ public class BartenderMenu extends Menu {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
             if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
+                PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
                 sendMessage(player, "&cYou can't do this in spawn.");
                 return;
             }
@@ -210,18 +210,18 @@ public class BartenderMenu extends Menu {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
             if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-                PlayerUtil.playSound(player, Sound.DIG_GRASS);
-                player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+                PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+                player.sendMessage(CC.t("&cYou can't do this in spawn."));
                 return;
             }
 
             if (player.getInventory().firstEmpty() == -1) {
                 playFail(player);
-                player.sendMessage(CC.translate("&cYour inventory is full!"));
+                player.sendMessage(CC.t("&cYour inventory is full!"));
                 return;
             }
 
-            player.sendMessage(CC.translate("&aSuccessfully bought the &bSplash Potion Of Slowness&a."));
+            player.sendMessage(CC.t("&aSuccessfully bought the &bSplash Potion Of Slowness&a."));
             player.getInventory().addItem(new ItemStack(Material.POTION, 1, (short) 16426));
             profile.setCredits(profile.getCredits() - costCredits);
             playSuccess(player);

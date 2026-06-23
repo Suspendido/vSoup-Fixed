@@ -14,7 +14,7 @@ public class HostEventsMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return CC.translate("Select an event to host");
+        return CC.t("Select an event to host");
     }
 
     @Override

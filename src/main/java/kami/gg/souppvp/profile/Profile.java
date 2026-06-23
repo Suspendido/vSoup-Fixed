@@ -8,6 +8,7 @@ import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
 import kami.gg.souppvp.feats.storage.StorageType;
 import kami.gg.souppvp.kit.progress.KitProgress;
+import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.tier.Tiers;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class Profile {
     private Sumo sumoEvent;
     private TNTTagGame tntTagGame;
     private Tiers tier;
+    private String selectedTierIcon;
 
     private Boolean loaded;
     private Boolean enableKillDeathMessages;
@@ -104,6 +106,7 @@ public class Profile {
         this.bounty = 0;
         this.experiences = 0;
         this.tier = Tiers.ZERO;
+        this.selectedTierIcon = TierCategory.IRON.name();
 
         this.currentKillstreak = 0;
         this.highestKillstreak = 0;
@@ -169,6 +172,7 @@ public class Profile {
         this.experiences = doc.getInteger("experiences", 0);
 
         this.tier = Tiers.getTierByNumber(doc.getInteger("tier", 0));
+        this.selectedTierIcon = doc.getString("selectedTierIcon");
 
         this.currentKillstreak = doc.getInteger("currentKillstreak", 0);
         this.highestKillstreak = doc.getInteger("highestKillstreak", 0);
@@ -217,6 +221,7 @@ public class Profile {
         doc.put("bounty", bounty);
         doc.put("experiences", experiences);
         doc.put("tier", tier.getTierLevel());
+        doc.put("selectedTierIcon", selectedTierIcon);
 
         doc.put("currentKillstreak", currentKillstreak);
         doc.put("highestKillstreak", highestKillstreak);
@@ -269,6 +274,7 @@ public class Profile {
         this.bounty = fromFile.getBounty();
         this.experiences = fromFile.getExperiences();
         this.tier = fromFile.getTier();
+        this.selectedTierIcon = fromFile.getSelectedTierIcon() != null ? fromFile.getSelectedTierIcon() : TierCategory.IRON.name();
 
         this.currentKillstreak = fromFile.getCurrentKillstreak();
         this.highestKillstreak = fromFile.getHighestKillstreak();

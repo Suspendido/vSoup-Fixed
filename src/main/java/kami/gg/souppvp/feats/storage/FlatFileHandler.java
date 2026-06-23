@@ -45,8 +45,6 @@ public class FlatFileHandler {
 
     public void deleteProfile(Profile profile) {
         File file = new File(profilesFolder, profile.getUuid().toString() + ".json");
-
-
     }
 
     public void saveAllProfiles() {

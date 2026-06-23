@@ -107,7 +107,7 @@ public class ScoreboardManager {
         text = text.replace("%player%", player.getName());
         text = text.replace("%online%", String.valueOf(Bukkit.getOnlinePlayers().size()));
 
-        text = CC.translate(text);
+        text = CC.t(text);
 
         return text;
     }

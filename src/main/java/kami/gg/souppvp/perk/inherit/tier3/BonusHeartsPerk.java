@@ -24,8 +24,8 @@ public class BonusHeartsPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Every kill, you will"));
-        lore.add(CC.translate("&7gain five additional hearts."));
+        lore.add(CC.t("&7Every kill, you will"));
+        lore.add(CC.t("&7gain five additional hearts."));
         return lore;
     }
 

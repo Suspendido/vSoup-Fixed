@@ -7,6 +7,7 @@ import kami.gg.souppvp.feats.nametag.task.NametagTask;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
+import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.NameThreadFactory;
 import lombok.Getter;
@@ -61,10 +62,6 @@ public class NametagManager {
         }
     }
 
-    public void disable() {
-        executor.shutdownNow();
-    }
-
     public void handleUpdate(Player viewer, Player target) {
         if (viewer == null || target == null) return;
         String prefix = getAdapter().getAndUpdate(viewer, target);
@@ -80,17 +77,8 @@ public class NametagManager {
         boolean isInSpawn = instance.getSpawnHandler().getCuboid().contains(target) && profile.getProfileState() == ProfileState.SPAWN;
         List<String> lines = new ArrayList<>();
 
-        if (profile == null) {
-            for (String s : nametagConfig.getStringList("NAMETAGS.FORMAT.NORMAL")) {
-                lines.add(s
-                        .replace("%prefix%", prefix != null ? prefix : "")
-                        .replace("%player%", target.getName())
-                        .replace("%health%", String.valueOf((int) target.getHealth() / 2))
-                );
-            }
-            handleLunar(target, viewer, CC.translate(lines));
-            return;
-        }
+        TierCategory tierCategory = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
+        String tierDisplay = profile.getTier().getTierLevel() + tierCategory.getFormattedIcon();
 
         if (staff) {
             for (String s : nametagConfig.getStringList("NAMETAGS.FORMAT.STAFF")) {
@@ -99,9 +87,10 @@ public class NametagManager {
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
                         .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
                         .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                        .replace("%tier%", tierDisplay)
                 );
             }
-            handleLunar(target, viewer, CC.translate(lines));
+            handleLunar(target, viewer, CC.t(lines));
             return;
         }
 
@@ -125,10 +114,11 @@ public class NametagManager {
                         .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
                         .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%bounty%", String.valueOf(bountyValue))
+                        .replace("%tier%", tierDisplay)
 
                 );
             }
-            handleLunar(target, viewer, CC.translate(lines));
+            handleLunar(target, viewer, CC.t(lines));
             return;
         }
 
@@ -143,6 +133,7 @@ public class NametagManager {
                         .replace("%player%", target.getName())
                         .replace("%health%", String.valueOf(isTrickster ? new Random().nextInt(11) : (int) target.getHealth() / 2))
                         .replace("%bounty%", String.valueOf(bountyValue))
+                        .replace("%tier%", tierDisplay)
                 );
             }
         } else if (profile.isJuggernaut()) {
@@ -153,6 +144,7 @@ public class NametagManager {
                         .replace("%prefix%", prefix != null ? prefix : "")
                         .replace("%player%", target.getName())
                         .replace("%health%", String.valueOf(isTrickster ? new Random().nextInt(11) : (int) target.getHealth() / 2))
+                        .replace("%tier%", tierDisplay)
                 );
             }
         } else if (isTrickster) {
@@ -164,6 +156,7 @@ public class NametagManager {
                         .replace("%player%", target.getName())
                         .replace("%health%", String.valueOf(new Random().nextInt(11)))
                         .replace("%bounty%", String.valueOf(RNG.nextInt(1001)))
+                        .replace("%tier%", tierDisplay)
                 );
             }
         } else if (profile.isInEvent()) {
@@ -176,6 +169,7 @@ public class NametagManager {
                             .replace("%prefix%", prefix != null ? prefix : "")
                             .replace("%player%", target.getName())
                             .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                            .replace("%tier%", tierDisplay)
                     );
                 }
             }
@@ -187,6 +181,7 @@ public class NametagManager {
                             .replace("%prefix%", prefix != null ? prefix : "")
                             .replace("%player%", target.getName())
                             .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                            .replace("%tier%", tierDisplay)
                     );
                 }
             }
@@ -198,11 +193,12 @@ public class NametagManager {
                         .replace("%prefix%", prefix != null ? prefix : "")
                         .replace("%player%", target.getName())
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
+                        .replace("%tier%", tierDisplay)
                 );
             }
         }
 
-        handleLunar(target, viewer, CC.translate(lines));
+        handleLunar(target, viewer, CC.t(lines));
     }
 
     private void handleLunar(Player target, Player viewer, List<String> lines) {

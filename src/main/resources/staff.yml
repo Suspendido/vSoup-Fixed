@@ -1,54 +1,12 @@
 STAFF_MODE:
-  STAFF_MODE_ON_JOIN: true # Enable staff on join
-  LUNAR_STAFF_MODULES: true # Enable lunar staff modules
-  ACTION_BAR_ENABLED: true
-  ACTION_BAR_STRING: '&6Vanish: %vanished% &7┃ &6Build: %staffbuild% &7┃ &6Hide Staff: %hidestaff%'
-  SILENT_VIEW_TITLE: 'Silently viewing...' # When clicking a chest or hopper in staff mode.
   FREEZE_MESSAGE_INTERVAL: 3
   RANDOM_TP_MINER_Y: 25 # For random tp miner player has to be below this y level
-  PAUSE_PLAYTIME_STAFF: true
-  PLACEHOLDERS:
-    TRUE_PLACEHOLDER: '&a✔'
-    FALSE_PLACEHOLDER: '&c×'
   DISABLED_COMMANDS_FROZEN:
     - 'f home'
     - 't home'
     - 'faction home'
     - 'team home'
     - 'logout'
-  REPORTS_MENU:
-    TITLE: '&dReports'
-    SIZE: 27
-    MAX_REPORTS: 81
-    REPORT_FORMAT:
-      NAME: '&dReport: &e%reported%'
-      MATERIAL: 'PAPER'
-      COMMAND: '/teleport %reported%'
-      DATA: 0
-      LORE:
-        - '&7&m----------------------------'
-        - '&ePlayer: &c%player%'
-        - '&eReported: &c%reported%'
-        - '&eReason: &c%reason%'
-        - ''
-        - '&eClick to teleport to &d%reported%&e.'
-        - '&7&m----------------------------'
-  REQUESTS_MENU:
-    TITLE: '&dRequests'
-    SIZE: 27
-    MAX_REPORTS: 81
-    REQUEST_FORMAT:
-      NAME: '&dRequest: &e%player%'
-      MATERIAL: 'PAPER'
-      COMMAND: '/teleport %player%'
-      DATA: 0
-      LORE:
-        - '&7&m----------------------------'
-        - '&ePlayer: &c%player%'
-        - '&eRequest: &c%reason%'
-        - ''
-        - '&eClick to teleport to &d%player%&e.'
-        - '&7&m----------------------------'
   STAFF_ITEMS:
     VANISH_ON:
       NAME: '&3Vanish &c(Disabled)'

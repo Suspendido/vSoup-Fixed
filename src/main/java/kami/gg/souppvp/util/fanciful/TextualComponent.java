@@ -67,11 +67,11 @@ public abstract class TextualComponent implements Cloneable {
 	}
 
 	static boolean isTextKey(String key) {
-		return key.equals("translate") || key.equals("text") || key.equals("score") || key.equals("selector");
+		return key.equals("t") || key.equals("text") || key.equals("score") || key.equals("selector");
 	}
 
 	static boolean isTranslatableText(TextualComponent component) {
-		return component instanceof ComplexTextTypeComponent && ((ComplexTextTypeComponent) component).getKey().equals("translate");
+		return component instanceof ComplexTextTypeComponent && ((ComplexTextTypeComponent) component).getKey().equals("t");
 	}
 
 	/**
@@ -237,7 +237,7 @@ public abstract class TextualComponent implements Cloneable {
 	 * @return The text component representing the specified localized text.
 	 */
 	public static TextualComponent localizedText(String translateKey) {
-		return new ArbitraryTextTypeComponent("translate", translateKey);
+		return new ArbitraryTextTypeComponent("t", translateKey);
 	}
 
 	private static void throwUnsupportedSnapshot() {

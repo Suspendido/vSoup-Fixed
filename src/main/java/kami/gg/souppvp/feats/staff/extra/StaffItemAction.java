@@ -7,6 +7,5 @@ public enum StaffItemAction {
     INSPECTION,
     FREEZE,
     INTERACT_PLAYER,
-    COMBAT_TP
 
 }

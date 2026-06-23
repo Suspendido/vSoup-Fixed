@@ -25,8 +25,8 @@ public class TauntPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Automatically taunt players in private"));
-        lore.add(CC.translate("&7messages when you kill them."));
+        lore.add(CC.t("&7Automatically taunt players in private"));
+        lore.add(CC.t("&7messages when you kill them."));
         return lore;
     }
 

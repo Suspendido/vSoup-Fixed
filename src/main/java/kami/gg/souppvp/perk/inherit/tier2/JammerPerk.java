@@ -26,8 +26,8 @@ public class JammerPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Have a high chance of jamming someone's ability"));
-        lore.add(CC.translate("&7to use the sponge."));
+        lore.add(CC.t("&7Have a high chance of jamming someone's ability"));
+        lore.add(CC.t("&7to use the sponge."));
         return lore;
     }
 
@@ -58,10 +58,10 @@ public class JammerPerk extends Perk implements Listener {
         if (currentPerk == jammerPerk){
             if (event.getEntity().hasMetadata("jammed")) return;
             event.getEntity().setMetadata("jammed", new FixedMetadataValue(SoupPvP.getInstance(), "jammed"));
-            ((Player) event.getEntity()).sendMessage(CC.translate("&cYou've been jammed by &e" + ((Player) event.getDamager()).getName() + "&c."));
+            ((Player) event.getEntity()).sendMessage(CC.t("&cYou've been jammed by &e" + ((Player) event.getDamager()).getName() + "&c."));
             TaskUtil.runLater(() -> {
                 event.getEntity().removeMetadata("jammed", SoupPvP.getInstance());
-                ((Player) event.getEntity()).sendMessage(CC.translate("&cYou're no longer jammed."));
+                ((Player) event.getEntity()).sendMessage(CC.t("&cYou're no longer jammed."));
             }, 10 * 20L);
         }
     }

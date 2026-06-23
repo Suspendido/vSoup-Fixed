@@ -2,12 +2,10 @@ package kami.gg.souppvp.tier.menu;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.tier.button.TierProgressButton;
-import kami.gg.souppvp.tier.button.ViewTiersButton;
+import kami.gg.souppvp.tier.button.*;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
-import kami.gg.souppvp.util.menu.button.BackButton;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,11 +25,12 @@ public class TiersProgressMenu extends Menu {
         Map<Integer, Button> buttons = new HashMap<>();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        buttons.put(13, new TierProgressButton(profile));
-        buttons.put(31, new ViewTiersButton());
+        buttons.put(10, new CurrentTierButton(profile));
+        buttons.put(43, new NextTierButton(profile));
+        buttons.put(49, new TierIconSelectorButton(profile));
 
         if (profile.getTier().getNext() != null) {
-            int[] BAR_SLOTS = {20, 21, 22, 23, 24};
+            int[] BAR_SLOTS = {19, 28, 37, 38, 39, 30, 21, 12, 13, 14, 23, 32, 41, 42};
             addProgressBar(buttons, BAR_SLOTS, profile.getExperiences(), profile.getTier().getNext().getRequiredExperiences());
         }
 
@@ -41,42 +40,68 @@ public class TiersProgressMenu extends Menu {
 
     @Override
     public int size(Map<Integer, Button> buttons) {
-        return 45;
+        return 54;
     }
 
     private void addProgressBar(Map<Integer, Button> buttons, int[] slots, int currentXP, int requiredXP) {
         double progress = Math.min(1.0, (double) currentXP / requiredXP);
         int filled = (int) Math.floor(progress * slots.length);
+        double xpPerSlot = (double) requiredXP / slots.length;
 
         for (int i = 0; i < slots.length; i++) {
             short color;
+            int slotXP = (int) Math.ceil((i + 1) * xpPerSlot);
+            boolean isFilled = i < filled;
+            boolean isPartial = i == filled && progress > 0;
 
-            if (i < filled) {
-                color = 5;
-            } else if (i == filled && progress > 0) {
-                color = 4;
+            if (isFilled) {
+                color = 10;
+            } else if (isPartial) {
+                color = 11;
             } else {
-                color = 14;
+                color = 8;
             }
 
-            buttons.put(slots[i], new GlassFillerButton(color));
+            buttons.put(slots[i], new ProgressItemButton(color, isFilled, isPartial, slotXP, currentXP));
         }
     }
 
-    public static class GlassFillerButton extends Button {
+    public static class ProgressItemButton extends Button {
 
         private final short data;
+        private final boolean filled;
+        private final boolean partial;
+        private final int slotXP;
+        private final int currentXP;
 
-        public GlassFillerButton(short data) {
+        public ProgressItemButton(short data, boolean filled, boolean partial, int slotXP, int currentXP) {
             this.data = data;
+            this.filled = filled;
+            this.partial = partial;
+            this.slotXP = slotXP;
+            this.currentXP = currentXP;
         }
 
         @Override
         public ItemStack getButtonItem(Player player) {
-            return new ItemBuilder(Material.STAINED_GLASS_PANE)
+            ItemBuilder builder = new ItemBuilder(Material.INK_SACK)
                     .durability(data)
-                    .name(" ")
-                    .build();
+                    .name(" ");
+
+            if (filled) {
+                builder.name("&a&l" + slotXP + " Exp")
+                       .lore("&aComplete!");
+            } else if (partial) {
+                int remaining = slotXP - currentXP;
+                builder.name("&e&l" + remaining)
+                       .lore("&7Need &e" + remaining + " &7more exp");
+            } else {
+                int remaining = slotXP - currentXP;
+                builder.name("&7&l" + slotXP)
+                       .lore("&7Need &d" + remaining + " &7more exp");
+            }
+
+            return builder.build();
         }
     }
 }

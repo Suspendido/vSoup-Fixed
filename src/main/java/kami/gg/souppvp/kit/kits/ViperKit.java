@@ -92,7 +92,7 @@ public class ViperKit extends Kit {
                 int randomNum = new Random().nextInt(100);
                 if (randomNum <= 10) {
                     ((Player) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10 * 20, 0));
-                    event.getEntity().sendMessage(CC.translate("&cYou have been poisoned by &e" + event.getDamager().getName() + "&c."));
+                    event.getEntity().sendMessage(CC.t("&cYou have been poisoned by &e" + event.getDamager().getName() + "&c."));
                 }
             }
         }

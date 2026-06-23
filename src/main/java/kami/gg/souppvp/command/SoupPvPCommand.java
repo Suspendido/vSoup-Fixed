@@ -29,7 +29,7 @@ public class SoupPvPCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return CC.translate(Arrays.asList(
+        return Arrays.asList(
                 CC.CHAT_BAR,
                 "&6&lSoupPvP Core",
                 "&fThis server is using &6SoupPvP Core",
@@ -39,7 +39,7 @@ public class SoupPvPCommand extends Command {
                 "&e/souppvp save &8- &fSaves the config.",
                 "&e/souppvp deleteusers &8- &fDeletes all the user data.",
                 CC.CHAT_BAR
-        ));
+        );
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SoupPvPCommand extends Command {
         switch (args[0].toLowerCase()) {
             case "reload":
                 if (sender.hasPermission("souppvp.reload")) {
-                    sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &eStarting config reload..."));
+                    sendMessage(sender, "&7[&6&lSoupPvP&7] &eStarting config reload...");
                     long startTime = System.currentTimeMillis();
 
                     SoupPvP.getInstance().getTablistManager().reload();
@@ -61,9 +61,10 @@ public class SoupPvPCommand extends Command {
                     SoupPvP.getInstance().getNametagManager().reload();
                     SoupPvP.getInstance().getMapManager().reload();
                     SoupPvP.getInstance().getStaffManager().reload();
+                    SoupPvP.getInstance().getListenerManager().reload();
 
                     long endTime = System.currentTimeMillis();
-                    sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &aConfigs reloaded! &7(" + (endTime - startTime) + "ms)"));
+                    sendMessage(sender, "&7[&6&lSoupPvP&7] &aConfigs reloaded! &7(" + (endTime - startTime) + "ms)");
                 }
                 return;
 
@@ -74,7 +75,7 @@ public class SoupPvPCommand extends Command {
                     return;
                 }
 
-                sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &eDeleting all profiles..."));
+                sendMessage(sender, "&7[&6&lSoupPvP&7] &eDeleting all profiles...");
 
                 Bukkit.getScheduler().runTaskAsynchronously(SoupPvP.getInstance(), () -> {
                     long startDelete = System.currentTimeMillis();
@@ -97,11 +98,11 @@ public class SoupPvPCommand extends Command {
                     int finalDeleted = deletedCount;
                     int finalFailed = failedCount;
                     Bukkit.getScheduler().runTask(SoupPvP.getInstance(), () -> {
-                        sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &aDeleted &l" + finalDeleted + "&a profiles."));
+                        sendMessage(sender, "&7[&6&lSoupPvP&7] &aDeleted &l" + finalDeleted + "&a profiles.");
                         if (finalFailed > 0) {
-                            sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &cFailed to delete &l" + finalFailed + "&c profiles."));
+                            sendMessage(sender, "&7[&6&lSoupPvP&7] &cFailed to delete &l" + finalFailed + "&c profiles.");
                         }
-                        sender.sendMessage(CC.translate("&7[&6&lSoupPvP&7] &7Completed in &e" + (endDelete - startDelete) + "ms"));
+                        sendMessage(sender, "&7[&6&lSoupPvP&7] &7Completed in &e" + (endDelete - startDelete) + "ms");
                     });
                 });
                 return;
@@ -117,7 +118,7 @@ public class SoupPvPCommand extends Command {
                 }
                 Long started = System.currentTimeMillis();
                 Long ended = System.currentTimeMillis();
-                sendMessage(sender, CC.translate("&7[&6&lSoupPvP&7] &aSuccessfully saved a total of &a&l" + SoupPvP.getInstance().getProfilesHandler().getProfiles().size() + "&a profiles within &a&l" + (ended - started) + "&ams."));
+                sendMessage(sender, "&7[&6&lSoupPvP&7] &aSuccessfully saved a total of &a&l" + SoupPvP.getInstance().getProfilesHandler().getProfiles().size() + "&a profiles within &a&l" + (ended - started) + "&ams.");
                 return;
         }
         sendUsage(sender);

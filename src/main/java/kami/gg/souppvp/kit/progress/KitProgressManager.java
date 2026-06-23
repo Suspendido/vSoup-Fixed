@@ -1,17 +1,11 @@
 package kami.gg.souppvp.kit.progress;
 
-import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class KitProgressManager {
-
-    private final SoupPvP plugin;
-
-    public KitProgressManager(SoupPvP plugin) {
-        this.plugin = plugin;
-    }
 
     public KitProgress getProgress(Profile profile) {
         return profile.getKitProgress(profile.getCurrentKit());
@@ -42,9 +36,9 @@ public class KitProgressManager {
             progress.setExp(0);
             progress.setLevel(progress.getLevel() + 1);
 
-            Player player = plugin.getServer().getPlayer(profile.getUuid());
+            Player player = Bukkit.getPlayer(profile.getUuid());
             if (player != null) {
-                player.sendMessage(CC.translate("&6Your " + profile.getCurrentKit() + " kit leveled up to &e" + progress.getLevel()));
+                player.sendMessage(CC.t("&6Your " + profile.getCurrentKit() + " kit leveled up to &e" + progress.getLevel()));
             }
         }
     }

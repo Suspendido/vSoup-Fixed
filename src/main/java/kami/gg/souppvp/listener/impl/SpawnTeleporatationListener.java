@@ -21,7 +21,7 @@ public class SpawnTeleporatationListener implements Listener {
             if (profile.isTeleportingToSpawn()){
                 if (event.getTo().getBlockX() == event.getFrom().getBlockX() && event.getTo().getBlockY() == event.getFrom().getBlockY() && event.getTo().getBlockZ() == event.getFrom().getBlockZ()) return;
                 profile.removeSpawnTeleportation();
-                Bukkit.getPlayer(player.getUniqueId()).sendMessage(CC.translate("&cYour spawn teleportation has been cancelled because you have moved."));
+                Bukkit.getPlayer(player.getUniqueId()).sendMessage(CC.t("&cYour spawn teleportation has been cancelled because you have moved."));
             }
         }
     }
@@ -34,12 +34,12 @@ public class SpawnTeleporatationListener implements Listener {
 
             if (victimProfile.isTeleportingToSpawn()) {
                 victimProfile.removeSpawnTeleportation();
-                Bukkit.getPlayer(victim.getUniqueId()).sendMessage(CC.translate("&cYour spawn teleportation you have been combat-tagged."));
+                Bukkit.getPlayer(victim.getUniqueId()).sendMessage(CC.t("&cYour spawn teleportation you have been combat-tagged."));
             }
 
             if (damagerProfile.isTeleportingToSpawn()) {
                 damagerProfile.removeSpawnTeleportation();
-                Bukkit.getPlayer(damager.getUniqueId()).sendMessage(CC.translate("&cYour spawn teleportation you have been combat-tagged."));
+                Bukkit.getPlayer(damager.getUniqueId()).sendMessage(CC.t("&cYour spawn teleportation you have been combat-tagged."));
             }
         }
     }

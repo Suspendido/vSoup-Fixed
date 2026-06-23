@@ -27,9 +27,9 @@ public class ReverseCopyCatPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7When you die, your killer has"));
-        lore.add(CC.translate("&7a 50% chance of getting your"));
-        lore.add(CC.translate("&7kit."));
+        lore.add(CC.t("&7When you die, your killer has"));
+        lore.add(CC.t("&7a 50% chance of getting your"));
+        lore.add(CC.t("&7kit."));
         return lore;
     }
 

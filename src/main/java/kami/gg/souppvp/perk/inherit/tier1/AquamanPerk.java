@@ -25,8 +25,8 @@ public class AquamanPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7While in water, you deal 10%"));
-        lore.add(CC.translate("&7more melee damage."));
+        lore.add(CC.t("&7While in water, you deal 10%"));
+        lore.add(CC.t("&7more melee damage."));
         return lore;
     }
 

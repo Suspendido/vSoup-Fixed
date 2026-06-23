@@ -5,9 +5,7 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -112,20 +110,19 @@ public class MelonKit extends Kit {
         event.setCancelled(true);
         player.updateInventory();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Melon Tosser", true)) {
-            long left = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Melon Tosser", true);
-            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(left, true) + ChatColor.RED + ".");
+        if (hasTimer(player.getUniqueId())) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
             return;
         }
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(BlockUtil.getTargetBlock(player, 20).getLocation())) {
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Melon Tosser", TimeUnit.SECONDS.toMillis(30)), true);
+        addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(30));
         XPBarTimer.runXpBar(player, 30);
-        PlayerUtil.playSound(player, Sound.EXPLODE);
+        PlayerUtil.playSound(player, Sound.EXPLODE, 1.0);
         FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation(), Material.MELON_BLOCK, (byte) 0);
 
         block.setDropItem(false);

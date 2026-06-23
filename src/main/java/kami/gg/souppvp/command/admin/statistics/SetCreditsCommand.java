@@ -40,13 +40,13 @@ public class SetCreditsCommand extends Command {
         String s = args[0];
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
         if (profile == null){
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
             return;
         }
 
         int value = Integer.parseInt(args[1]);
         profile.setCredits(value);
-        sender.sendMessage(CC.translate("&aSuccessfully updated!"));
+        sender.sendMessage(CC.t("&aSuccessfully updated!"));
         profile.saveProfile();
     }
 }

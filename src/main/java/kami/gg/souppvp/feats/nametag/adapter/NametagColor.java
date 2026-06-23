@@ -28,8 +28,8 @@ public class NametagColor implements NametagAdapter {
 
     private String createTeam(Player player, Player target, String name, String prefix, String color, NameVisibility visibility) {
         String formattedPrefix = (prefix.isEmpty() ? "" : prefix
-                .replace("%rank-color%", CC.translate(SoupPvP.getInstance().getRankHook().getRankColor(target)))
-                .replace("%rank-name%", CC.translate(SoupPvP.getInstance().getRankHook().getRankName(target))));
+                .replace("%rank-color%", CC.t(SoupPvP.getInstance().getRankHook().getRankColor(target)))
+                .replace("%rank-name%", CC.t(SoupPvP.getInstance().getRankHook().getRankName(target))));
 
         return formattedPrefix + color;
     }

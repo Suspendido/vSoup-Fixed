@@ -4,12 +4,9 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitRarity;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
 import kami.gg.souppvp.util.projectile.event.CustomProjectileHitEvent;
 import kami.gg.souppvp.util.projectile.projectile.ItemProjectile;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -61,7 +58,7 @@ public class TorchKit extends Kit {
     public List<ItemStack> getCombatEquipments() {
         List<ItemStack> itemStacks = new ArrayList<>();
         itemStacks.add(new ItemBuilder(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1).build());
-        itemStacks.add(new ItemBuilder(Material.BLAZE_POWDER).name(CC.translate("&cDragon Breath")).build());
+        itemStacks.add(new ItemBuilder(Material.BLAZE_POWDER).name("&cDragon Breath").build());
         return itemStacks;
     }
 
@@ -91,42 +88,50 @@ public class TorchKit extends Kit {
     public void onPlayerInteractEvent(PlayerInteractEvent event){
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (profile.getCurrentKit().equals(getName())){
-            if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))){
-                event.setCancelled(true);
-                player.updateInventory();
-                if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Dragon Breath", true)) {
-                    player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Dragon Breath", true), true) + ChatColor.RED + ".");
-                    return;
-                }
-                SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Dragon Breath", TimeUnit.SECONDS.toMillis(45)), true);
-                XPBarTimer.runXpBar(player, 45);
-                PlayerUtil.playSound(player, Sound.ENDERDRAGON_GROWL);
-                for (Entity entity : player.getNearbyEntities(5, 5, 5)){
-                    if (entity instanceof Player){
-                        PlayerUtil.playSound((Player) entity, Sound.ENDERDRAGON_GROWL);
-                    }
-                }
-                new BukkitRunnable() {
-                    int i = 0;
-                    @Override
-                    public void run() {
-                        if(i >= 20) {
-                            cancel();
-                        }
-                        ++i;
-                        ItemProjectile projectile = new ItemProjectile("DRAGON_BREATH", player, new ItemStack(Material.BLAZE_POWDER), 0.5f);
-                    }
-                }.runTaskTimer(SoupPvP.getInstance(), 2L, 2L);
+        if (!profile.getCurrentKit().equals(getName())) return;
+
+        if (event.getPlayer().getItemInHand().isSimilar(this.getCombatEquipments().get(1)) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+            event.setCancelled(true);
+            player.updateInventory();
+
+            if (profile.isInEvent() || isInSpawn(player, profile)) {
+                player.sendMessage(CC.t("&cYou can't use this while in spawn."));
+                return;
             }
+
+            if (hasTimer(player.getUniqueId())) {
+                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId()), true) + "&c."));
+                return;
+            }
+
+            addTimer(player.getUniqueId(), TimeUnit.SECONDS.toMillis(45));
+            XPBarTimer.runXpBar(player, 45);
+            PlayerUtil.playSound(player, Sound.ENDERDRAGON_GROWL, 1.0);
+
+            for (Entity entity : player.getNearbyEntities(5, 5, 5)) {
+                if (entity instanceof Player) {
+                    PlayerUtil.playSound((Player) entity, Sound.ENDERDRAGON_GROWL, 1.0);
+                }
+            }
+
+            new BukkitRunnable() {
+                int i = 0;
+                @Override
+                public void run() {
+                    if (i >= 20) {
+                        cancel();
+                    }
+                    ++i;
+                    ItemProjectile projectile = new ItemProjectile("DRAGON_BREATH", player, new ItemStack(Material.BLAZE_POWDER), 0.5f);
+                }
+            }.runTaskTimer(SoupPvP.getInstance(), 2L, 2L);
         }
     }
 
     @EventHandler
-    public void onHit(CustomProjectileHitEvent event){
+    public void onHit(CustomProjectileHitEvent event) {
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(event.getHitEntity())) return;
-        if (event.getProjectile().getProjectileName().equals("DRAGON_BREATH") && event.getHitEntity() instanceof Player && event.getHitEntity() != event.getProjectile().getShooter()){
+        if (event.getProjectile().getProjectileName().equals("DRAGON_BREATH") && event.getHitEntity() instanceof Player && event.getHitEntity() != event.getProjectile().getShooter()) {
             event.getHitEntity().setFireTicks(40);
         }
     }

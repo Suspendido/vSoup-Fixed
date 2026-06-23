@@ -30,8 +30,8 @@ public class RevengePerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Gain triple your normal credits for killing"));
-        lore.add(CC.translate("&7a player who just killed you."));
+        lore.add(CC.t("&7Gain triple your normal credits for killing"));
+        lore.add(CC.t("&7a player who just killed you."));
         return lore;
     }
 
@@ -64,12 +64,12 @@ public class RevengePerk extends Perk implements Listener {
                 } else {
                     revengeMap.put(event.getEntity().getUniqueId(), event.getEntity().getKiller().getUniqueId());
                 }
-                Bukkit.getPlayer(event.getEntity().getUniqueId()).sendMessage(CC.translate("&cYou need to take your revenge on " + event.getEntity().getKiller().getName() + "."));
+                Bukkit.getPlayer(event.getEntity().getUniqueId()).sendMessage(CC.t("&cYou need to take your revenge on " + event.getEntity().getKiller().getName() + "."));
             }
             if (killerProfilePerk == revengePerk){
                 if (revengeMap.containsKey(event.getEntity().getKiller().getUniqueId())){
                     if (revengeMap.get(event.getEntity().getKiller().getUniqueId()) == event.getEntity().getUniqueId()){
-                        event.getEntity().getKiller().sendMessage(CC.translate("&cYou earned triple your credits for killing " + event.getEntity().getName() + "."));
+                        event.getEntity().getKiller().sendMessage(CC.t("&cYou earned triple your credits for killing " + event.getEntity().getName() + "."));
                         killerProfile.setCredits(killerProfile.getCredits() + (17 * 2));
                         revengeMap.remove(event.getEntity().getKiller().getUniqueId());
                     }

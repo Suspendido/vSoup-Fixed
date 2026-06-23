@@ -44,13 +44,13 @@ public class GoldenApplesButton extends Button {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
-            player.sendMessage(CC.translate("&cYou can't do this in spawn."));
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
+            player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
         if (profile.getCredits() < costCredits) {
-            PlayerUtil.playSound(player, Sound.DIG_GRASS);
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
             sendMessage(player, "&cInsufficient credits.");
             return;
         }
@@ -61,10 +61,10 @@ public class GoldenApplesButton extends Button {
             return;
         }
 
-        player.sendMessage(CC.translate("&aSuccessfully bought the &bGolden Apples&a."));
+        player.sendMessage(CC.t("&aSuccessfully bought the &bGolden Apples&a."));
         player.getInventory().addItem(new ItemBuilder(Material.GOLDEN_APPLE).amount(3).build());
         profile.setCredits(profile.getCredits() - costCredits);
-        PlayerUtil.playSound(player, Sound.NOTE_PIANO);
+        PlayerUtil.playSound(player, Sound.NOTE_PIANO, 1.0);
         playSuccess(player);
     }
 

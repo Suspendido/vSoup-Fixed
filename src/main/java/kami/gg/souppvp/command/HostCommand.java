@@ -1,6 +1,7 @@
 package kami.gg.souppvp.command;
 
 import kami.gg.souppvp.events.menu.HostEventsMenu;
+import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -8,7 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 import java.util.List;
 
-public class HostCommand extends kami.gg.souppvp.util.command.Command {
+public class HostCommand extends Command {
 
     public HostCommand(CommandManager manager) {
         super(manager, "host");

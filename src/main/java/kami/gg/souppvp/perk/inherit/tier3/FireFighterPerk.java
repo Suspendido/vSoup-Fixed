@@ -24,8 +24,8 @@ public class FireFighterPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Take 5% less damage, and deal"));
-        lore.add(CC.translate("&710% more damage while on fire."));
+        lore.add(CC.t("&7Take 5% less damage, and deal"));
+        lore.add(CC.t("&710% more damage while on fire."));
         return lore;
     }
 

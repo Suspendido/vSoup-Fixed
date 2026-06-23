@@ -27,8 +27,8 @@ public class DeathDoUsApartPerk extends Perk implements Listener {
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.translate("&7Have a chance to spawn a random debuff"));
-        lore.add(CC.translate("&7potions at your death point."));
+        lore.add(CC.t("&7Have a chance to spawn a random debuff"));
+        lore.add(CC.t("&7potions at your death point."));
         return lore;
     }
 

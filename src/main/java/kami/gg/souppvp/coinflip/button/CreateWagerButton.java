@@ -20,7 +20,7 @@ public class CreateWagerButton extends Button {
     @Override
     public void clicked(Player player, ClickType clickType) {
         if (SoupPvP.getInstance().getCoinFlipsHandler().hasCoinFlipWager(player.getUniqueId())) {
-            player.sendMessage(CC.translate("&cYou already have a coin flip wager available."));
+            sendMessage(player, "&cYou already have a coin flip wager available.");
             playFail(player);
             return;
         }

@@ -105,7 +105,7 @@ public class PerkButton extends Button {
                                 profile.setCurrentKillstreak(0);
                             }
                             profile.getActivePerks().set(tier-1, perk.getName().replaceAll(" ", "_"));
-                            player.sendMessage(CC.translate("&aSuccessfully bought the &e" + perk.getName() + " &aperk."));
+                            player.sendMessage(CC.t("&aSuccessfully bought the &e" + perk.getName() + " &aperk."));
                             TaskUtil.runLater(player::closeInventory, 1L);
                         }
                     }).openMenu(player);

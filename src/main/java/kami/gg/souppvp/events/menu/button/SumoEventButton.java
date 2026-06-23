@@ -89,7 +89,7 @@ public class SumoEventButton extends Button {
         }
 
         activeSumo.handleJoin(player);
-        PlayerUtil.playSound(player, Sound.CLICK);
+        PlayerUtil.playSound(player, Sound.CLICK, 1.0);
     }
 
 }

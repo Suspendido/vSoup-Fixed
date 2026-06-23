@@ -3,11 +3,11 @@ package kami.gg.souppvp.command;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class StatisticsCommand extends Command {
 
     @Override
     public List<String> usage() {
-        return Collections.singletonList(CC.translate("&cUsage: /stats <player>"));
+        return Collections.singletonList("&cUsage: /stats <player>");
     }
 
     @Override
@@ -41,10 +41,11 @@ public class StatisticsCommand extends Command {
         }
 
         String targetName = args[0];
+        Player player = (Player) sender;
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(targetName);
 
         if (profile == null) {
-            sender.sendMessage(CC.translate("&cCouldn't resolve that player's name."));
+            sendMessage(player, "&cCouldn't resolve that player's name.");
             return;
         }
 
@@ -53,31 +54,32 @@ public class StatisticsCommand extends Command {
         String activePerkName = profile.getActivePerks().size() > 2 ? profile.getActivePerks().get(2) : null;
         Perk activePerk = activePerkName != null ? SoupPvP.getInstance().getPerksHandler().getPerkByName(activePerkName) : null;
 
-        sender.sendMessage(" ");
-        sender.sendMessage(CC.translate(isSelf ? "&bYour Statistics:" : "&b" + profile.getUsername() + "'s Statistics:"));
-        sender.sendMessage(CC.translate(" &fKills: &b" + profile.getKills()));
-        sender.sendMessage(CC.translate(" &fDeaths: &b" + profile.getDeaths()));
+        sendMessage(player, " ");
+        sendMessage(player, isSelf ? "&bYour Statistics:" : "&b" + profile.getUsername() + "'s Statistics:");
+        sendMessage(player, " &fKills: &b" + profile.getKills());
+        sendMessage(player, " &fDeaths: &b" + profile.getDeaths());
 
         if (profile.getDeaths() == 0) {
-            sender.sendMessage(CC.translate(" &fKDR: &6Infinity"));
+            sendMessage(player, " &fKDR: &6Infinity");
         } else {
             double kdr = (double) profile.getKills() / profile.getDeaths();
             String color = kdr >= 1 ? "&a" : "&c";
-            sender.sendMessage(CC.translate(" &fKDR: " + color + df.format(kdr)));
+            sendMessage(player, " &fKDR: " + color + df.format(kdr));
         }
 
         if (activePerk != incognito) {
-            sender.sendMessage(CC.translate(" &fCurrent Killstreak: &b" + profile.getCurrentKillstreak()));
+            sendMessage(player, " &fCurrent Killstreak: &b" + profile.getCurrentKillstreak());
         }
 
-        sender.sendMessage(CC.translate(" &fHighest Killstreak: &b" + profile.getHighestKillstreak()));
-        sender.sendMessage(CC.translate(" &fCredits: &b" + profile.getCredits()));
-        sender.sendMessage(CC.translate(" &fTier: &7" + profile.getTier().getDisplay() + "✫"));
+        sendMessage(player, " &fHighest Killstreak: &b" + profile.getHighestKillstreak());
+        sendMessage(player, " &fCredits: &b" + profile.getCredits());
+        TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
+        sendMessage(player, " &fTier: &7" + profile.getTier().getTierLevel() + category.getFormattedIcon());
 
         if (profile.getBounty() > 0) {
-            sender.sendMessage(CC.translate(" &fBounty: &b" + profile.getBounty()));
+            sendMessage(player, " &fBounty: &b" + profile.getBounty());
         }
 
-        sender.sendMessage(" ");
+        sendMessage(player, " ");
     }
 }
