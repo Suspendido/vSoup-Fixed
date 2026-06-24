@@ -1,7 +1,6 @@
 package kami.gg.souppvp.shop;
 
 import kami.gg.souppvp.kit.menu.KitsBuyMenu;
-import kami.gg.souppvp.perk.menu.PerksMenu;
 import kami.gg.souppvp.shop.items.ItemsMenu;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
@@ -25,7 +24,7 @@ public class ShopMenu extends Menu {
     public Map<Integer, Button> getButtons(Player var1) {
         Map<Integer, Button> button = new HashMap<>();
 
-        button.put(11, new Button() {
+        button.put(12, new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {
                 return new ItemBuilder(Material.BEACON)
@@ -39,21 +38,7 @@ public class ShopMenu extends Menu {
             }
         });
 
-        button.put(13, new Button() {
-            @Override
-            public ItemStack getButtonItem(Player player) {
-                return new ItemBuilder(Material.ENDER_CHEST)
-                        .name("&bPerks Shop")
-                        .build();
-            }
-            @Override
-            public void clicked(Player player, ClickType clickType) {
-                playNeutral(player);
-                new PerksMenu().openMenu(player);
-            }
-        });
-
-        button.put(15, new Button() {
+        button.put(14, new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {
                 return new ItemBuilder(Material.DIAMOND_SWORD)
