@@ -73,6 +73,7 @@ public class CommandManager {
                 // Event
                 new SumoCommand(this),
                 new TNTTagCommand(this),
+                new SoupSaysCommand(this),
 
                 // Credits
                 new CreditsSetCommand(this),
@@ -90,7 +91,7 @@ public class CommandManager {
                 new SetDeathsCommand(this),
                 new SetExpCommand(this),
                 new SetCreditsCommand(this),
-                new SoupSaysCommand(this)
+                new SetLevelCommand(this)
         ));
     }
 
