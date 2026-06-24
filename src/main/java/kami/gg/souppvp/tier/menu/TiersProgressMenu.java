@@ -2,6 +2,7 @@ package kami.gg.souppvp.tier.menu;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.tier.TierUtils;
 import kami.gg.souppvp.tier.button.*;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
@@ -29,10 +30,9 @@ public class TiersProgressMenu extends Menu {
         buttons.put(43, new NextTierButton(profile));
         buttons.put(49, new TierIconSelectorButton(profile));
 
-        if (profile.getTier().getNext() != null) {
-            int[] BAR_SLOTS = {19, 28, 37, 38, 39, 30, 21, 12, 13, 14, 23, 32, 41, 42};
-            addProgressBar(buttons, BAR_SLOTS, profile.getExperiences(), profile.getTier().getNext().getRequiredExperiences());
-        }
+        int[] BAR_SLOTS = {19, 28, 37, 38, 39, 30, 21, 12, 13, 14, 23, 32, 41, 42};
+        int nextTierXP = TierUtils.calculateNextTierXP(profile.getTier());
+        addProgressBar(buttons, BAR_SLOTS, profile.getExperiences(), nextTierXP);
 
         setPlaceholder(true);
         return buttons;

@@ -74,7 +74,7 @@ public class StatisticsCommand extends Command {
         sendMessage(player, " &fHighest Killstreak: &b" + profile.getHighestKillstreak());
         sendMessage(player, " &fCredits: &b" + profile.getCredits());
         TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
-        sendMessage(player, " &fTier: &7" + profile.getTier().getTierLevel() + category.getFormattedIcon());
+        sendMessage(player, " &fTier: &7" + profile.getTier() + category.getFormattedIcon());
 
         if (profile.getBounty() > 0) {
             sendMessage(player, " &fBounty: &b" + profile.getBounty());

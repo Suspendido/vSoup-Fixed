@@ -78,7 +78,7 @@ public class NametagManager {
         List<String> lines = new ArrayList<>();
 
         TierCategory tierCategory = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
-        String tierDisplay = profile.getTier().getTierLevel() + tierCategory.getFormattedIcon();
+        String tierDisplay = profile.getTier() + tierCategory.getFormattedIcon();
 
         if (staff) {
             for (String s : nametagConfig.getStringList("NAMETAGS.FORMAT.STAFF")) {

@@ -243,7 +243,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
             TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
             for (String s : spawnLines) {
                 lines.add(s
-                        .replace("%tier%", category.getColor() + profile.getTier().getTierLevel() + category.getFormattedIcon())
+                        .replace("%tier%", category.getColor() + profile.getTier() + category.getFormattedIcon())
                         .replace("%kit%", profile.getCurrentKit())
                         .replace("%kit_color%", String.valueOf(current.getRarityType().getColor()))
                 );

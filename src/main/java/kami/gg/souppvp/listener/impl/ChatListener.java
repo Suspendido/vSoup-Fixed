@@ -15,7 +15,7 @@ public class ChatListener implements Listener {
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId());
         TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
-        event.setFormat(CC.t(category.getColor() + "[" + profile.getTier().getTierLevel() + category.getIcon() + "] " + SoupPvP.getInstance().getRankHook().getRankPrefix(event.getPlayer()) + event.getPlayer().getName() + "&7: &f" + event.getMessage()));
+        event.setFormat(CC.t(category.getColor() + "[" + profile.getTier() + category.getIcon() + "] " + SoupPvP.getInstance().getRankHook().getRankPrefix(event.getPlayer()) + event.getPlayer().getName() + "&7: &f" + event.getMessage()));
     }
 
 }

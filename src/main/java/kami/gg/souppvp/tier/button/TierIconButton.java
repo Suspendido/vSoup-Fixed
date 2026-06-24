@@ -31,10 +31,10 @@ public class TierIconButton extends Button {
         boolean selected = profile.getSelectedTierIcon().equals(category.name());
 
         List<String> lore = new ArrayList<>();
-        lore.add("&7Preview: " + category.getColor() + "[" + profile.getTier().getTierLevel()  + category.getFormattedIcon() + "]");
+        lore.add("&7Preview: " + category.getColor() + "[" + profile.getTier()  + category.getFormattedIcon() + "]");
         lore.add("");
         lore.add("&7Chat Example:");
-        lore.add(category.getColor() + "[" + profile.getTier().getTierLevel()  + category.getFormattedIcon() + "] " + SoupPvP.getInstance().getRankHook().getRankPrefix(player) +  player.getName() + "&7: &fHellow World!");
+        lore.add(category.getColor() + "[" + profile.getTier()  + category.getFormattedIcon() + "] " + SoupPvP.getInstance().getRankHook().getRankPrefix(player) +  player.getName() + "&7: &fHellow World!");
         lore.add("");
 
         if (unlocked) {

@@ -21,33 +21,38 @@ public class TiersListener implements Listener {
         Player killer = event.getEntity().getKiller();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
         int experiences = profile.getExperiences();
+        int currentTier = profile.getTier();
 
-        Tiers currentTier = profile.getTier();
-        Tiers nextTier = currentTier.getNext();
+        // Calcular el XP requerido para el siguiente tier
+        int requiredXP = TierUtils.calculateNextTierXP(currentTier);
 
-        if (nextTier != null && experiences >= nextTier.getRequiredExperiences()) {
-            TierCategory currentCategory = TierCategory.getCategoryByLevel(currentTier.getTierLevel());
-            profile.setTier(nextTier);
-            TierCategory category = TierCategory.getCategoryByLevel(nextTier.getTierLevel());
+        // Verificar si el jugador tiene suficiente XP para subir de tier
+        if (experiences >= requiredXP) {
+            int newTier = currentTier + 1;
+            TierCategory currentCategory = TierCategory.getCategoryByLevel(currentTier);
+            TierCategory newCategory = TierCategory.getCategoryByLevel(newTier);
 
-            // Give credits reward
-            int reward = nextTier.getCreditsReward();
+            // Actualizar tier
+            profile.setTier(newTier);
+
+            // Dar reward de credits
+            int reward = TierUtils.calculateTierReward(newTier);
             profile.setCredits(profile.getCredits() + reward);
 
             List<String> message = new ArrayList<>();
-            message.add("&8" + CC.MENU_BAR);
+            message.add(CC.MENU_BAR);
             message.add("&b&lLevel Up!");
-            message.add(currentCategory.getColor() + "[" + currentTier.getTierLevel() + currentCategory.getFormattedIcon() + "] &7➤ " + category.getColor() + "[" + nextTier.getTierLevel() + category.getFormattedIcon() + "]");
+            message.add(currentCategory.getColor() + "[" + currentTier + currentCategory.getFormattedIcon() + "] &7➤ " + newCategory.getColor() + "[" + newTier + newCategory.getFormattedIcon() + "]");
             message.add("");
             message.add("&b&lRewards");
             message.add("&7➜ " + reward + " Credits");
 
-            // Check if new icon was unlocked
-            if (!category.equals(currentCategory)) {
-                message.add("&7➜ " + category.getColor() + category.getName());
+            // Verificar si desbloqueó una nueva categoría de iconos
+            if (TierUtils.isNewCategory(currentTier, newTier)) {
+                message.add("&7➜ " + newCategory.getColor() + newCategory.getName() + " Icon Unlocked");
             }
 
-            message.add("&8" + CC.MENU_BAR);
+            message.add(CC.MENU_BAR);
 
             for (String s : message) {
                 killer.sendMessage(CC.t(s));

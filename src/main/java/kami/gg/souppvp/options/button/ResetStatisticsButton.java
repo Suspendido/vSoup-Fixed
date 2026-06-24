@@ -2,7 +2,6 @@ package kami.gg.souppvp.options.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.tier.Tiers;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.TaskUtil;
@@ -80,7 +79,7 @@ public class ResetStatisticsButton extends Button {
         profile.setDeaths(0);
         profile.setCredits(0);
         profile.setExperiences(0);
-        profile.setTier(Tiers.ZERO);
+        profile.setTier(0);
 
         profile.setCurrentKillstreak(0);
         profile.setHighestKillstreak(0);

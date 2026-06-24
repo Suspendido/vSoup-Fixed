@@ -24,7 +24,7 @@ public class TierIconSelectorMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        int currentLevel = profile.getTier().getTierLevel();
+        int currentLevel = profile.getTier();
 
         int slot = 9;
         for (TierCategory category : TierCategory.values()) {

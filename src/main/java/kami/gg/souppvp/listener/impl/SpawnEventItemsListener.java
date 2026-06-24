@@ -100,7 +100,7 @@ public class SpawnEventItemsListener implements Listener {
         player.sendMessage(CC.t(" &fHighest Killstreak: &b" + profile.getHighestKillstreak()));
         player.sendMessage(CC.t(" &fCredits: &b" + profile.getCredits()));
         TierCategory category = TierCategory.getCategoryByName(profile.getSelectedTierIcon());
-        player.sendMessage(CC.t(" &fTier: &7" + profile.getTier().getTierLevel() + category.getFormattedIcon()));
+        player.sendMessage(CC.t(" &fTier: &7" + profile.getTier() + category.getFormattedIcon()));
 
         if (profile.getBounty() > 0) {
             player.sendMessage(CC.t(" &fBounty: &b" + profile.getBounty()));

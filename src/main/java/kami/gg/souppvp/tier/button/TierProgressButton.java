@@ -1,7 +1,7 @@
 package kami.gg.souppvp.tier.button;
 
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.tier.Tiers;
+import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import org.bukkit.Material;
@@ -21,29 +21,38 @@ public class TierProgressButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        Tiers current = profile.getTier();
-        Tiers next = current.getNext();
+        int currentTier = profile.getTier();
+        int nextTier = currentTier + 1;
+        TierCategory category = TierCategory.getCategoryByLevel(currentTier);
+        TierCategory nextCategory = TierCategory.getCategoryByLevel(nextTier);
 
         List<String> lore = new ArrayList<>();
 
         lore.add("");
-        lore.add("&b┃ &fCurrent Tier: &b" + current.getDisplay() + "✫");
+        lore.add("&b┃ &fCurrent Tier: &b" + currentTier);
+        lore.add("&b┃ &fCategory: " + category.getColor() + category.getName());
         lore.add("&b┃ &fExperiences: &b" + profile.getExperiences());
         lore.add("");
-
-        if (next != null) {
-            lore.add("&b┃ &fNext Tier: &b" + next.getDisplay() + "✫");
-            lore.add("&b┃ &fRequired XP: &b" + next.getRequiredExperiences());
-            lore.add("");
-            lore.add("&b┃ &fProgress:");
-            lore.add("&b┃ &b" + Math.min(profile.getExperiences(), next.getRequiredExperiences()) + "&7/&b" + next.getRequiredExperiences());
-        } else {
-            lore.add("&a&lMAX TIER REACHED");
-        }
+        lore.add("&b┃ &fNext Tier: &b" + nextTier);
+        lore.add("&b┃ &fNext Category: " + nextCategory.getColor() + nextCategory.getName());
+        lore.add("");
+        lore.add("&b┃ &fReward for next tier:");
+        lore.add("&7- &b" + calculateTierReward(nextTier) + " credits");
 
         return new ItemBuilder(Material.EXP_BOTTLE)
                 .name("&bTier Progress")
                 .lore(lore)
                 .build();
+    }
+
+    private int calculateTierReward(int tier) {
+        // Fórmula de rewards basada en el sistema original
+        // Tier 1: 500, 2: 500, 3: 1000, etc.
+        if (tier == 0) return 0;
+        if (tier <= 5) return 500;
+        if (tier <= 10) return 1000;
+        if (tier <= 15) return 2000;
+        if (tier <= 20) return 3000;
+        return 5000; // Para niveles más altos
     }
 }

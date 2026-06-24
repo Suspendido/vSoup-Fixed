@@ -9,7 +9,6 @@ import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
 import kami.gg.souppvp.feats.storage.StorageType;
 import kami.gg.souppvp.kit.progress.KitProgress;
 import kami.gg.souppvp.tier.TierCategory;
-import kami.gg.souppvp.tier.Tiers;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
@@ -27,7 +26,7 @@ public class Profile {
     private CoinFlipState coinFlipState;
     private Sumo sumoEvent;
     private TNTTagGame tntTagGame;
-    private Tiers tier;
+    private int tier;
     private String selectedTierIcon;
 
     private Boolean loaded;
@@ -105,7 +104,7 @@ public class Profile {
         this.credits = 0;
         this.bounty = 0;
         this.experiences = 0;
-        this.tier = Tiers.ZERO;
+        this.tier = 0;
         this.selectedTierIcon = TierCategory.IRON.name();
 
         this.currentKillstreak = 0;
@@ -171,7 +170,7 @@ public class Profile {
         this.bounty = doc.getInteger("bounty", 0);
         this.experiences = doc.getInteger("experiences", 0);
 
-        this.tier = Tiers.getTierByNumber(doc.getInteger("tier", 0));
+        this.tier = doc.getInteger("tier", 0);
         this.selectedTierIcon = doc.getString("selectedTierIcon");
 
         this.currentKillstreak = doc.getInteger("currentKillstreak", 0);
@@ -220,7 +219,7 @@ public class Profile {
         doc.put("credits", credits);
         doc.put("bounty", bounty);
         doc.put("experiences", experiences);
-        doc.put("tier", tier.getTierLevel());
+        doc.put("tier", tier);
         doc.put("selectedTierIcon", selectedTierIcon);
 
         doc.put("currentKillstreak", currentKillstreak);
