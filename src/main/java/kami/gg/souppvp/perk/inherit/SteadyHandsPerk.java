@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier2;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -19,6 +19,11 @@ public class SteadyHandsPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Steady Hands";
+    }
+
+    @Override
+    public String getColor() {
+        return "&2";
     }
 
     @Override

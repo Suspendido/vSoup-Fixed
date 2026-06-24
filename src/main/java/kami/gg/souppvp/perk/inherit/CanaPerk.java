@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier3;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -19,6 +19,11 @@ public class CanaPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Cana";
+    }
+
+    @Override
+    public String getColor() {
+        return "&6";
     }
 
     @Override

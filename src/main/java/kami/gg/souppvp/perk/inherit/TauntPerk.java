@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier2;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -20,6 +20,11 @@ public class TauntPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Taunt";
+    }
+
+    @Override
+    public String getColor() {
+        return "&a";
     }
 
     @Override

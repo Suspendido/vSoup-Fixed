@@ -1,44 +1,47 @@
-package kami.gg.souppvp.perk.inherit.tier3;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class JuggernautPerk extends Perk implements Listener {
+public class BonusHeartsPerk extends Perk implements Listener {
 
     @Override
     public String getName() {
-        return "Juggernaut";
+        return "Bonus Hearts";
+    }
+
+    @Override
+    public String getColor() {
+        return "&c";
     }
 
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7Enemy kills give you Regeneration I"));
-        lore.add(CC.t("&7for up to 10 seconds."));
+        lore.add(CC.t("&7Every kill, you will"));
+        lore.add(CC.t("&7gain five additional hearts."));
         return lore;
     }
 
     @Override
     public ItemStack getIcon() {
-        return new ItemStack(Material.DIAMOND_CHESTPLATE);
+        return new ItemBuilder(Material.INK_SACK).durability(1).build();
     }
 
     @Override
     public int getCost() {
-        return 2000;
+        return 1275;
     }
 
     @Override
@@ -49,12 +52,16 @@ public class JuggernautPerk extends Perk implements Listener {
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){
         if (event.getEntity().getKiller() == null) return;
-        Perk juggernautPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Juggernaut");
+        Perk bonusHeartsPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Bonus Hearts");
         Profile killerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
         if (killerProfile.isInEvent()) return;
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(killerProfile.getActivePerks().get(2)) == juggernautPerk){
-            int number = new Random().nextInt(11);
-            event.getEntity().getKiller().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number * 20, 0));
+        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(killerProfile.getActivePerks().get(2)) == bonusHeartsPerk){
+            double killerHealth = event.getEntity().getKiller().getHealth();
+            if (killerHealth < 10){
+                event.getEntity().getKiller().setHealth(killerHealth + 10);
+            } else {
+                event.getEntity().getKiller().setHealth(event.getEntity().getKiller().getMaxHealth());
+            }
         }
     }
 

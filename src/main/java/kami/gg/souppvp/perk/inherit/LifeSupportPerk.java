@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier3;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -21,6 +21,11 @@ public class LifeSupportPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Life Support";
+    }
+
+    @Override
+    public String getColor() {
+        return "&d";
     }
 
     @Override
@@ -56,7 +61,7 @@ public class LifeSupportPerk extends Perk implements Listener {
                 if (((Player) event.getEntity()).getHealth() < 3.0){
                     if (new Random().nextDouble() <= 0.3){
                         ((Player) event.getEntity()).setHealth(((Player) event.getEntity()).getMaxHealth());
-                        ((Player) event.getEntity()).sendMessage(CC.t("&cYour Life Support Perk came in clutch."));
+                        event.getEntity().sendMessage(CC.t("&cYour Life Support Perk came in clutch."));
                     }
                 }
             }

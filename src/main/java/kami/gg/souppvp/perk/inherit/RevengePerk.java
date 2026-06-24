@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier2;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -25,6 +25,11 @@ public class RevengePerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Revenge";
+    }
+
+    @Override
+    public String getColor() {
+        return "&4";
     }
 
     @Override

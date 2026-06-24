@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier1;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -19,6 +19,11 @@ public class NourishmentPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Nourishment";
+    }
+
+    @Override
+    public String getColor() {
+        return "&6";
     }
 
     @Override

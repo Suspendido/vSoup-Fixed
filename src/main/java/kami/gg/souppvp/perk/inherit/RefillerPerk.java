@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier1;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -20,6 +20,11 @@ public class RefillerPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Refiller";
+    }
+
+    @Override
+    public String getColor() {
+        return "&6";
     }
 
     @Override

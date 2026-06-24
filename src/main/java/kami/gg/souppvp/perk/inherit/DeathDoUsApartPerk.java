@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier2;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -22,6 +22,11 @@ public class DeathDoUsApartPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Death Do Us Apart";
+    }
+
+    @Override
+    public String getColor() {
+        return "&3";
     }
 
     @Override

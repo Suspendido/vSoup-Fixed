@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier3;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.util.CC;
@@ -8,29 +8,34 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConartistPerk extends Perk {
+public class IncognitoPerk extends Perk {
 
     @Override
     public String getName() {
-        return "Conartist";
+        return "Incognito";
+    }
+
+    @Override
+    public String getColor() {
+        return "&8";
     }
 
     @Override
     public List<String> getDescription() {
         List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7There is a 50% chance you do not"));
-        lore.add(CC.t("&7drop any soup on death."));
+        lore.add(CC.t("&7Prevent your enemies from keeping"));
+        lore.add(CC.t("&7track of your kill streak."));
         return lore;
     }
 
     @Override
     public ItemStack getIcon() {
-        return new ItemStack(Material.MUSHROOM_SOUP);
+        return new ItemStack(Material.DIAMOND_SWORD);
     }
 
     @Override
     public int getCost() {
-        return 500;
+        return 450;
     }
 
     @Override

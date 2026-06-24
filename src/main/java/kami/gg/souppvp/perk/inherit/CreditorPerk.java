@@ -1,4 +1,4 @@
-package kami.gg.souppvp.perk.inherit.tier3;
+package kami.gg.souppvp.perk.inherit;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
@@ -18,6 +18,11 @@ public class CreditorPerk extends Perk implements Listener {
     @Override
     public String getName() {
         return "Creditor";
+    }
+
+    @Override
+    public String getColor() {
+        return "&b";
     }
 
     @Override
