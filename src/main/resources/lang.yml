@@ -1,0 +1,14 @@
+GENERAL:
+  NO_PERMISSION: "&cYou do not have permission to execute this command."
+  ONLY_PLAYERS: "&cOnly players can run this command."
+  PLAYER_NOT_FOUND: "&cPlayer not found."
+  INVALID_NUMBER: "&cInvalid number."
+  INVALID_PROFILE: "&cPlayer's profile couldn't be resolved or do not exist."
+  SUCCESSFULLY_UPDATED: "&aSuccessfully updated!"
+
+KITS:
+  NOT_IN_SPAWN: "&cYou cannot open the kits menu while not being on spawn!"
+  NO_KIT_SELECTED: "&cYou have not selected a kit."
+  KIT_EQUIPPED: "&aYou have equipped the {kit} kit."
+  KIT_LOCKED: "&cThis kit is locked! You need {tier} tier to unlock it."
+  KIT_COOLDOWN: "&cYou must wait {time} seconds before using this kit again."
