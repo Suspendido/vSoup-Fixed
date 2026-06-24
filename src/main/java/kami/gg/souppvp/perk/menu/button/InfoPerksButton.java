@@ -15,7 +15,7 @@ public class InfoPerksButton extends Button {
                 .lore(
                         "&fEach perk allows you to customize your playstyle to",
                         "&fbenefit your combat skills!",
-                        "&fYou can select three perks, one from each tier level.",
+                        "&fYou can only select three perks, so choose wisely.",
                         "",
                         "&7&oPerks can only be purchased using in-game credits."
                 ).build();

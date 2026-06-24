@@ -1,8 +1,6 @@
 package kami.gg.souppvp.perk;
 
-import kami.gg.souppvp.perk.inherit.tier1.*;
-import kami.gg.souppvp.perk.inherit.tier2.*;
-import kami.gg.souppvp.perk.inherit.tier3.*;
+import kami.gg.souppvp.perk.inherit.*;
 import kami.gg.souppvp.util.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Material;
