@@ -11,6 +11,7 @@ import kami.gg.souppvp.command.spawn.*;
 import kami.gg.souppvp.events.impl.sumo.command.SumoCommand;
 import kami.gg.souppvp.events.impl.tnttag.command.TNTTagCommand;
 import kami.gg.souppvp.feats.leaderboard.command.LeaderboardCommand;
+import kami.gg.souppvp.feats.soupsays.command.SoupSaysCommand;
 import kami.gg.souppvp.feats.staff.command.*;
 import kami.gg.souppvp.map.command.MapCommand;
 import kami.gg.souppvp.feats.storage.StorageStatsCommand;
@@ -87,8 +88,9 @@ public class CommandManager {
                 new SetKillsCommand(this),
                 new SetBountyCommand(this),
                 new SetDeathsCommand(this),
-                new SetExperience(this),
-                new SetCreditsCommand(this)
+                new SetExpCommand(this),
+                new SetCreditsCommand(this),
+                new SoupSaysCommand(this)
         ));
     }
 
