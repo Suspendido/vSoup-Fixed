@@ -15,13 +15,12 @@ import java.util.Map;
 
 public class ShopMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Server Shop";
+    public ShopMenu(Player player) {
+        super(player, "Server Shop", 27, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player var1) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> button = new HashMap<>();
 
         button.put(12, new Button() {
@@ -34,7 +33,7 @@ public class ShopMenu extends Menu {
             @Override
             public void clicked(Player player, ClickType clickType) {
                 playNeutral(player);
-                new ItemsMenu().openMenu(player);
+                new ItemsMenu(player).open();
             }
         });
 
@@ -48,15 +47,10 @@ public class ShopMenu extends Menu {
             @Override
             public void clicked(Player player, ClickType clickType) {
                 playNeutral(player);
-                new KitsBuyMenu().openMenu(player);
+                new KitsBuyMenu(player).open();
             }
         });
-        setPlaceholder(true);
+        setFillEnabled(true);
         return button;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 27;
     }
 }

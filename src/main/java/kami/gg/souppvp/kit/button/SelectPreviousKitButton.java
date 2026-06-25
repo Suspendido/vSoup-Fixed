@@ -59,6 +59,13 @@ public class SelectPreviousKitButton extends Button {
 
         Kit current = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
 
+        // Check if previous kit is available (exists and enabled)
+        if (!SoupPvP.getInstance().getKitsHandler().isKitAvailable(profile.getPreviousKit())) {
+            playFail(player);
+            sendMessage(player, "&cYour previous kit is no longer available.");
+            return;
+        }
+
         PlayerUtil.playSound(player, Sound.CLICK, 1.0);
 
         // swap

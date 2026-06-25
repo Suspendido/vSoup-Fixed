@@ -17,18 +17,12 @@ import java.util.*;
 
 public class LeaderboardMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Server Leaderboard";
+    public LeaderboardMenu(Player player) {
+        super(player, "Server Leaderboard", 27, true);
     }
 
     @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 27;
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
 
         buttons.put(10, new PlayerStatsButton());
@@ -38,7 +32,7 @@ public class LeaderboardMenu extends Menu {
         buttons.put(15, new LeaderboardCategoryButton(LeaderboardType.KILLSTREAK, Material.BLAZE_POWDER));
         buttons.put(16, new LeaderboardCategoryButton(LeaderboardType.CREDITS, Material.GOLD_NUGGET));
 
-        setPlaceholder(true);
+        setFillEnabled(true);
         return buttons;
     }
 

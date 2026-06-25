@@ -7,16 +7,23 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import kami.gg.souppvp.changelog.ChangeLogHandler;
+import kami.gg.souppvp.changelog.task.ChangeLogNotificationTask;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
 import kami.gg.souppvp.events.impl.tnttag.TNTTagHandler;
 import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
+import kami.gg.souppvp.feats.quest.QuestManager;
+import kami.gg.souppvp.feats.soupsays.SoupSaysManager;
 import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.handlers.*;
 import kami.gg.souppvp.feats.hooks.clients.ClientHook;
 import kami.gg.souppvp.feats.hooks.ranks.IRankHook;
 import kami.gg.souppvp.killstreak.KillstreaksHandler;
+import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.kit.progress.KitProgressManager;
 import kami.gg.souppvp.kit.KitsHandler;
+import kami.gg.souppvp.kit.ability.KitAbilityRegistry;
+import kami.gg.souppvp.kit.storage.KitStorage;
 import kami.gg.souppvp.feats.leaderboard.LeaderboardManager;
 import kami.gg.souppvp.listener.*;
 import kami.gg.souppvp.map.MapManager;
@@ -32,8 +39,11 @@ import kami.gg.souppvp.tasks.ClearDropsTask;
 import kami.gg.souppvp.tasks.ClearTimerCacheTask;
 import kami.gg.souppvp.tasks.SaveProfilesTask;
 import kami.gg.souppvp.timer.TimersHandler;
+import kami.gg.souppvp.lang.Lang;
+import kami.gg.souppvp.lang.LangManager;
 import kami.gg.souppvp.util.assemble.Assemble;
 import kami.gg.souppvp.util.command.CommandManager;
+import kami.gg.souppvp.util.menu.MenuManager;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -61,6 +71,8 @@ public class SoupPvP extends JavaPlugin {
 
     // Handlers
     private KitsHandler kitsHandler;
+    private KitAbilityRegistry kitAbilityRegistry;
+    private KitStorage kitStorage;
     private ProfilesHandler profilesHandler;
     private CombatTagsHandler combatTagsHandler;
     private SpawnTeleportationHandler spawnTeleportationHandler;
@@ -88,12 +100,22 @@ public class SoupPvP extends JavaPlugin {
     private StaffManager staffManager;
     private KitProgressManager kitProgressManager;
     private ListenerManager listenerManager;
+    private LangManager langManager;
+    private SoupSaysManager soupSaysManager;
+    private QuestManager questManager;
+    private ChangeLogHandler changeLogHandler;
+    private MenuManager menuManager;
 
     @Override
     public void onEnable() {
         instance = this;
         SoupPvP.getInstance().saveDefaultConfig();
         isFreeKitsMode = SoupPvP.getInstance().getConfig().getBoolean("FREE-KITS");
+        
+        langManager = new LangManager(this);
+        langManager.load();
+        Lang.load(langManager);
+        
         for (World world : Bukkit.getWorlds()) {
             world.setGameRuleValue("doDaylightCycle", "false");
             world.setGameRuleValue("doMobSpawning", "false");
@@ -105,7 +127,21 @@ public class SoupPvP extends JavaPlugin {
         scoreboardManager = new ScoreboardManager(this);
         nametagManager = new NametagManager();
         staffManager = new StaffManager(this);
-        kitsHandler = new KitsHandler();
+        kitAbilityRegistry = new KitAbilityRegistry();
+        kitStorage = new KitStorage(this, kitAbilityRegistry);
+        
+        // Register ability events
+        for (KitAbility ability : kitAbilityRegistry.getAbilities().values()) {
+            getServer().getPluginManager().registerEvents(ability, this);
+        }
+        
+        // Copy default kit YAML files from resources to data folder BEFORE loading kits
+        KitsHandler.copyDefaultKits();
+        
+        kitsHandler = new KitsHandler(kitStorage);
+        
+        menuManager = new MenuManager(this);
+        
         profilesHandler = new ProfilesHandler();
         combatTagsHandler = new CombatTagsHandler();
         spawnTeleportationHandler = new SpawnTeleportationHandler();
@@ -128,6 +164,11 @@ public class SoupPvP extends JavaPlugin {
         rankHook = new IRankHook();
         clientHook = new ClientHook();
         placeholderHook = new PlaceholderHook();
+        soupSaysManager = new SoupSaysManager();
+        questManager = new QuestManager();
+        changeLogHandler = new ChangeLogHandler(this);
+        ChangeLogNotificationTask.start(this);
+        
         (new PacketBorderHandler()).start();
 
         setupAssemble();

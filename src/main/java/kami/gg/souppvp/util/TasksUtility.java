@@ -25,4 +25,7 @@ public class TasksUtility {
         SoupPvP.getInstance().getServer().getScheduler().runTask(SoupPvP.getInstance(), runnable);
     }
 
+    public static void runTaskLaterAsync(long delay, long period, Runnable runnable) {
+        SoupPvP.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(SoupPvP.getInstance(), runnable, delay, period);
+    }
 }

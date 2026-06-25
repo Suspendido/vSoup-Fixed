@@ -12,13 +12,12 @@ import java.util.Map;
 
 public class HostEventsMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return CC.t("Select an event to host");
+    public HostEventsMenu(Player player) {
+        super(player, "Select an event to host", 45, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttonMap = new HashMap<>();
         buttonMap.put(10, new SumoEventButton());
         buttonMap.put(13, new TNTTagEventButton());
@@ -26,12 +25,7 @@ public class HostEventsMenu extends Menu {
         buttonMap.put(28, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
         buttonMap.put(31, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
         buttonMap.put(34, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        setPlaceholder(true);
+        setFillEnabled(true);
         return buttonMap;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 45;
     }
 }

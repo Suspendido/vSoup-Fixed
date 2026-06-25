@@ -2,7 +2,7 @@ package kami.gg.souppvp.tier.menu;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.tier.TierUtils;
+import kami.gg.souppvp.tier.util.TierUtils;
 import kami.gg.souppvp.tier.button.*;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
@@ -16,13 +16,12 @@ import java.util.Map;
 
 public class TiersProgressMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Tier Progress";
+    public TiersProgressMenu(Player player) {
+        super(player, "Tier Progress", 54, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
@@ -34,13 +33,8 @@ public class TiersProgressMenu extends Menu {
         int nextTierXP = TierUtils.calculateNextTierXP(profile.getTier());
         addProgressBar(buttons, BAR_SLOTS, profile.getExperiences(), nextTierXP);
 
-        setPlaceholder(true);
+        setFillEnabled(true);
         return buttons;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 54;
     }
 
     private void addProgressBar(Map<Integer, Button> buttons, int[] slots, int currentXP, int requiredXP) {

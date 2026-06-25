@@ -2,7 +2,7 @@ package kami.gg.souppvp.tier.button;
 
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.tier.TierCategory;
-import kami.gg.souppvp.tier.TierUtils;
+import kami.gg.souppvp.tier.util.TierUtils;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import org.bukkit.entity.Player;

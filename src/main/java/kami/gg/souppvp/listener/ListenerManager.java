@@ -10,12 +10,8 @@ import kami.gg.souppvp.feats.staff.listener.StaffListener;
 import kami.gg.souppvp.feats.tablist.TablistListener;
 import kami.gg.souppvp.juggernaut.JuggernautListener;
 import kami.gg.souppvp.killstreak.inherit.*;
-import kami.gg.souppvp.kit.inherit.*;
-import kami.gg.souppvp.kit.kits.*;
 import kami.gg.souppvp.listener.impl.*;
-import kami.gg.souppvp.perk.inherit.tier1.*;
-import kami.gg.souppvp.perk.inherit.tier2.*;
-import kami.gg.souppvp.perk.inherit.tier3.*;
+import kami.gg.souppvp.perk.inherit.*;
 import kami.gg.souppvp.tier.TiersListener;
 import kami.gg.souppvp.timer.TimersListener;
 import kami.gg.souppvp.util.menu.MenuListener;
@@ -60,7 +56,7 @@ public class ListenerManager {
                 new WorldListener(),
                 new NametagListener(),
                 new TablistListener(),
-                new MenuListener(),
+                new MenuListener(SoupPvP.getInstance().getMenuManager()),
                 new TiersListener(),
                 new CoinFlipListener(),
                 new WagerCustomEventListeners(),
@@ -75,37 +71,6 @@ public class ListenerManager {
 
                 // MiniEvent
                 new JuggernautListener(),
-
-                // Kits
-                new DefaultKit(),
-                new ChemistKit(),
-                new KangarooKit(),
-                new FishermanKit(),
-                new AvatarKit(),
-                new FiremanKit(),
-                new CactusKit(),
-                new VampireKit(),
-                new EskimoKit(),
-                new StomperKit(),
-                new SwitcherooKit(),
-                new BarbarianKit(),
-                new NinjaKit(),
-                new TorchKit(),
-                new ZeusKit(),
-                new RogueKit(),
-                new EnhancerKit(),
-                new SpidermanKit(),
-                new ProKit(),
-                new ArcherKit(),
-                new GrapplerKit(),
-                new PalioxisKit(),
-                new MelonKit(),
-                new CyclopsKit(),
-                new ViperKit(),
-                new PhantomKit(),
-                new CopyCatKit(),
-                new DwarfKit(),
-                new YodaKit(),
 
                 // Perks
                 new SoreLoserPerk(),

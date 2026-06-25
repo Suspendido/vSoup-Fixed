@@ -15,13 +15,12 @@ import java.util.Map;
 
 public class TierIconSelectorMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Select Your Tier Icon";
+    public TierIconSelectorMenu(Player player) {
+        super(player, "Select Your Tier Icon", 36, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         int currentLevel = profile.getTier();
@@ -31,17 +30,12 @@ public class TierIconSelectorMenu extends Menu {
             buttons.put(slot++, new TierIconButton(category, currentLevel, profile));
         }
 
-        buttons.put(4, new BackButton(new TiersProgressMenu()));
+        buttons.put(4, new BackButton(new TiersProgressMenu(player)));
 
         for (int i = 0; i < 9; i++) {
             buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));
         }
 
         return buttons;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 36;
     }
 }

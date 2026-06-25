@@ -10,26 +10,19 @@ import java.util.Map;
 
 public class OptionsMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Configure your settings";
+    public OptionsMenu(Player player) {
+        super(player, "Configure your settings", 27, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
         buttons.put(10, new KillDeathMessagesButton());
         buttons.put(11, new KillstreakMessagesButton());
         buttons.put(12, new ScoreboardButton());
         buttons.put(13, new EasySoupButton());
         buttons.put(14, new ResetStatisticsButton(10000));
-        setPlaceholder(true);
+        setFillEnabled(true);
         return buttons;
     }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 27;
-    }
-
 }

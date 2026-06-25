@@ -19,18 +19,13 @@ public class AnimatedMenu extends Menu {
 
     private final CoinFlip coinFlip;
 
-    public AnimatedMenu(CoinFlip coinFlip) {
+    public AnimatedMenu(CoinFlip coinFlip, Player player) {
+        super(player, "&a&lCoinflip Match", 27, true);
         this.coinFlip = coinFlip;
-        setAutoUpdate(true);
     }
 
     @Override
-    public String getTitle(Player player) {
-        return "&a&lCoinflip Match";
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         HashMap<Integer, Button> buttonHashMap = new HashMap<>();
         new BukkitRunnable(){
             int i = 10;
@@ -48,25 +43,14 @@ public class AnimatedMenu extends Menu {
                     this.cancel();
                 }
                 if (i % 2 == 0) {
-                    new GreenMenu(coinFlip).openMenu(player);
+                    new GreenMenu(coinFlip, player).update();
                     PlayerUtil.playSound(player, Sound.CLICK, 1.0);
                 } else {
-                    new RedMenu(coinFlip).openMenu(player);
+                    new RedMenu(coinFlip, player).update();
                     PlayerUtil.playSound(player, Sound.CLICK, 1.0);
                 }
             }
         }.runTaskTimer(SoupPvP.getInstance(), 0L, 10L);
         return buttonHashMap;
     }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 27;
-    }
-
-    @Override
-    public boolean isAutoUpdate() {
-        return true;
-    }
-
 }

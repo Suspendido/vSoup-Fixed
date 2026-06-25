@@ -1,6 +1,7 @@
 package kami.gg.souppvp.command.admin.statistics;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.lang.Lang;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
@@ -45,14 +46,14 @@ public class SetDeathsCommand extends Command {
         String s = args[0];
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
-        if (profile == null){
-            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
+        if (profile == null) {
+            sendMessage(sender, Lang.INVALID_PROFILE);
             return;
         }
 
         int value = Integer.parseInt(args[1]);
         profile.setDeaths(value);
-        sender.sendMessage(CC.t("&aSuccessfully updated!"));
+        sendMessage(sender, Lang.SUCCESSFULLY_UPDATED);
         profile.saveProfile();
     }
 }

@@ -1,0 +1,67 @@
+name: Enhancer
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: BREWING_STAND_ITEM
+description:
+- '&7Gain access to a portable effects enhancer to gain advantages'
+- '&7above other players through effects like strength, regeneration, etc.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 3
+- ==: org.bukkit.inventory.ItemStack
+  type: BREWING_STAND_ITEM
+  meta:
+    ==: ItemMeta
+    meta-type: TILE_ENTITY
+    display-name: §dStim Beacon
+    blockMaterial: BREWING_STAND_ITEM
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color: &id001
+      ==: Color
+      RED: 0
+      BLUE: 0
+      GREEN: 0
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color: *id001
+- null
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Enhancer
+secondaryAbility: None

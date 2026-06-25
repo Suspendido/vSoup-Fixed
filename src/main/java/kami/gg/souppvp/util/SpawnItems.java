@@ -22,6 +22,10 @@ public class SpawnItems {
             .durability(3)
             .build();
 
+    public static ItemStack PERK_SELECTOR = new ItemBuilder(Material.GOLDEN_APPLE)
+            .name("&bPerks &7(Right Click)")
+            .build();
+
     public static ItemStack PREVIOUS_KIT = new ItemBuilder(Material.WATCH)
             .name("&bSelect Previous Kit &7(Right Click)")
             .build();

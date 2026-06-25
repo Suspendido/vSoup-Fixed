@@ -1,0 +1,62 @@
+name: Stomper
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: ANVIL
+description:
+- '&7You depend on locations with high altitudes. You take no fall damage'
+- '&7and for each fall damage taken, you deal that amount to whoever you are'
+- '&7stomping on top off.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: ANVIL
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Stomper
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+      DURABILITY: 10
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Stomper
+secondaryAbility: None

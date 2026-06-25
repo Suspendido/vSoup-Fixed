@@ -12,27 +12,21 @@ import java.util.Map;
 
 public class ItemsMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Select a feature to purchase";
+    public ItemsMenu(Player player) {
+        super(player, "Select a feature to purchase", 27, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player var1) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttonMap = new HashMap<>();
         buttonMap.put(10, new RepairDurabilityButton(50));
         buttonMap.put(11, new SoupRefillButton(100));
         buttonMap.put(12, new GoldenApplesButton(300));
         buttonMap.put(13, new MilkBucketButton(100));
         buttonMap.put(14, new BartenderButton());
-        buttonMap.put(26, new BackButton(new ShopMenu()));
-        setPlaceholder(true);
+        buttonMap.put(26, new BackButton(new ShopMenu(player)));
+        setFillEnabled(true);
         return buttonMap;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 27;
     }
 
 }

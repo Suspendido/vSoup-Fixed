@@ -18,18 +18,13 @@ public class WagerResultMenu extends Menu {
 
     private CoinFlip coinFlip;
 
-    public WagerResultMenu(CoinFlip coinFlip) {
+    public WagerResultMenu(CoinFlip coinFlip, Player player) {
+        super(player, (coinFlip.getWinner().equals(player.getUniqueId()) ? "&a&lYOU WON!!" : "&c&lYOU LOST!!"), 27, false);
         this.coinFlip = coinFlip;
-        setPlaceholder(true);
     }
 
     @Override
-    public String getTitle(Player player) {
-        return (coinFlip.getWinner().equals(player.getUniqueId()) ? "&a&lYOU WON!!" : "&c&lYOU LOST!!");
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
 
         int[] decorationSlots = {
@@ -42,12 +37,7 @@ public class WagerResultMenu extends Menu {
             buttons.put(slot, new WagerWinnerButton(coinFlip));
         }
 
-        buttons.put(26, new BackButton(new CoinFlipMenu()));
+        buttons.put(26, new BackButton(new CoinFlipMenu(player)));
         return buttons;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 27;
     }
 }

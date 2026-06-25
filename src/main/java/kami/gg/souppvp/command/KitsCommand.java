@@ -2,9 +2,9 @@ package kami.gg.souppvp.command;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.menu.KitsSelectMenu;
+import kami.gg.souppvp.lang.Lang;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -31,17 +31,17 @@ public class KitsCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sendMessage(sender, "&cOnly players can run this command.");
+            sendMessage(sender, Lang.ONLY_PLAYERS);
             return;
         }
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         boolean isInSpawn = SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player) && profile.getProfileState() == ProfileState.SPAWN;
 
         if (!isInSpawn) {
-            sendMessage(player, "&cYou cannot open the kits menu while not being on spawn!");
+            sendMessage(player, Lang.KITS_NOT_IN_SPAWN);
             return;
         }
 
-        new KitsSelectMenu().openMenu(player);
+        new KitsSelectMenu(player).open();
     }
 }

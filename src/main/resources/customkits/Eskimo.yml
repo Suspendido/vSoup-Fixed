@@ -1,0 +1,73 @@
+name: Eskimo
+rarity: ULTIMATE
+price: 4500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: PACKED_ICE
+description:
+- '&7Whenever possible, spawn in an ice dome like an igloo to'
+- '&7trap enemies and gain a higher chance of killing them.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 3
+- ==: org.bukkit.inventory.ItemStack
+  type: PACKED_ICE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §5Ice Dome
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+- ==: PotionEffect
+  effect: 11
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Eskimo
+secondaryAbility: None

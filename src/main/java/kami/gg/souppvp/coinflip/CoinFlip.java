@@ -52,8 +52,8 @@ public class CoinFlip {
         loserProfile.setWagersLost(loserProfile.getWagersLost() + 1);
 
         TaskUtil.run(() -> {
-            new WagerResultMenu(this).openMenu(Bukkit.getPlayer(winner));
-            new WagerResultMenu(this).openMenu(Bukkit.getPlayer(loser));
+            new WagerResultMenu(this, Bukkit.getPlayer(winner)).open();
+            new WagerResultMenu(this, Bukkit.getPlayer(loser)).open();
         });
 
         Player nameWinner = Bukkit.getPlayer(winner);

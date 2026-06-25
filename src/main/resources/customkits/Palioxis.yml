@@ -1,0 +1,49 @@
+name: Palioxis
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: ENDER_PEARL
+description:
+- '&7Like an enderman, teleport fast'
+- '&7and efficiently to your destination.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: ENDER_PEARL
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+      DURABILITY: 10
+    color:
+      ==: Color
+      RED: 0
+      BLUE: 0
+      GREEN: 0
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+primaryAbility: Palioxis
+secondaryAbility: None

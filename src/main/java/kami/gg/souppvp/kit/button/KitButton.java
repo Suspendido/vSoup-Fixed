@@ -2,6 +2,7 @@ package kami.gg.souppvp.kit.button;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.kit.menu.KitsBuyMenu;
 import kami.gg.souppvp.kit.progress.KitProgress;
 import kami.gg.souppvp.kit.menu.KitViewMenu;
 import kami.gg.souppvp.profile.Profile;
@@ -9,6 +10,7 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.menu.Button;
+import kami.gg.souppvp.util.menu.menus.ConfirmMenu;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -77,7 +79,7 @@ public class KitButton extends Button {
 
         if (clickType.isRightClick()) {
             PlayerUtil.playSound(player, Sound.CLICK, 1.0);
-            new KitViewMenu(kit).openMenu(player);
+            new KitViewMenu(kit, player).open();
             return;
         }
 
@@ -86,7 +88,10 @@ public class KitButton extends Button {
         if (freeMode || unlocked) {
             kit.equipKit(player);
             PlayerUtil.playSound(player, Sound.CLICK, 1.0);
-            profile.setPreviousKit(profile.getCurrentKit());
+            // Only set previous kit if current kit is available
+            if (SoupPvP.getInstance().getKitsHandler().isKitAvailable(profile.getCurrentKit())) {
+                profile.setPreviousKit(profile.getCurrentKit());
+            }
             profile.setCurrentKit(kitName);
             player.closeInventory();
             sendMessage(player, "&aSuccessfully equipped the &r" + kit.getRarityType().getColor() + kitName + "&a kit.");
@@ -99,11 +104,18 @@ public class KitButton extends Button {
             return;
         }
 
-        PlayerUtil.playSound(player, Sound.NOTE_PIANO, 1.0);
-        profile.setCredits(profile.getCredits() - kit.getPrice());
-        profile.getUnlockedKits().add(kitName);
-        PlayerUtil.playSound(player, Sound.VILLAGER_YES, 1.0);
-        player.sendMessage(CC.t("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
+        new ConfirmMenu("&6Purchase " + kit.getRarityType().getColor() + kitName + "&6?", confirmed -> {
+            if (!confirmed) {
+                new KitsBuyMenu(player).open();
+                return;
+            }
+
+            profile.setCredits(profile.getCredits() - kit.getPrice());
+            profile.getUnlockedKits().add(kitName);
+            PlayerUtil.playSound(player, Sound.VILLAGER_YES, 1.0);
+            player.sendMessage(CC.t("&aSuccessfully purchased the kit &r" + kit.getRarityType().getColor() + kitName + " &afor &6" + kit.getPrice() + " &acredits."));
+            new KitsBuyMenu(player).open();
+        }, player).open();
     }
 
     private boolean hasExactPermission(Player player, String permission) {

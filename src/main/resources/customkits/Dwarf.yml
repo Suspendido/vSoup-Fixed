@@ -1,0 +1,38 @@
+name: Dwarf
+rarity: LEGENDARY
+price: 5000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: GOLD_AXE
+description:
+- '&7Crouch to charge up a blast that'
+- '&7knocks players away.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_AXE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Dwarf's Axe
+    enchants:
+      DAMAGE_ALL: 3
+      DURABILITY: 10
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+primaryAbility: Dwarf
+secondaryAbility: None

@@ -32,6 +32,6 @@ public class TiersCommand extends Command {
             return;
         }
 
-        new TiersProgressMenu().openMenu(player);
+        new TiersProgressMenu(player).open();
     }
 }

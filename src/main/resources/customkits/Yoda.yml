@@ -1,0 +1,49 @@
+name: Yoda
+rarity: LEGENDARY
+price: 5000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: INK_SACK
+  damage: 2
+description:
+- '&7With the capabilities of Yoda, the jet master,'
+- '&7create a pulling force to pull enemies towards you.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+- ==: org.bukkit.inventory.ItemStack
+  type: INK_SACK
+  damage: 2
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §aThe Force
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      DURABILITY: 3
+    color:
+      ==: Color
+      RED: 0
+      BLUE: 0
+      GREEN: 128
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Yoda
+secondaryAbility: None

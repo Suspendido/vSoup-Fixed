@@ -1,0 +1,42 @@
+name: Kangaroo
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: FIREWORK
+description:
+- '&7Similarly to wild life kangaroos, use your kangaroo boost ability'
+- '&7to jump over enemies and escape dangerous situations easily.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+- ==: org.bukkit.inventory.ItemStack
+  type: FIREWORK
+  meta:
+    ==: ItemMeta
+    meta-type: FIREWORK
+    display-name: §cKangaroo Boost
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DURABILITY: 4
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+primaryAbility: Kangaroo
+secondaryAbility: None

@@ -6,6 +6,7 @@ import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.kit.menu.KitsSelectMenu;
 import kami.gg.souppvp.options.OptionsMenu;
+import kami.gg.souppvp.perk.menu.AllPerksMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.shop.ShopMenu;
 import kami.gg.souppvp.tier.TierCategory;
@@ -38,22 +39,27 @@ public class SpawnEventItemsListener implements Listener {
         if (profile == null) return;
 
         if (item.isSimilar(SpawnItems.KITS_SELECTOR)) {
-            new KitsSelectMenu().openMenu(player);
+            new KitsSelectMenu(player).open();
             return;
         }
 
         if (item.isSimilar(SpawnItems.HOST_EVENTS)) {
-            new HostEventsMenu().openMenu(player);
+            new HostEventsMenu(player).open();
             return;
         }
 
         if (item.isSimilar(SpawnItems.SHOP)) {
-            new ShopMenu().openMenu(player);
+            new ShopMenu(player).open();
             return;
         }
 
         if (item.isSimilar(SpawnItems.YOUR_STATISTICS)) {
             displayStatistics(player, profile);
+            return;
+        }
+
+        if (item.isSimilar(SpawnItems.PERK_SELECTOR)) {
+            new AllPerksMenu(player).open();
             return;
         }
 
@@ -63,7 +69,7 @@ public class SpawnEventItemsListener implements Listener {
         }
 
         if (item.isSimilar(SpawnItems.YOUR_OPTIONS)) {
-            new OptionsMenu().openMenu(player);
+            new OptionsMenu(player).open();
             return;
         }
 

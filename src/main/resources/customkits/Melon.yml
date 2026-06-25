@@ -1,0 +1,53 @@
+name: Melon
+rarity: LEGENDARY
+price: 5000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: MELON
+description:
+- '&7Chop your enemies up with your melon and shoot'
+- '&7your melon tosser and toss your enemies into'
+- '&7the air.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: MELON
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 4
+- ==: org.bukkit.inventory.ItemStack
+  type: SPECKLED_MELON
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §2Melon Toss
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      DURABILITY: 10
+    color:
+      ==: Color
+      RED: 0
+      BLUE: 0
+      GREEN: 128
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+primaryAbility: Melon
+secondaryAbility: None

@@ -17,19 +17,13 @@ public class RedMenu extends Menu {
 
     private final CoinFlip coinFlip;
 
-    public RedMenu(CoinFlip coinFlip) {
+    public RedMenu(CoinFlip coinFlip, Player player) {
+        super(player, "&a&lCoinflip Match", 27, true);
         this.coinFlip = coinFlip;
-        setPlaceholder(true);
-        setAutoUpdate(true);
     }
 
     @Override
-    public String getTitle(Player player) {
-        return "&a&lCoinflip Match";
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         HashMap<Integer, Button> buttons = new HashMap<>();
         Player opponent = Bukkit.getPlayer(coinFlip.getOpponent());
         String name = opponent != null ? opponent.getName() : "Unknown";

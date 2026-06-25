@@ -1,0 +1,71 @@
+name: Archer
+rarity: UNCOMMON
+price: 3500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: BOW
+description:
+- '&7Become robin hood and snipe enemies.'
+- '&7Longer distance = more damage.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DURABILITY: 2
+- ==: org.bukkit.inventory.ItemStack
+  type: BOW
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DURABILITY: 3
+      ARROW_INFINITE: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: ARROW
+  amount: 64
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+primaryAbility: Archer
+secondaryAbility: None

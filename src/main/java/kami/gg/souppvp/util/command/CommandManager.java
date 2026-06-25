@@ -1,6 +1,7 @@
 package kami.gg.souppvp.util.command;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.changelog.command.*;
 import kami.gg.souppvp.command.*;
 import kami.gg.souppvp.command.admin.*;
 import kami.gg.souppvp.command.admin.statistics.*;
@@ -15,6 +16,7 @@ import kami.gg.souppvp.feats.soupsays.command.SoupSaysCommand;
 import kami.gg.souppvp.feats.staff.command.*;
 import kami.gg.souppvp.map.command.MapCommand;
 import kami.gg.souppvp.feats.storage.StorageStatsCommand;
+import kami.gg.souppvp.command.KitEditCommand;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -52,6 +54,8 @@ public class CommandManager {
                 new FreeKitsCommand(this),
                 new SoupPvPCommand(this),
                 new MapCommand(this),
+                new KitEditCommand(this),
+                new ChangeLogAdminCommand(this),
 
                 // Normal
                 new SpawnCommand(this),
@@ -69,6 +73,7 @@ public class CommandManager {
                 new LeaderboardCommand(this),
                 new KitsCommand(this),
                 new MarketCommand(this),
+                new ChangeLogCommand(this),
 
                 // Event
                 new SumoCommand(this),

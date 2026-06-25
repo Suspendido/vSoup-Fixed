@@ -1,0 +1,58 @@
+name: Cyclops
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: REDSTONE
+description:
+- '&7Laser beam enemies with penetrable blocks to set'
+- '&7the exciting fights straight and scare off enemies.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 3
+- ==: org.bukkit.inventory.ItemStack
+  type: REDSTONE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §cLaser Beam
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      DURABILITY: 10
+    color:
+      ==: Color
+      RED: 255
+      BLUE: 0
+      GREEN: 0
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+primaryAbility: Cyclops
+secondaryAbility: None

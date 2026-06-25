@@ -31,6 +31,6 @@ public class BountyListCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        new BountyMenu().openMenu(player);
+        new BountyMenu(player).open();
     }
 }

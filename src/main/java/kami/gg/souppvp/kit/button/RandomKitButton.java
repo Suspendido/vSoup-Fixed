@@ -45,12 +45,15 @@ public class RandomKitButton extends Button {
         String kitName = unlocked.get(ThreadLocalRandom.current().nextInt(unlocked.size()));
         Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(kitName);
 
-        if (kit == null) {
+        if (kit == null || !kit.isEnabled()) {
             sendMessage(player, "&cThis kit no longer exists in the system.");
             return;
         }
 
-        profile.setPreviousKit(profile.getCurrentKit());
+        // Only set previous kit if current kit is available
+        if (SoupPvP.getInstance().getKitsHandler().isKitAvailable(profile.getCurrentKit())) {
+            profile.setPreviousKit(profile.getCurrentKit());
+        }
         profile.setCurrentKit(kit.getName());
 
         PlayerUtil.playSound(player, Sound.CLICK, 1.0);

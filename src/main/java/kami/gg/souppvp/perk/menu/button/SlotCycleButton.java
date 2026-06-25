@@ -53,6 +53,6 @@ public class SlotCycleButton extends Button {
         int current = AllPerksMenu.getSelectedSlot(player);
         AllPerksMenu.setSelectedSlot(player, (current + 1) % 3);
         playNeutral(player);
-        new AllPerksMenu().openMenu(player);
+        new AllPerksMenu(player).open();
     }
 }

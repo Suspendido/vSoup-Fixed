@@ -15,8 +15,9 @@ public abstract class FilterablePaginatedMenu<T> extends PaginatedMenu {
 	@Getter private final List<PageFilter<T>> filters;
 	@Getter @Setter private int scrollIndex = 0;
 
-	{
-		filters = generateFilters();
+	public FilterablePaginatedMenu(Player player, String title, int size) {
+		super(player, title, size);
+		this.filters = generateFilters();
 	}
 
 	@Override
@@ -28,10 +29,10 @@ public abstract class FilterablePaginatedMenu<T> extends PaginatedMenu {
 
 	@Override
 	public Map<Integer, Button> getAllPagesButtons(Player player) {
-		return getFilteredButtons(player);
+		return getFilteredButtons();
 	}
 
-	public abstract Map<Integer, Button> getFilteredButtons(Player player);
+	public abstract Map<Integer, Button> getFilteredButtons();
 
 	public List<PageFilter<T>> generateFilters() {
 		return new ArrayList<>();

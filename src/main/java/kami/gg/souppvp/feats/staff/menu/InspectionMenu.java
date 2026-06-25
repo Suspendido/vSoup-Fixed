@@ -3,7 +3,6 @@ package kami.gg.souppvp.feats.staff.menu;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
-import kami.gg.souppvp.util.CC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,24 +17,15 @@ public class InspectionMenu extends Menu {
     private final Player target;
     private final ItemStack filler;
 
-    public InspectionMenu(Player target) {
-        this.target = target;
+    public InspectionMenu(Player player) {
+        super(player, "&cInspecting &f" + player.getName(), 54, true);
+        this.target = player;
         this.filler = Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " ").getButtonItem(null);
-        setPlaceholder(false);
+        setFillEnabled(true);
     }
 
     @Override
-    public String getTitle(Player player) {
-        return CC.t("&cInspecting &f" + target.getName());
-    }
-
-    @Override
-    public int getSize() {
-        return 54;
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
         PlayerInventory inventory = target.getInventory();
 

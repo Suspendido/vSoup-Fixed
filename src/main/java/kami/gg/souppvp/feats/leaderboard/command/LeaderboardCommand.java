@@ -32,6 +32,6 @@ public class LeaderboardCommand extends Command {
             return;
         }
 
-        new LeaderboardMenu().openMenu(player);
+        new LeaderboardMenu(player).open();
     }
 }

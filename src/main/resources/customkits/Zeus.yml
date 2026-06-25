@@ -1,0 +1,53 @@
+name: Zeus
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: GLOWSTONE_DUST
+description:
+- '&7With the immense ability of a god, you possess control over lightning,'
+- '&7striking anyone who stands in front of you.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+- ==: org.bukkit.inventory.ItemStack
+  type: GLOWSTONE_DUST
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Lightning Bolt
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      DURABILITY: 20
+    color: &id001
+      ==: Color
+      RED: 255
+      BLUE: 0
+      GREEN: 255
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_FIRE: 1
+    color: *id001
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Zeus
+secondaryAbility: None

@@ -46,11 +46,11 @@ public class WagerCustomEventListeners implements Listener {
         Player opponent = Bukkit.getPlayer(opponentUUID);
 
         if (creator != null) {
-            new AnimatedMenu(coinFlip).openMenu(creator);
+            new AnimatedMenu(coinFlip, creator).open();
         }
 
         if (opponent != null) {
-            new AnimatedMenu(coinFlip).openMenu(opponent);
+            new AnimatedMenu(coinFlip, opponent).open();
         }
     }
 }

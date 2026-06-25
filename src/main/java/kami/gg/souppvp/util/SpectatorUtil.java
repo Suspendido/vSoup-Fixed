@@ -26,7 +26,8 @@ public class SpectatorUtil {
 
         player.getInventory().setItem(0, SpawnItems.KITS_SELECTOR);
         player.getInventory().setItem(1, SpawnItems.HOST_EVENTS);
-        player.getInventory().setItem(4, SpawnItems.SHOP);
+        player.getInventory().setItem(3, SpawnItems.SHOP);
+        player.getInventory().setItem(5, SpawnItems.PERK_SELECTOR);
         player.getInventory().setItem(7, SpawnItems.PREVIOUS_KIT);
         player.getInventory().setItem(8, SpawnItems.YOUR_OPTIONS);
 

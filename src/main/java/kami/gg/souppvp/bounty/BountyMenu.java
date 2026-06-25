@@ -3,7 +3,6 @@ package kami.gg.souppvp.bounty;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.bounty.button.BountyPlayerButton;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.Bukkit;
@@ -19,9 +18,8 @@ public class BountyMenu extends PaginatedMenu {
             1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
     };
 
-    @Override
-    public String getPrePaginatedTitle(Player player) {
-        return "Available Bounties";
+    public BountyMenu(Player player) {
+        super(player, "Available Bounties", 54);
     }
 
     @Override

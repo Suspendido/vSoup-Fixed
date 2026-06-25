@@ -1,0 +1,40 @@
+name: Avatar
+rarity: LEGENDARY
+price: 5000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: INK_SACK
+  damage: 12
+description:
+- '&7Have the ability to control elements. Shoot water'
+- '&7guns to slow enemies. Jump over enemies to set'
+- '&7them on fire.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+- ==: org.bukkit.inventory.ItemStack
+  type: INK_SACK
+  damage: 12
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §bWater Gun
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Avatar
+secondaryAbility: None

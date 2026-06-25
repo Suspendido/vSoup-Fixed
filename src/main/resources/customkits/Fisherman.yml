@@ -1,0 +1,49 @@
+name: Fisherman
+rarity: UNCOMMON
+price: 3500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: COOKED_FISH
+description:
+- '&7Become a fisherman, when both on land and on water. Instead of fishing for enemies,'
+- '&7hook enemies towards you with instantaneous speeds so that they won''t get loose.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+- ==: org.bukkit.inventory.ItemStack
+  type: FISHING_ROD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §aFishing Rod
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 10
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Fisherman
+secondaryAbility: None

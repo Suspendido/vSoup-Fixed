@@ -49,7 +49,7 @@ public class CoinFlipListener implements Listener {
         }
 
         profile.setCoinFlipState(CoinFlipState.NONE);
-        new ConfirmWagerMenu(amount).openMenu(player);
+        new ConfirmWagerMenu(amount, player).update();
     }
 
     @EventHandler

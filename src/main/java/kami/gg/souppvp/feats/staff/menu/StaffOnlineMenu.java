@@ -1,5 +1,6 @@
 package kami.gg.souppvp.feats.staff.menu;
 
+import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.hooks.ranks.IRankHook;
 import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.util.ItemBuilder;
@@ -21,18 +22,12 @@ public class StaffOnlineMenu extends PaginatedMenu {
 
     private final StaffManager staffManager;
 
-    public StaffOnlineMenu() {
-        this.staffManager = soupPvP.getStaffManager();
-    }
-
-    @Override
-    public String getPrePaginatedTitle(Player player) {
-        return staffManager.getStaffConfig().getString("STAFF_MODE.STAFF_ONLINE_MENU.TITLE");
-    }
-
-    @Override
-    public int getSize() {
-        return staffManager.getStaffConfig().getInt("STAFF_MODE.STAFF_ONLINE_MENU.SIZE");
+    public StaffOnlineMenu(Player player) {
+        super(player,
+                SoupPvP.getInstance().getStaffManager().getStaffConfig().getString("STAFF_MODE.STAFF_ONLINE_MENU.TITLE"),
+                SoupPvP.getInstance().getStaffManager().getStaffConfig().getInt("STAFF_MODE.STAFF_ONLINE_MENU.SIZE")
+        );
+        this.staffManager = SoupPvP.getInstance().getStaffManager();
     }
 
     @Override
@@ -55,7 +50,7 @@ public class StaffOnlineMenu extends PaginatedMenu {
         return new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {
-                IRankHook rankHook = soupPvP.getRankHook();
+                IRankHook rankHook = SoupPvP.getInstance().getRankHook();
                 boolean staffMode = staffManager.isStaffEnabled(staff);
                 boolean vanish = staffManager.isVanished(staff);
 

@@ -37,6 +37,7 @@ public class RepairCommand extends Command {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile.isJuggernaut()) {
+            PlayerUtil.playSound(player, Sound.DIG_GRASS, 1.0);
             sendMessage(player, "&cYou may not repair whilst in Juggernaut.");
             return;
         }

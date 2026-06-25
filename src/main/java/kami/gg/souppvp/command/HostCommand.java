@@ -28,6 +28,6 @@ public class HostCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        new HostEventsMenu().openMenu(player);
+        new HostEventsMenu(player).open();
     }
 }

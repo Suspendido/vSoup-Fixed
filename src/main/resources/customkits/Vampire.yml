@@ -1,0 +1,65 @@
+name: Vampire
+rarity: ULTIMATE
+price: 4500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: MONSTER_EGG
+  damage: 65
+description:
+- '&7Gain a bat shooting ability with a perk'
+- '&7of Regen V after each kill.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: MONSTER_EGG
+  damage: 65
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Bat Blast
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Vampire
+secondaryAbility: None

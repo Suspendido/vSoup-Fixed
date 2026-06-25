@@ -1,0 +1,31 @@
+name: Pro
+rarity: COMMON
+price: 3000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND
+description:
+- '&7Although this kit has no special abilities like the default'
+- '&7kit, upon every kill, you are guaranteed double credits.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Pro
+secondaryAbility: None

@@ -12,28 +12,23 @@ import java.util.Map;
 
 public class KillstreakMenu extends Menu {
 
-    @Override
-    public String getTitle(Player player) {
-        return "Killstreaks";
+    public KillstreakMenu(Player player) {
+        super(player, "Killstreaks", 36, true);
     }
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         HashMap<Integer, Button> buttonHashMap = new HashMap<>();
+
         int i=10;
-        for (Killstreak killstreak : SoupPvP.getInstance().getKillstreaksHandler().getKillstreaks()){
+        for (Killstreak killstreak : SoupPvP.getInstance().getKillstreaksHandler().getKillstreaks()) {
             if (i == 17) {
                 i = 19;
             }
             buttonHashMap.put(i, new KillstreakButton(killstreak));
             i++;
         }
-        setPlaceholder(true);
+        setFillEnabled(true);
         return buttonHashMap;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 36;
     }
 }

@@ -36,6 +36,6 @@ public class StaffOnlineCommand extends Command {
             return;
         }
 
-        new StaffOnlineMenu().openMenu(player);
+        new StaffOnlineMenu(player).open();
     }
 }

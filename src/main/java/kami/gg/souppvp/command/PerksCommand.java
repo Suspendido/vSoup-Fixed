@@ -1,7 +1,6 @@
 package kami.gg.souppvp.command;
 
-import kami.gg.souppvp.perk.menu.PerksMenu;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.perk.menu.AllPerksMenu;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -33,6 +32,6 @@ public class PerksCommand extends Command {
             return;
         }
 
-        new PerksMenu().openMenu(player);
+        new AllPerksMenu(player).open();
     }
 }

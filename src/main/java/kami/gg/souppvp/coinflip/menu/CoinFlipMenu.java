@@ -17,9 +17,8 @@ public class CoinFlipMenu extends PaginatedMenu {
             1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
     };
 
-    @Override
-    public String getPrePaginatedTitle(Player player) {
-        return "&a&lCoinflip";
+    public CoinFlipMenu(Player player) {
+        super(player, "&a&lCoinflip", 54);
     }
 
     @Override
@@ -52,10 +51,5 @@ public class CoinFlipMenu extends PaginatedMenu {
         global.put(4, new CreateWagerButton());
 
         return global;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 54;
     }
 }

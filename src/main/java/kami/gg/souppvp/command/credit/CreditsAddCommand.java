@@ -1,6 +1,7 @@
 package kami.gg.souppvp.command.credit;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.lang.Lang;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
@@ -41,7 +42,7 @@ public class CreditsAddCommand extends Command {
         Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByName(s);
 
         if (targetProfile == null) {
-            sender.sendMessage(CC.t("&cCouldn't resolve that player's name."));
+            sendMessage(sender, Lang.INVALID_PROFILE);
             return;
         }
 

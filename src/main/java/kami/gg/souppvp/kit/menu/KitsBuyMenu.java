@@ -19,14 +19,8 @@ public class KitsBuyMenu extends PaginatedMenu {
             1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
     };
 
-    public KitsBuyMenu() {
-        setAutoUpdate(true);
-        setUpdateAfterClick(true);
-    }
-
-    @Override
-    public String getPrePaginatedTitle(Player player) {
-        return "Kits Shop";
+    public KitsBuyMenu(Player player) {
+        super(player, "Kits Shop", 54);
     }
 
     @Override
@@ -37,6 +31,8 @@ public class KitsBuyMenu extends PaginatedMenu {
 
         int index = 0;
         for (Kit kit : SoupPvP.getInstance().getKitsHandler().getKits()) {
+            if (!kit.isEnabled()) continue;
+
             if (!freeMode && !profile.getUnlockedKits().contains(kit.getName())) {
                 buttons.put(index++, new KitButton(kit));
             }
@@ -54,13 +50,8 @@ public class KitsBuyMenu extends PaginatedMenu {
             global.put(slot, filler);
         }
 
-        global.put(49, new BackButton(new ShopMenu()));
+        global.put(53, new BackButton(new ShopMenu(player)));
 
         return global;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 54;
     }
 }

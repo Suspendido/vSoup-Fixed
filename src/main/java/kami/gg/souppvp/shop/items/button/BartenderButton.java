@@ -25,7 +25,7 @@ public class BartenderButton extends Button {
     @Override
     public void clicked(Player player, ClickType clickType) {
         playNeutral(player);
-        new BartenderMenu().openMenu(player);
+        new BartenderMenu(player).open();
     }
 
 }

@@ -3,7 +3,6 @@ package kami.gg.souppvp.kit.menu;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.button.view.*;
 import kami.gg.souppvp.kit.button.view.amor.*;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
 import kami.gg.souppvp.util.menu.button.BackButton;
@@ -21,17 +20,13 @@ public class KitViewMenu extends Menu {
 
     private Kit kit;
 
-    public KitViewMenu(Kit kit) {
+    public KitViewMenu(Kit kit, Player player) {
+        super(player, "Viewing the " + kit.getName() + " kit", 27, false);
         this.kit = kit;
     }
 
     @Override
-    public String getTitle(Player player) {
-        return CC.t("Viewing the " + kit.getName() + " kit");
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
 
         int slot = 14;
@@ -46,7 +41,7 @@ public class KitViewMenu extends Menu {
         putArmor(buttons, 13, armor[0], new BootsButton(kit));
 
         buttons.put(22, new DescriptionButton(kit));
-        buttons.put(26, new BackButton(new KitsSelectMenu()));
+        buttons.put(26, new BackButton(new KitsSelectMenu(player)));
 
         for (int i = 0; i < 27; i++) {
             buttons.putIfAbsent(i, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " "));

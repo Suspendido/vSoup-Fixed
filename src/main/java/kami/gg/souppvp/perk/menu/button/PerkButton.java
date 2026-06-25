@@ -6,6 +6,7 @@ import kami.gg.souppvp.perk.menu.AllPerksMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
+import kami.gg.souppvp.util.menu.menus.ConfirmMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -53,16 +54,23 @@ public class PerkButton extends Button {
 
         if (!profile.getUnlockedPerks().contains(perk.getName())) {
             if (profile.getCredits() < perk.getCost()) {
-                sendMessage(player, "&cInsufficient credits! You're " + (profile.getCredits() - perk.getCost()) + " credits short.");
+                sendMessage(player, "&cInsufficient credits! You're " + (perk.getCost() - profile.getCredits()) + " credits short.");
                 playFail(player);
                 return;
             }
 
-            profile.setCredits(profile.getCredits() - perk.getCost());
-            profile.getUnlockedPerks().add(perk.getName());
-            sendMessage(player, "&aPurchased " + perk.getColor() + perk.getName() + "&a!");
-            playSuccess(player);
-            new AllPerksMenu().openMenu(player);
+            new ConfirmMenu("&6Purchase " + perk.getColor() + perk.getName() + "&6?", confirmed -> {
+                if (!confirmed) {
+                    new AllPerksMenu(player).open();
+                    return;
+                }
+
+                profile.setCredits(profile.getCredits() - perk.getCost());
+                profile.getUnlockedPerks().add(perk.getName());
+                sendMessage(player, "&aPurchased " + perk.getColor() + perk.getName() + "&a!");
+                playSuccess(player);
+                new AllPerksMenu(player).open();
+            }, player).open();
             return;
         }
 
@@ -70,7 +78,7 @@ public class PerkButton extends Button {
             profile.getActivePerks().set(selectedSlot, "None");
             sendMessage(player, "&cUnequipped " + perk.getColor() + perk.getName() + " &cfrom Slot " + (selectedSlot + 1) + "&c.");
             playFail(player);
-            new AllPerksMenu().openMenu(player);
+            new AllPerksMenu(player).open();
             return;
         }
 
@@ -82,6 +90,6 @@ public class PerkButton extends Button {
         profile.getActivePerks().set(selectedSlot, perk.getName());
         sendMessage(player, "&aEquipped " + perk.getColor() + perk.getName() + " &ato Slot " + (selectedSlot + 1) + "&a!");
         playSuccess(player);
-        new AllPerksMenu().openMenu(player);
+        new AllPerksMenu(player).open();
     }
 }

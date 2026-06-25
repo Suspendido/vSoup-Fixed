@@ -35,6 +35,6 @@ public class KillstreakCommand extends Command {
             return;
         }
 
-        new KillstreakMenu().openMenu(player);
+        new KillstreakMenu(player).open();
     }
 }

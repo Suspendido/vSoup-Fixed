@@ -1,0 +1,85 @@
+name: Spiderman
+rarity: ULTIMATE
+price: 4500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: WEB
+description:
+- '&7Be a superhero and fight criminals like your enemies.'
+- '&7Using your web shooter, trap and slow down enemies.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: WEB
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §dWeb Shooter
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color: &id001
+      ==: Color
+      RED: 0
+      BLUE: 255
+      GREEN: 0
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color: &id002
+      ==: Color
+      RED: 255
+      BLUE: 0
+      GREEN: 0
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color: *id001
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color: *id002
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+- ==: PotionEffect
+  effect: 11
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Spiderman
+secondaryAbility: None

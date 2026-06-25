@@ -8,7 +8,6 @@ import kami.gg.souppvp.util.menu.Menu;
 import kami.gg.souppvp.util.menu.button.BackButton;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 
 public class ViewAllPagesMenu extends Menu {
@@ -18,7 +17,7 @@ public class ViewAllPagesMenu extends Menu {
 	PaginatedMenu menu;
 
 	public ViewAllPagesMenu(PaginatedMenu menu, Player player) {
-		super(player, "Jump to page", 54, true);
+		super(player, "Jump to page", 54, false);
 		this.menu = menu;
 	}
 
@@ -30,7 +29,7 @@ public class ViewAllPagesMenu extends Menu {
 
 		int index = 10;
 
-		for (int i = 1; i <= menu.getPages(menu.getPlayer()); i++) {
+		for (int i = 1; i <= menu.getPages(player); i++) {
 			buttons.put(index++, new JumpToPageButton(i, menu, menu.getPage() == i));
 
 			if ((index - 8) % 9 == 0) {

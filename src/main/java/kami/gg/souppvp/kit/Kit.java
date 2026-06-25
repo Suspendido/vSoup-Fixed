@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.timer.Timer;
@@ -14,20 +15,31 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Getter @Setter
 public abstract class Kit implements Listener {
 
-    public abstract String getName();
-    public abstract KitRarity getRarityType();
-    public abstract Integer getPrice();
-    public abstract ItemStack getIcon();
-    public abstract List<String> getDescription();
-    public abstract List<ItemStack> getCombatEquipments();
-    public abstract ItemStack[] getArmor();
-    public abstract List<PotionEffect> getPotionEffects();
+    protected String name;
+    protected KitRarity rarityType;
+    protected Integer price;
+    protected ItemStack icon;
+    protected List<String> description;
+    protected List<ItemStack> combatEquipments;
+    protected ItemStack[] armor;
+    protected List<PotionEffect> potionEffects;
+    protected KitAbility primaryAbility;
+    protected KitAbility secondaryAbility;
+    protected boolean enabled = true;
+
+    public Kit() {
+        this.description = new ArrayList<>();
+        this.combatEquipments = new ArrayList<>();
+        this.potionEffects = new ArrayList<>();
+        this.armor = new ItemStack[4];
+    }
 
     public abstract void onSelect(Player player);
 
@@ -51,6 +63,22 @@ public abstract class Kit implements Listener {
 
         for (PotionEffect potionEffect : this.getPotionEffects()) {
             player.addPotionEffect(potionEffect);
+        }
+
+        if (primaryAbility != null) {
+            primaryAbility.onKitSelect(player);
+            ItemStack abilityItem = primaryAbility.getItem();
+            if (abilityItem != null) {
+                player.getInventory().addItem(abilityItem);
+            }
+        }
+
+        if (secondaryAbility != null) {
+            secondaryAbility.onKitSelect(player);
+            ItemStack abilityItem = secondaryAbility.getItem();
+            if (abilityItem != null) {
+                player.getInventory().addItem(abilityItem);
+            }
         }
 
         onSelect(player);

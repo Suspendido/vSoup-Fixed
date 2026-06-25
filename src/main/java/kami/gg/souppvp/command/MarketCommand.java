@@ -2,10 +2,8 @@ package kami.gg.souppvp.command;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.menu.KitsBuyMenu;
-import kami.gg.souppvp.kit.menu.KitsSelectMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -45,6 +43,6 @@ public class MarketCommand extends Command {
             return;
         }
 
-        new KitsBuyMenu().openMenu(player);
+        new KitsBuyMenu(player).open();
     }
 }

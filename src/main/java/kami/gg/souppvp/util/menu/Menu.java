@@ -7,14 +7,12 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -32,7 +30,7 @@ public abstract class Menu {
 	protected boolean autoUpdate;
 	protected long updateInterval;
 
-	private Map<Integer, Button> buttons = new HashMap<>();
+	protected Map<Integer, Button> buttons;
 	private Button placeholderButton = Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 15, " ");
 
 	public Menu(Player player, String title, int size, boolean autoUpdate) {
@@ -58,54 +56,94 @@ public abstract class Menu {
 	}
 
 	public void open() {
-		this.buttons = this.getButtons();
-		this.inventory.clear();
+		this.buttons = getButtons();
 
-		// Set items
-		for (Map.Entry<Integer, Button> entry : this.buttons.entrySet()) {
-			this.inventory.setItem(entry.getKey(), createItemStack(entry.getValue()));
+		// Set the first items (0-based indexing)
+		for (Map.Entry<Integer, Button> entry : buttons.entrySet()) {
+			inventory.setItem(entry.getKey(), createItemStack(entry.getValue()));
 		}
 
-		// Fill empty slots if enabled
-		if (this.fillEnabled) {
-			for (int i = 0; i < this.size; i++) {
-				if (this.buttons.get(i) == null) {
-					this.inventory.setItem(i, this.placeholderButton.getButtonItem(this.player));
+		// Fill null/air spots with our filler
+		if (fillEnabled) {
+			for (int i = 0; i < inventory.getSize(); i++) {
+				ItemStack item = inventory.getItem(i);
+				if (item == null || item.getType() == Material.AIR) {
+					inventory.setItem(i, placeholderButton.getButtonItem(player));
 				}
 			}
 		}
 
-		this.player.openInventory(this.inventory);
-		this.onOpen();
-	}
+		// Open and add to map
+		player.openInventory(inventory);
+		SoupPvP.getInstance().getMenuManager().getMenus().put(player.getUniqueId(), this);
 
-	public void close() {
-		this.updater = null;
-		this.onClose();
+		// Start updater if auto-update is enabled
+		if (autoUpdate) {
+			updater = Bukkit.getScheduler().runTaskTimer(plugin, this::update, 0L, updateInterval);
+		}
+
+		onOpen();
 	}
 
 	public void update() {
-		this.buttons = this.getButtons();
-		this.inventory.clear();
-
-		// Update items
-		for (Map.Entry<Integer, Button> entry : this.buttons.entrySet()) {
-			this.inventory.setItem(entry.getKey(), createItemStack(entry.getValue()));
+		if (!player.isOnline()) {
+			destroy();
+			return;
 		}
 
-		// Fill empty slots if enabled
-		if (this.fillEnabled) {
-			for (int i = 0; i < this.size; i++) {
-				if (this.buttons.get(i) == null) {
-					this.inventory.setItem(i, this.placeholderButton.getButtonItem(this.player));
+		// Clear inventory to remove ghost items from previous state
+		inventory.clear();
+
+		// Re-fetch the buttons and cache them again
+		buttons = getButtons();
+
+		// Update the items in our inventory (0-based indexing)
+		for (Map.Entry<Integer, Button> entry : buttons.entrySet()) {
+			inventory.setItem(entry.getKey(), createItemStack(entry.getValue()));
+		}
+
+		// Update filler
+		if (fillEnabled) {
+			for (int i = 0; i < inventory.getSize(); i++) {
+				ItemStack item = inventory.getItem(i);
+				if (item == null || item.getType() == Material.AIR) {
+					inventory.setItem(i, placeholderButton.getButtonItem(player));
 				}
 			}
 		}
 
-		this.player.updateInventory();
+		player.updateInventory();
 	}
 
-	private ItemStack createItemStack(Button button) {
+	public void destroy() {
+		// Lower ram usage
+		if (buttons != null) {
+			buttons.clear();
+		}
+		inventory.clear();
+
+		// Remove from map
+		SoupPvP.getInstance().getMenuManager().getMenus().remove(player.getUniqueId());
+
+		// Cancel updater
+		if (updater != null) {
+			updater.cancel();
+			updater = null;
+		}
+
+		onClose();
+	}
+
+	public void onClick(InventoryClickEvent e) {
+		if (!allowInteract) {
+			e.setCancelled(true);
+		}
+	}
+
+	public void onClickOwn(InventoryClickEvent e) {
+	}
+
+	public ItemStack createItemStack(Button button) {
 		ItemStack item = button.getButtonItem(this.player);
 
 		if (item.getType() != Material.SKULL_ITEM) {
@@ -121,15 +159,6 @@ public abstract class Menu {
 		return item;
 	}
 
-	public void handleClick(InventoryClickEvent event) {
-		int slot = event.getSlot();
-		if (this.buttons.containsKey(slot)) {
-			Button button = this.buttons.get(slot);
-			button.clicked(this.player, event.getClick());
-			button.clicked(this.player, slot, event.getClick(), event.getHotbarButton());
-		}
-	}
-
 	public abstract Map<Integer, Button> getButtons();
 
 	public void onOpen() {
@@ -138,6 +167,4 @@ public abstract class Menu {
 	public void onClose() {
 	}
 
-	public void onInventoryClick(InventoryClickEvent event) {
-	}
 }

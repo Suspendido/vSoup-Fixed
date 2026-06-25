@@ -39,7 +39,7 @@ public class TierIconSelectorButton extends Button {
 
     @Override
     public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
-        new TierIconSelectorMenu().openMenu(player);
+        new TierIconSelectorMenu(player).open();
         playNeutral(player);
     }
 }

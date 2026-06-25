@@ -2,14 +2,11 @@ package kami.gg.souppvp.kit.menu;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
-import kami.gg.souppvp.kit.button.KitButton;
-import kami.gg.souppvp.kit.button.RandomKitButton;
-import kami.gg.souppvp.kit.button.SelectPreviousKitButton;
+import kami.gg.souppvp.kit.button.*;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.pagination.PaginatedMenu;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +16,8 @@ public class KitsSelectMenu extends PaginatedMenu {
              1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53
     };
 
-    @Override
-    public String getPrePaginatedTitle(Player player) {
-        return "Kit Selector";
+    public KitsSelectMenu(Player player) {
+        super(player, "Kit Selector", 54);
     }
 
     @Override
@@ -31,10 +27,20 @@ public class KitsSelectMenu extends PaginatedMenu {
         boolean freeMode = SoupPvP.getIsFreeKitsMode();
 
         int index = 0;
+        Kit lastKit = null;
+
         for (Kit kit : SoupPvP.getInstance().getKitsHandler().getKits()) {
+            if (!kit.isEnabled()) continue;
+
             if (freeMode || profile.getUnlockedKits().contains(kit.getName())) {
-                buttons.put(index++, new KitButton(kit));
+                buttons.put(index, new KitButton(kit));
+                lastKit = kit;
+                index++;
             }
+        }
+
+        if (player.hasPermission("souppvp.kit.create") && lastKit != null) {
+            buttons.put(index + 1, new CreateKitButton());
         }
 
         return buttons;
@@ -55,15 +61,5 @@ public class KitsSelectMenu extends PaginatedMenu {
         global.put(5, new SelectPreviousKitButton(profile));
 
         return global;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 54;
-    }
-
-    @Override
-    public boolean shouldUpdateOnClick(Player player, Button button, ClickType clickType) {
-        return false;
     }
 }

@@ -1,6 +1,7 @@
 package kami.gg.souppvp.listener.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
@@ -84,10 +85,13 @@ public class PvPListeners implements Listener {
 
                 int credits = ThreadLocalRandom.current().nextInt(1, 21);
                 int xp = ThreadLocalRandom.current().nextInt(1, 5);
-                boolean proKit = "Pro".equalsIgnoreCase(killerProfile.getCurrentKit());
+                Kit killerKit = SoupPvP.getInstance().getKitsHandler().getKitByName(killerProfile.getCurrentKit());
+                boolean hasProAbility = killerKit != null && 
+                    ((killerKit.getPrimaryAbility() != null && killerKit.getPrimaryAbility().getName().equals("Pro")) ||
+                     (killerKit.getSecondaryAbility() != null && killerKit.getSecondaryAbility().getName().equals("Pro")));
                 boolean easySoupDisabled = !killerProfile.getEnableEasySoup();
 
-                if (proKit) credits *= 2;
+                if (hasProAbility) credits *= 2;
                 if (easySoupDisabled) credits *= 2;
 
                 killerProfile.setCredits(killerProfile.getCredits() + credits);

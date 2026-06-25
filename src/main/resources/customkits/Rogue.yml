@@ -1,0 +1,77 @@
+name: Rogue
+rarity: ULTIMATE
+price: 4500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: GOLD_SWORD
+description:
+- '&7Go rogue and backstab enemies.'
+- '&7A precise backstab deals massive damage.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+      DURABILITY: 3
+- ==: org.bukkit.inventory.ItemStack
+  type: GOLD_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Backstab Dagger
+    enchants:
+      DURABILITY: 10
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+      DURABILITY: 3
+    color:
+      ==: Color
+      RED: 0
+      BLUE: 0
+      GREEN: 0
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 1
+  ambient: true
+  has-particles: true
+- ==: PotionEffect
+  effect: 11
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Rogue
+secondaryAbility: None

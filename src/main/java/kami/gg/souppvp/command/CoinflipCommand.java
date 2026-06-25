@@ -30,6 +30,6 @@ public class CoinflipCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        new CoinFlipMenu().openMenu((Player) sender);
+        new CoinFlipMenu((Player) sender).open();
     }
 }

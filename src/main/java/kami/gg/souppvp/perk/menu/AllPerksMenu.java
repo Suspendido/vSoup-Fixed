@@ -16,6 +16,10 @@ public class AllPerksMenu extends Menu {
 
     private static final Map<UUID, Integer> selectedSlots = new HashMap<>();
 
+    public AllPerksMenu(Player player) {
+        super(player, "Perks", 36, true);
+    }
+
     public static int getSelectedSlot(Player player) {
         return selectedSlots.getOrDefault(player.getUniqueId(), 0);
     }
@@ -25,12 +29,7 @@ public class AllPerksMenu extends Menu {
     }
 
     @Override
-    public String getTitle(Player player) {
-        return "Perks";
-    }
-
-    @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
 
         buttons.put(3, new SlotCycleButton());
@@ -48,10 +47,5 @@ public class AllPerksMenu extends Menu {
         }
 
         return buttons;
-    }
-
-    @Override
-    public int size(Map<Integer, Button> buttons) {
-        return 36;
     }
 }

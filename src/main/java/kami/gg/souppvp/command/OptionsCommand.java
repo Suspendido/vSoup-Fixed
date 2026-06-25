@@ -32,6 +32,6 @@ public class OptionsCommand extends Command {
             return;
         }
 
-        new OptionsMenu().openMenu(player);
+        new OptionsMenu(player).open();
     }
 }

@@ -1,0 +1,48 @@
+name: Viper
+rarity: RARE
+price: 3500
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: POTION
+  damage: 8196
+description:
+- '&7Every hit damaged to an enemy will have a 10% chance'
+- '&7to give them poison for a total duration of 10 seconds.'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: LEATHER_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: LEATHER_ARMOR
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 2
+      DURABILITY: 3
+    color:
+      ==: Color
+      RED: 0
+      BLUE: 0
+      GREEN: 128
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Viper
+secondaryAbility: None

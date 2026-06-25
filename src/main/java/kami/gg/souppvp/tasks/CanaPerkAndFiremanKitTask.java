@@ -11,12 +11,10 @@ import org.bukkit.entity.Player;
 public class CanaPerkAndFiremanKitTask {
 
     private final Perk canaPerk;
-    private final Kit firemanKit;
 
     public CanaPerkAndFiremanKitTask() {
 
         this.canaPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Cana");
-        this.firemanKit = SoupPvP.getInstance().getKitsHandler().getKitByName("Fireman");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(SoupPvP.getInstance(), () -> {
 
@@ -40,9 +38,12 @@ public class CanaPerkAndFiremanKitTask {
                     }
                 }
 
-                boolean isFireman = firemanKit != null && firemanKit.getName().equalsIgnoreCase(profile.getCurrentKit());
+                Kit currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
+                boolean hasFiremanAbility = currentKit != null && 
+                    ((currentKit.getPrimaryAbility() != null && currentKit.getPrimaryAbility().getName().equals("Fireman")) ||
+                     (currentKit.getSecondaryAbility() != null && currentKit.getSecondaryAbility().getName().equals("Fireman")));
 
-                if (hasCana || isFireman) {
+                if (hasCana || hasFiremanAbility) {
                     player.damage(2);
                 }
             }

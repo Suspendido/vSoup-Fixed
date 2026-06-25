@@ -2,6 +2,7 @@ package kami.gg.souppvp.tier;
 
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.profile.Profile;
+import kami.gg.souppvp.tier.util.TierUtils;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import org.bukkit.Sound;

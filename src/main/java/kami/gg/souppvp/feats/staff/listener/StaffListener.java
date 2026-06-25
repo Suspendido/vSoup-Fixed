@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -191,7 +192,7 @@ public class StaffListener implements Listener {
             interactCooldown.applyCooldownTicks(player, 100); // 0.1s
 
             if (staffItem.action() == StaffItemAction.INSPECTION) {
-                new InspectionMenu(player).openMenu(player);
+                new InspectionMenu(player).update();
 
             } else if (staffItem.action() == StaffItemAction.FREEZE) {
                 player.chat("/freeze " + clicked.getName());
@@ -213,7 +214,7 @@ public class StaffListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true) // Deny clicking of blocks (Deny GMC Abuse)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true) // Deny clicking of blocks (Deny GMC Abuse)
     public void onInventory(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
 

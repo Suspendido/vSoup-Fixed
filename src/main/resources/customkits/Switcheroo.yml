@@ -1,0 +1,43 @@
+name: Switcheroo
+rarity: RARE
+price: 4000
+icon:
+  ==: org.bukkit.inventory.ItemStack
+  type: SNOW_BALL
+description:
+- '&7Your main ability is being extremely sneaky. Catch your enemies off'
+- '&7guard and swap locations with them to give yourself a positional advantage'
+enabled: true
+combatEquipments:
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
+- ==: org.bukkit.inventory.ItemStack
+  type: SNOW_BALL
+  amount: 3
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Switcheroo
+armor:
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_BOOTS
+- ==: org.bukkit.inventory.ItemStack
+  type: CHAINMAIL_LEGGINGS
+- ==: org.bukkit.inventory.ItemStack
+  type: DIAMOND_CHESTPLATE
+- ==: org.bukkit.inventory.ItemStack
+  type: IRON_HELMET
+potionEffects:
+- ==: PotionEffect
+  effect: 1
+  duration: 2147483647
+  amplifier: 0
+  ambient: true
+  has-particles: true
+primaryAbility: Switcheroo
+secondaryAbility: None
