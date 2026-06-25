@@ -23,7 +23,7 @@ public class JumpToMenuButton extends Button {
 
 	@Override
 	public void clicked(Player player, ClickType clickType) {
-		menu.openMenu(player);
+		menu.update();
 	}
 
 }

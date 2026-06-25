@@ -11,13 +11,10 @@ import java.util.Map;
 public abstract class PaginatedMenu extends Menu {
 
     @Getter
-    private int page = 1; {
-        setUpdateAfterClick(false);
-    }
+    private int page = 1;
 
-    @Override
-    public String getTitle(Player player) {
-        return getPrePaginatedTitle(player);
+    public PaginatedMenu(Player player, String title, int size) {
+        super(player, title, size, false);
     }
 
     public final void modPage(Player player, int mod) {
@@ -31,8 +28,7 @@ public abstract class PaginatedMenu extends Menu {
             page = getPages(player);
         }
 
-        getButtons().clear();
-        openMenu(player);
+        update();
     }
 
     public final int getPages(Player player) {
@@ -46,7 +42,7 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     @Override
-    public final Map<Integer, Button> getButtons(Player player) {
+    public final Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
 
         int minIndex = (page - 1) * getMaxItemsPerPage(player);
@@ -99,8 +95,6 @@ public abstract class PaginatedMenu extends Menu {
     public Map<Integer, Button> getGlobalButtons(Player player) {
         return null;
     }
-
-    public abstract String getPrePaginatedTitle(Player player);
 
     public abstract Map<Integer, Button> getAllPagesButtons(Player player);
 }

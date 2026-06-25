@@ -13,11 +13,10 @@ import org.bukkit.entity.Player;
 
 public class ConfirmMenu extends Menu {
 
-    private final String title;
     private final Callback<Boolean> response;
 
     @Override
-    public Map<Integer, Button> getButtons(Player player) {
+    public Map<Integer, Button> getButtons() {
         HashMap<Integer, Button> buttons = new HashMap<>();
         buttons.put(11, new BooleanButton(true, this.response));
         buttons.put(15, new BooleanButton(false, this.response));
@@ -27,14 +26,9 @@ public class ConfirmMenu extends Menu {
         return buttons;
     }
 
-    @Override
-    public String getTitle(Player player) {
-        return this.title;
-    }
-
     @ConstructorProperties(value={"title", "response"})
-    public ConfirmMenu(String title, Callback<Boolean> response) {
-        this.title = title;
+    public ConfirmMenu(String title, Callback<Boolean> response, Player player) {
+        super(player, title, 27, false);
         this.response = response;
     }
 }

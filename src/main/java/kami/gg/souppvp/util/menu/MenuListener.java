@@ -12,20 +12,30 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class MenuListener implements Listener {
 
+    private final MenuManager menuManager;
+
+    public MenuListener(MenuManager menuManager) {
+        this.menuManager = menuManager;
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onButtonPress(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        Menu openMenu = Menu.currentlyOpenedMenus.get(player.getName());
+        Menu openMenu = menuManager.getupdate();
 
         if (openMenu != null) {
             if (event.getSlot() != event.getRawSlot()) {
+                openMenu.onInventoryClick(event);
+                if (event.isCancelled()) {
+                    Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), player::updateInventory, 1L);
+                }
                 if ((event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT)) {
                     event.setCancelled(true);
                 }
-
                 return;
             }
 
+            // Handle clicks in menu
             if (openMenu.getButtons().containsKey(event.getSlot())) {
                 Button button = openMenu.getButtons().get(event.getSlot());
                 boolean cancel = button.shouldCancel(player, event.getClick());
@@ -43,22 +53,6 @@ public class MenuListener implements Listener {
                 button.clicked(player, event.getClick());
                 button.clicked(player, event.getSlot(), event.getClick(), event.getHotbarButton());
 
-                if (Menu.currentlyOpenedMenus.containsKey(player.getName())) {
-                    Menu newMenu = Menu.currentlyOpenedMenus.get(player.getName());
-
-                    if (newMenu == openMenu) {
-                        boolean shouldUpdate = openMenu.shouldUpdateOnClick(player, button, event.getClick()) && button.shouldUpdate(player, event.getClick());
-
-                        if (shouldUpdate) {
-                            openMenu.setClosedByMenu(true);
-                            newMenu.openMenu(player);
-                        }
-                    }
-                } else if (openMenu.shouldUpdateOnClick(player, button, event.getClick()) && button.shouldUpdate(player, event.getClick())) {
-                    openMenu.setClosedByMenu(true);
-                    openMenu.openMenu(player);
-                }
-
                 if (event.isCancelled()) {
                     Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), player::updateInventory, 1L);
                 }
@@ -74,19 +68,9 @@ public class MenuListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        Menu openMenu = Menu.currentlyOpenedMenus.get(player.getName());
-
-        if (openMenu == null) return;
-
-        if (openMenu.isClosedByMenu()) {
-            openMenu.setClosedByMenu(false);
-            return;
-        }
-
-        openMenu.onClose(player);
-        Menu.currentlyOpenedMenus.remove(player.getName());
+        menuManager.closeMenu(player);
     }
 }
