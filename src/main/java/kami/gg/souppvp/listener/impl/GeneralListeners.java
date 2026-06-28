@@ -129,16 +129,6 @@ public class GeneralListeners implements Listener {
     }
 
     @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onExplosionPrime(ExplosionPrimeEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         event.setCancelled(true);
     }
@@ -210,31 +200,6 @@ public class GeneralListeners implements Listener {
                 event.setLine(i, CC.t(lines[i]));
             }
         }
-    }
-
-    @EventHandler
-    public void onCraft(CraftItemEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage(null);
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        event.setQuitMessage(null);
-    }
-
-    @EventHandler
-    public void onBlockFade(BlockFadeEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockBurn(BlockBurnEvent event) {
-        event.setCancelled(true);
     }
 
     @EventHandler
@@ -310,5 +275,40 @@ public class GeneralListeners implements Listener {
         if (safe != null) {
             player.teleport(safe.add(0.5, 0, 0.5));
         }
+    }
+
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onExplosionPrime(ExplosionPrimeEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        event.setJoinMessage(null);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
+    }
+
+    @EventHandler
+    public void onBlockFade(BlockFadeEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        event.setCancelled(true);
     }
 }
