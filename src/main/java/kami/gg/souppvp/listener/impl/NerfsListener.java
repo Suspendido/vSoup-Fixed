@@ -30,15 +30,15 @@ public class NerfsListener implements Listener {
 
             switch (level) {
                 case 1:
-                    e.setDamage(e.getDamage() * 0.45);
+                    e.setDamage(e.getDamage() * 0.7);
                     break;
 
                 case 2:
-                    e.setDamage(e.getDamage() * 0.40);
+                    e.setDamage(e.getDamage() * 0.65);
                     break;
 
                 default:
-                    e.setDamage(e.getDamage() * 0.30);
+                    e.setDamage(e.getDamage() * 0.6);
             }
         }
     }
