@@ -48,7 +48,7 @@ public class FortyKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.SKULL_ITEM)
                 .durability(2)
-                .name(CC.t("&a" + getName()))
+                .name("&a" + getName())
                 .lore(
                         CC.MENU_BAR,
                         "&7Spawns a Security Guard",

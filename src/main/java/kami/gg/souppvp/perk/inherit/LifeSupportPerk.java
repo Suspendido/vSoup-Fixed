@@ -46,10 +46,6 @@ public class LifeSupportPerk extends Perk implements Listener {
         return 2000;
     }
 
-    @Override
-    public int getTier() {
-        return 3;
-    }
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){

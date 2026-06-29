@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.timer.Timer;
@@ -25,7 +26,12 @@ import java.util.concurrent.TimeUnit;
 
 public class TorchAbility implements KitAbility {
 
-    private final ItemStack dragonBreath = new ItemBuilder(Material.BLAZE_POWDER).name("&cDragon Breath").build();
+    private final Timer torchTimer;
+
+    public TorchAbility() {
+        this.torchTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(45));
+        SoupPvP.getInstance().getTimerManager().registerTimer(torchTimer);
+    }
 
     @Override
     public String getName() {
@@ -44,7 +50,7 @@ public class TorchAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return dragonBreath.clone();
+        return new ItemBuilder(Material.BLAZE_POWDER).name("&cDragon Breath").build();
     }
 
     @EventHandler
@@ -52,7 +58,7 @@ public class TorchAbility implements KitAbility {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        if (event.getPlayer().getItemInHand().isSimilar(dragonBreath) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+        if (AbilityItemComparator.isSameAbilityItem(event.getPlayer().getItemInHand(), getItem()) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
             event.setCancelled(true);
             player.updateInventory();
 
@@ -61,12 +67,15 @@ public class TorchAbility implements KitAbility {
                 return;
             }
 
-            if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Dragon Breath", true)) {
-                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Dragon Breath", true), true) + "&c."));
+            // Check if player has Torch ability
+            if (!hasAbility(player, profile, getName())) return;
+
+            if (torchTimer.hasTimer(player)) {
+                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(torchTimer.getRemaining(player), true) + "&c."));
                 return;
             }
 
-            SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Dragon Breath", TimeUnit.SECONDS.toMillis(45)), true);
+            torchTimer.applyTimer(player);
             XPBarTimer.runXpBar(player, 45);
             PlayerUtil.playSound(player, Sound.ENDERDRAGON_GROWL, 1.0);
 

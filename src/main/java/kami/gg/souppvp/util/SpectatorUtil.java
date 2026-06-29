@@ -46,11 +46,8 @@ public class SpectatorUtil {
         }
 
         XPBarTimer.remove(player);
-        SoupPvP.getInstance().getTimersHandler().removeAllPlayerTimers(player.getUniqueId());
-        SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().remove(player.getUniqueId());
+        SoupPvP.getInstance().getTimerManager().getTimer("Combat").removeTimer(player);
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
-        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(player.getUniqueId());
-
     }
 
 }

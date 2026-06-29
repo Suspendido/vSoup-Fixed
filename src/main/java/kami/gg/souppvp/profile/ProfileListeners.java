@@ -98,8 +98,7 @@ public class ProfileListeners implements Listener {
             profile.setDeaths(profile.getDeaths() + 1);
         }
         profile.saveProfile();
-        SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().remove(player.getUniqueId());
+        SoupPvP.getInstance().getTimerManager().getTimer("Combat").removeTimer(player);
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
-        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(player.getUniqueId());
     }
 }

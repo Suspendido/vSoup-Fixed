@@ -2,6 +2,7 @@ package kami.gg.souppvp.kit.ability.impl;
 
 import com.google.common.collect.Sets;
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -27,6 +28,12 @@ import java.util.concurrent.TimeUnit;
 public class KangarooAbility implements KitAbility {
 
     private final Set<UUID> jumpingUsers = Sets.newHashSet();
+    private final Timer kangarooTimer;
+
+    public KangarooAbility() {
+        this.kangarooTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(10));
+        SoupPvP.getInstance().getTimerManager().registerTimer(kangarooTimer);
+    }
 
     @Override
     public String getName() {
@@ -45,13 +52,7 @@ public class KangarooAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.FIREWORK)
-                .name(CC.t("&cKangaroo Boost"))
-                .lore(
-                        "&7Right-click to boost jump",
-                        "&7No fall damage during jump"
-                )
-                .build();
+        return new ItemBuilder(Material.FIREWORK).name("&cKangaroo Boost").build();
     }
 
     @EventHandler
@@ -75,6 +76,11 @@ public class KangarooAbility implements KitAbility {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
+        
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
+        if (!hasAbility(player, profile, getName())) return;
+
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL && jumpingUsers.contains(player.getUniqueId())) {
             event.setCancelled(true);
         }
@@ -87,19 +93,19 @@ public class KangarooAbility implements KitAbility {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile == null || profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
 
         ItemStack item = event.getItem();
-        if (item == null || item.getType() != Material.FIREWORK) return;
+        if (item == null || !AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
 
         event.setCancelled(true);
 
         UUID uuid = player.getUniqueId();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, "Kangaroo", true)) {
-            long remain = SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, "Kangaroo", true);
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remain, true) + "&c."));
+        if (kangarooTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(kangarooTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
@@ -108,12 +114,7 @@ public class KangarooAbility implements KitAbility {
             return;
         }
 
-        // Apply cooldown immediately
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                uuid,
-                new Timer("Kangaroo", TimeUnit.SECONDS.toMillis(10)),
-                true
-        );
+        kangarooTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 10);
 
         player.setVelocity(player.getEyeLocation().getDirection().multiply(1.5).setY(1.25));

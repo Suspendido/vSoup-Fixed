@@ -46,7 +46,7 @@ public class ThirtyKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.MONSTER_EGG)
                 .durability(95)
-                .name(CC.t("&a" + getName()))
+                .name("&a" + getName())
                 .lore(
                         CC.MENU_BAR,
                         "&7Spawns a squad of loyal wolves",

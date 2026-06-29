@@ -47,11 +47,6 @@ public class DeathDoUsApartPerk extends Perk implements Listener {
         return 800;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeathEvent(PlayerDeathEvent event){
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getUniqueId());

@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -9,7 +10,6 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.XPBarTimer;
-import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,10 +27,12 @@ import java.util.concurrent.TimeUnit;
 
 public class RogueAbility implements KitAbility {
 
-    private final ItemStack BACKSTAB_DAGGER = new ItemBuilder(Material.GOLD_SWORD)
-            .name(CC.t("&6Backstab Dagger"))
-            .enchantment(Enchantment.DURABILITY, 10)
-            .build();
+    private final Timer backstabTimer;
+
+    public RogueAbility() {
+        this.backstabTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(25));
+        SoupPvP.getInstance().getTimerManager().registerTimer(backstabTimer);
+    }
 
     @Override
     public String getName() {
@@ -49,7 +51,10 @@ public class RogueAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return BACKSTAB_DAGGER.clone();
+        return new ItemBuilder(Material.GOLD_SWORD)
+                .name("&6Backstab Dagger")
+                .enchantment(Enchantment.DURABILITY, 10)
+                .build();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -61,15 +66,13 @@ public class RogueAbility implements KitAbility {
         if (attacker == null) return;
 
         if (attacker.isInEvent() || attacker.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(damager, attacker, getName())) return;
 
         ItemStack hand = damager.getItemInHand();
-        if (hand == null || hand.getType() != Material.GOLD_SWORD) return;
+        if (hand == null || !AbilityItemComparator.isSameAbilityItem(hand, getItem())) return;
 
-        final var timers = SoupPvP.getInstance().getTimersHandler();
-        final String timerId = "Back Stabber";
-
-        if (timers.hasTimer(damager.getUniqueId(), timerId, true)) {
-            damager.sendMessage(CC.t("&cYou can't use this for another " + DurationFormatter.getRemaining(timers.getRemaining(damager.getUniqueId(), timerId, true), true) + "&c."));
+        if (backstabTimer.hasTimer(damager)) {
+            damager.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(backstabTimer.getRemaining(damager), true) + "&c."));
             return;
         }
 
@@ -89,8 +92,8 @@ public class RogueAbility implements KitAbility {
             return;
         }
 
-        timers.addPlayerTimer(damager.getUniqueId(), new Timer(timerId, TimeUnit.SECONDS.toMillis(30)), true);
-        XPBarTimer.runXpBar(damager, 30);
+        backstabTimer.applyTimer(damager);
+        XPBarTimer.runXpBar(damager, 25);
 
         damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
         damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);

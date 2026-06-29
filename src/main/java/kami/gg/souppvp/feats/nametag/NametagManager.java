@@ -1,6 +1,9 @@
 package kami.gg.souppvp.feats.nametag;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.events.Event;
+import kami.gg.souppvp.events.EventType;
+import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
 import kami.gg.souppvp.feats.nametag.adapter.NametagAdapter;
 import kami.gg.souppvp.feats.nametag.adapter.NametagColor;
 import kami.gg.souppvp.feats.nametag.task.NametagTask;
@@ -131,6 +134,10 @@ public class NametagManager {
                 lines.add(s
                         .replace("%prefix%", prefix != null ? prefix : "")
                         .replace("%player%", target.getName())
+                        .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                        .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                        .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%health%", String.valueOf(isTrickster ? new Random().nextInt(11) : (int) target.getHealth() / 2))
                         .replace("%bounty%", String.valueOf(bountyValue))
                         .replace("%tier%", tierDisplay)
@@ -143,6 +150,10 @@ public class NametagManager {
                 lines.add(s
                         .replace("%prefix%", prefix != null ? prefix : "")
                         .replace("%player%", target.getName())
+                        .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                        .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                        .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%health%", String.valueOf(isTrickster ? new Random().nextInt(11) : (int) target.getHealth() / 2))
                         .replace("%tier%", tierDisplay)
                 );
@@ -154,32 +165,46 @@ public class NametagManager {
                 lines.add(s
                         .replace("%prefix%", prefix != null ? prefix : "")
                         .replace("%player%", target.getName())
+                        .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                        .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                        .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%health%", String.valueOf(new Random().nextInt(11)))
                         .replace("%bounty%", String.valueOf(RNG.nextInt(1001)))
                         .replace("%tier%", tierDisplay)
                 );
             }
         } else if (profile.isInEvent()) {
-            if (profile.getTntTagGame() != null) {
-                boolean hasTNT = profile.getTntTagGame().getTntHolder() != null && profile.getTntTagGame().getTntHolder().equals(target.getUniqueId());
+            Event activeEvent = profile.getActiveEvent();
+            if (activeEvent != null && activeEvent.getType() == EventType.TNTTAG) {
+                TNTTagGame tntGame = (TNTTagGame) activeEvent;
+                boolean hasTNT = tntGame.getTntHolder() != null && tntGame.getTntHolder().equals(target.getUniqueId());
                 formatKey = hasTNT ? "NAMETAGS.FORMAT.TNTTAG_HOLDER" : "NAMETAGS.FORMAT.TNTTAG_NORMAL";
 
                 for (String s : nametagConfig.getStringList(formatKey)) {
                     lines.add(s
                             .replace("%prefix%", prefix != null ? prefix : "")
                             .replace("%player%", target.getName())
+                            .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                            .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                            .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                            .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                             .replace("%health%", String.valueOf((int) target.getHealth() / 2))
                             .replace("%tier%", tierDisplay)
                     );
                 }
             }
-            else if (profile.getSumoEvent() != null) {
+            else if (activeEvent != null && activeEvent.getType() == EventType.SUMO) {
                 formatKey = "NAMETAGS.FORMAT.SUMO";
 
                 for (String s : nametagConfig.getStringList(formatKey)) {
                     lines.add(s
                             .replace("%prefix%", prefix != null ? prefix : "")
                             .replace("%player%", target.getName())
+                            .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                            .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                            .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                            .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                             .replace("%health%", String.valueOf((int) target.getHealth() / 2))
                             .replace("%tier%", tierDisplay)
                     );
@@ -192,6 +217,10 @@ public class NametagManager {
                 lines.add(s
                         .replace("%prefix%", prefix != null ? prefix : "")
                         .replace("%player%", target.getName())
+                        .replace("%rank%", instance.getRankHook().getRankColor(target) + instance.getRankHook().getRankName(target))
+                        .replace("%rank-prefix%", instance.getRankHook().getRankPrefix(target))
+                        .replace("%rank_color%", instance.getRankHook().getRankColor(target.getPlayer()))
+                        .replace("%rank_suffix%", instance.getRankHook().getRankSuffix(target.getPlayer()))
                         .replace("%health%", String.valueOf((int) target.getHealth() / 2))
                         .replace("%tier%", tierDisplay)
                 );

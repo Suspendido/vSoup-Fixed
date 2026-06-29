@@ -44,10 +44,6 @@ public class FireFighterPerk extends Perk implements Listener {
         return 1500;
     }
 
-    @Override
-    public int getTier() {
-        return 3;
-    }
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){

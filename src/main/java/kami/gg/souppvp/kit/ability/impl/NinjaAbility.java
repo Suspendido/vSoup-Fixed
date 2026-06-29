@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -22,9 +23,12 @@ import java.util.concurrent.TimeUnit;
 
 public class NinjaAbility implements KitAbility {
 
-    private final String TIMER_NAME = "Shuriken";
-    private final int SHURIKEN_COOLDOWN = 10;
-    private final ItemStack SHURIKEN_ITEM = new ItemBuilder(Material.NETHER_STAR).name(CC.t("&bShuriken")).amount(4).build();
+    private final Timer shurikenTimer;
+
+    public NinjaAbility() {
+        this.shurikenTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(10));
+        SoupPvP.getInstance().getTimerManager().registerTimer(shurikenTimer);
+    }
 
     @Override
     public String getName() {
@@ -43,7 +47,7 @@ public class NinjaAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return SHURIKEN_ITEM.clone();
+        return new ItemBuilder(Material.NETHER_STAR).name("&bShuriken").amount(4).build();
     }
 
     @EventHandler
@@ -54,6 +58,9 @@ public class NinjaAbility implements KitAbility {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
 
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+
+        // Check if player has Ninja ability
+        if (!hasAbility(killer, profile, getName())) return;
 
         for (ItemStack armor : killer.getInventory().getArmorContents()) {
             if (armor != null) {
@@ -79,14 +86,14 @@ public class NinjaAbility implements KitAbility {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
-        if (item == null || !item.isSimilar(SHURIKEN_ITEM)) return;
+        if (item == null || !AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
+        if (!hasAbility(player, profile, "Ninja")) return;
 
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK))
             return;
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
-            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
-            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(remaining, true) + ChatColor.RED + ".");
+        if (shurikenTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(shurikenTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
@@ -95,13 +102,8 @@ public class NinjaAbility implements KitAbility {
             return;
         }
 
-        // Apply cooldown immediately
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                player.getUniqueId(),
-                new Timer(TIMER_NAME, TimeUnit.SECONDS.toMillis(SHURIKEN_COOLDOWN)),
-                true
-        );
-        XPBarTimer.runXpBar(player, SHURIKEN_COOLDOWN);
+        shurikenTimer.applyTimer(player);
+        XPBarTimer.runXpBar(player, 10);
 
         // Launch shuriken
         player.getWorld().playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);

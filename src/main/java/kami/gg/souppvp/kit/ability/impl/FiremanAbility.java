@@ -5,10 +5,13 @@ import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.ItemBuilder;
+import kami.gg.souppvp.util.TasksUtility;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class FiremanAbility implements KitAbility {
@@ -20,7 +23,7 @@ public class FiremanAbility implements KitAbility {
 
     @Override
     public String getDescription() {
-        return "&fImmune to fire and lava damage";
+        return "&fWater acts as Lava, Lava acts as Water";
     }
 
     @Override
@@ -30,14 +33,7 @@ public class FiremanAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.LAVA_BUCKET)
-                .name("&c&lFire Immunity")
-                .lore(
-                        "&7You are immune to:",
-                        "&7- Fire damage",
-                        "&7- Lava damage"
-                )
-                .build();
+        return new ItemBuilder(Material.LAVA_BUCKET).lore("Dont Display").build();
     }
 
     @EventHandler
@@ -46,15 +42,56 @@ public class FiremanAbility implements KitAbility {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null) return;
-
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         EntityDamageEvent.DamageCause cause = event.getCause();
 
-        if (cause != EntityDamageEvent.DamageCause.FIRE && 
-            cause != EntityDamageEvent.DamageCause.LAVA && 
-            cause != EntityDamageEvent.DamageCause.FIRE_TICK) return;
+        if (cause == EntityDamageEvent.DamageCause.FIRE || cause == EntityDamageEvent.DamageCause.LAVA) {
+            event.setCancelled(true);
+            return;
+        }
 
-        event.setCancelled(true);
+        if (cause == EntityDamageEvent.DamageCause.FIRE_TICK) {
+            Location loc = player.getLocation();
+            Material feet = loc.getBlock().getType();
+            Material legs = loc.clone().add(0, 1, 0).getBlock().getType();
+
+            boolean inLava = feet == Material.LAVA || feet == Material.STATIONARY_LAVA || legs == Material.LAVA || legs == Material.STATIONARY_LAVA;
+
+            if (inLava) event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+
+        if (profile == null) return;
+        if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(player, profile, getName())) return;
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
+
+        Location loc = player.getLocation();
+        Material feet  = loc.getBlock().getType();
+        Material legs  = loc.clone().add(0, 1, 0).getBlock().getType();
+        Material head  = loc.clone().add(0, 2, 0).getBlock().getType();
+
+        boolean inLava  = feet == Material.LAVA  || feet == Material.STATIONARY_LAVA || legs == Material.LAVA  || legs == Material.STATIONARY_LAVA || head == Material.LAVA  || head == Material.STATIONARY_LAVA;
+        boolean inWater = feet == Material.WATER || feet == Material.STATIONARY_WATER || legs == Material.WATER || legs == Material.STATIONARY_WATER || head == Material.WATER || head == Material.STATIONARY_WATER;
+
+        if (inLava) {
+            TasksUtility.runTaskLater(() -> player.setFireTicks(0), 2L);
+            return;
+        }
+
+        if (inWater) {
+            if (player.getFireTicks() > 0) {
+                TasksUtility.runTaskLater(() -> player.setFireTicks(0), 2L);
+            } else {
+                TasksUtility.runTaskLater(() -> player.setFireTicks(200), 2L);
+            }
+        }
     }
 }

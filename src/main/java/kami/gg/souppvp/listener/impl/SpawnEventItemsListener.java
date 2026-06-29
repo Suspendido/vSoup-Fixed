@@ -1,6 +1,7 @@
 package kami.gg.souppvp.listener.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.events.Event;
 import kami.gg.souppvp.events.menu.HostEventsMenu;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitsHandler;
@@ -74,12 +75,9 @@ public class SpawnEventItemsListener implements Listener {
         }
 
         if (item.isSimilar(EventItems.LEAVE_EVENT)) {
-            if (profile.getTntTagGame() != null) {
-                profile.getTntTagGame().handleLeave(player);
-            }
-
-            if (profile.getSumoEvent() != null) {
-                profile.getSumoEvent().handleLeave(player);
+            Event activeEvent = profile.getActiveEvent();
+            if (activeEvent != null) {
+                activeEvent.handleLeave(player);
             }
         }
     }

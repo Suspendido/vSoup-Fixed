@@ -44,7 +44,7 @@ public class FortyFiveKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.SNOW_BALL)
-                .name(CC.t("&a" + getName()))
+                .name("&a" + getName())
                 .lore(
                         CC.MENU_BAR,
                         "&fSpawns an Angry Snowman",

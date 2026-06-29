@@ -1,7 +1,9 @@
 package kami.gg.souppvp.events.impl.sumo;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.events.impl.sumo.task.SumoStartTask;
+import kami.gg.souppvp.events.EventType;
+import kami.gg.souppvp.events.util.task.EventStartTask;
+import kami.gg.souppvp.util.Cooldown;
 import kami.gg.souppvp.util.LocationUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +32,27 @@ public class SumoHandler {
 		}
 
 		activeSumo = sumo;
-		activeSumo.setEventTask(new SumoStartTask(sumo));
+		activeSumo.setEventTask(new EventStartTask(sumo, EventType.SUMO) {
+			@Override
+			protected Cooldown getCooldown() {
+				return sumo.getCooldown();
+			}
+
+			@Override
+			protected void setCooldown(Cooldown cooldown) {
+				sumo.setCooldown(cooldown);
+			}
+
+			@Override
+			protected void announce() {
+				sumo.announce();
+			}
+
+			@Override
+			protected void onRound() {
+				sumo.onRound();
+			}
+		});
 	}
 
 	public void load() {

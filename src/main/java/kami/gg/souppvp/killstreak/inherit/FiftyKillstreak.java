@@ -41,7 +41,7 @@ public class FiftyKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.TNT)
-                .name(CC.t("&a" + getName()))
+                .name("&a" + getName())
                 .lore(Arrays.asList(
                         CC.MENU_BAR,
                         "&7Will start a 10 second timer and upon finish,",

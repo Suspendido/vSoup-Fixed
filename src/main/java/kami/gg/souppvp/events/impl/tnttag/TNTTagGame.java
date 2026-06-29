@@ -1,9 +1,15 @@
 package kami.gg.souppvp.events.impl.tnttag;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.events.impl.tnttag.player.TNTGamePlayer;
-import kami.gg.souppvp.events.impl.tnttag.player.TNTGamePlayerState;
-import kami.gg.souppvp.events.impl.tnttag.task.*;
+import kami.gg.souppvp.events.Event;
+import kami.gg.souppvp.events.EventManager;
+import kami.gg.souppvp.events.util.EventGamePlayer;
+import kami.gg.souppvp.events.util.EventState;
+import kami.gg.souppvp.events.EventType;
+import kami.gg.souppvp.events.util.EventPlayerState;
+import kami.gg.souppvp.events.impl.tnttag.task.TNTTagGameTask;
+import kami.gg.souppvp.events.util.task.EventEndTask;
+import kami.gg.souppvp.events.util.task.EventTask;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.*;
@@ -17,9 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 @Getter @Setter
-public class TNTTagGame {
+public class TNTTagGame implements Event {
 
-    private final Map<UUID, TNTGamePlayer> eventPlayers = new LinkedHashMap<>();
+    private final Map<UUID, EventGamePlayer> eventPlayers = new LinkedHashMap<>();
     private List<UUID> spectators = new ArrayList<>();
 
     private int maxPlayers;
@@ -29,17 +35,19 @@ public class TNTTagGame {
 
     private UUID tntHolder;
     private PlayerSnapshot host;
-    private TNTTagState state = TNTTagState.WAITING;
-    private transient TNTTagTask eventTask;
+    private EventState state = EventState.WAITING;
+    private transient EventTask eventTask;
     private Cooldown cooldown;
+    private EventManager eventManager;
 
     public TNTTagGame(Player player) {
         this.host = new PlayerSnapshot(player.getUniqueId(), player.getName());
+        this.eventManager = SoupPvP.getInstance().getEventManager();
         this.maxPlayers = 100;
         this.roundDuration = 30;
     }
 
-    public void setEventTask(TNTTagTask task) {
+    public void setEventTask(EventTask task) {
         if (eventTask != null) {
             eventTask.cancel();
         }
@@ -51,13 +59,13 @@ public class TNTTagGame {
         }
     }
 
-    public TNTGamePlayer getEventPlayer(Player player) {
+    public EventGamePlayer getEventPlayer(Player player) {
         return eventPlayers.get(player.getUniqueId());
     }
 
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>();
-        for (TNTGamePlayer gp : eventPlayers.values()) {
+        for (EventGamePlayer gp : eventPlayers.values()) {
             Player p = gp.getPlayer();
             if (p != null) players.add(p);
         }
@@ -66,8 +74,8 @@ public class TNTTagGame {
 
     public List<Player> getRemainingPlayers() {
         List<Player> players = new ArrayList<>();
-        for (TNTGamePlayer gp : eventPlayers.values()) {
-            if (gp.getState() == TNTGamePlayerState.WAITING) {
+        for (EventGamePlayer gp : eventPlayers.values()) {
+            if (gp.getState() == EventPlayerState.WAITING) {
                 Player p = gp.getPlayer();
                 if (p != null) players.add(p);
             }
@@ -77,19 +85,14 @@ public class TNTTagGame {
 
     public void handleJoin(Player player) {
         totalPlayers++;
-        eventPlayers.put(player.getUniqueId(), new TNTGamePlayer(player));
+        eventPlayers.put(player.getUniqueId(), new EventGamePlayer(player));
+
+        eventManager.handleEventJoin(player, SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn().add(0.5, 0, 0.5));
         broadcastMessage("&b" + player.getName() + " &7has joined the &4TNTTag &7Event! &f(" + getRemainingPlayers().size() + "/" + maxPlayers + ")");
-
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        profile.setTntTagGame(this);
-        profile.setProfileState(ProfileState.IN_EVENT);
-
-        EventUtil.resetPlayer(player);
-        player.teleport(SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn().add(0.5, 0, 0.5));
     }
 
     public void handleLeave(Player player) {
-        TNTGamePlayer gp = eventPlayers.remove(player.getUniqueId());
+        EventGamePlayer gp = eventPlayers.remove(player.getUniqueId());
 
         if (gp != null) {
             totalPlayers--;
@@ -99,19 +102,21 @@ public class TNTTagGame {
             }
         }
 
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        profile.setTntTagGame(null);
-        profile.setProfileState(ProfileState.SPAWN);
-        PlayerUtil.resetPlayer(player);
+        eventManager.handleEventLeave(player);
+    }
+
+    @Override
+    public boolean hasRounds() {
+        return true;
     }
 
     public void pickNewTNT() {
         clearTNT();
 
-        List<TNTGamePlayer> alive = new ArrayList<>();
+        List<EventGamePlayer> alive = new ArrayList<>();
 
-        for (TNTGamePlayer gp : eventPlayers.values()) {
-            if (gp.getState() == TNTGamePlayerState.WAITING) {
+        for (EventGamePlayer gp : eventPlayers.values()) {
+            if (gp.getState() == EventPlayerState.WAITING) {
                 alive.add(gp);
             }
         }
@@ -121,11 +126,10 @@ public class TNTTagGame {
             return;
         }
 
-        TNTGamePlayer chosen = alive.get(new Random().nextInt(alive.size()));
+        EventGamePlayer chosen = alive.get(new Random().nextInt(alive.size()));
         tntHolder = chosen.getUuid();
 
-        // Teleportar a todos al spawn
-        for (TNTGamePlayer player : eventPlayers.values()) {
+        for (EventGamePlayer player : eventPlayers.values()) {
             Player p = Bukkit.getPlayer(player.getUuid());
             if (p != null) {
                 p.teleport(SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn());
@@ -138,12 +142,11 @@ public class TNTTagGame {
             applyTNT(player);
         }
 
-        // Resetear el tiempo del round
         roundStartTime = System.currentTimeMillis();
     }
 
     public void clearTNT() {
-        for (TNTGamePlayer gp : eventPlayers.values()) {
+        for (EventGamePlayer gp : eventPlayers.values()) {
             Player player = gp.getPlayer();
             if (player == null) continue;
 
@@ -164,17 +167,22 @@ public class TNTTagGame {
     }
 
     public void handleDeath(Player player) {
-        TNTGamePlayer gp = getEventPlayer(player);
+        EventGamePlayer gp = getEventPlayer(player);
         if (gp == null) return;
 
-        gp.setState(TNTGamePlayerState.ELIMINATED);
+        gp.setState(EventPlayerState.ELIMINATED);
         removeTNT(player);
 
         addSpectator(player);
         broadcastMessage("&4" + player.getName() + " &7has exploded!");
 
         if (getRemainingPlayers().size() <= 1) {
-            setEventTask(new TNTTagEndStask(this));
+            setEventTask(new EventEndTask(this, EventType.TNTTAG) {
+                @Override
+                protected void onRound() {
+                    TNTTagGame.this.pickNewTNT();
+                }
+            });
             return;
         }
 
@@ -188,8 +196,8 @@ public class TNTTagGame {
     }
 
     public Player getWinner() {
-        for (TNTGamePlayer gp : eventPlayers.values()) {
-            if (gp.getState() != TNTGamePlayerState.ELIMINATED) {
+        for (EventGamePlayer gp : eventPlayers.values()) {
+            if (gp.getState() != EventPlayerState.ELIMINATED) {
                 return gp.getPlayer();
             }
         }
@@ -197,12 +205,7 @@ public class TNTTagGame {
     }
 
     public void broadcastMessage(String message) {
-        for (TNTGamePlayer player : eventPlayers.values()) {
-            Player p = Bukkit.getPlayer(player.getUuid());
-            if (p != null) {
-                p.sendMessage(CC.t(message));
-            }
-        }
+        eventManager.broadcastEventMessage(this, CC.t(message));
     }
 
     public void sendMessage(Player player, String s) {
@@ -223,9 +226,9 @@ public class TNTTagGame {
             player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 1.0F, 1.0F);
             player.getWorld().spigot().playEffect(player.getLocation(), Effect.EXPLOSION_LARGE);
 
-            TNTGamePlayer gp = getEventPlayer(player);
+            EventGamePlayer gp = getEventPlayer(player);
             if (gp != null) {
-                gp.setState(TNTGamePlayerState.ELIMINATED);
+                gp.setState(EventPlayerState.ELIMINATED);
             }
 
             removeTNT(player);
@@ -239,7 +242,7 @@ public class TNTTagGame {
         }
     }
 
-    protected List<Player> getSpectatorsList() {
+    public List<Player> getSpectatorsList() {
         return PlayerUtil.convertUUIDListToPlayerList(spectators);
     }
 
@@ -249,7 +252,6 @@ public class TNTTagGame {
         eventPlayers.remove(player.getUniqueId());
         spectators.add(player.getUniqueId());
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        profile.setTntTagGame(this);
         profile.setProfileState(ProfileState.SPECTATING_EVENT);
         EventUtil.resetPlayer(player);
         player.teleport(SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn());
@@ -258,13 +260,12 @@ public class TNTTagGame {
     public void removeSpectator(Player player) {
         spectators.remove(player.getUniqueId());
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        profile.setTntTagGame(null);
         profile.setProfileState(ProfileState.SPAWN);
         PlayerUtil.resetPlayer(player);
     }
 
     public int getTimeRemaining() {
-        if (state != TNTTagState.RUNNING) {
+        if (state != EventState.RUNNING) {
             return roundDuration;
         }
 
@@ -273,10 +274,30 @@ public class TNTTagGame {
         return Math.max(0, remaining);
     }
 
+    @Override
+    public EventState getState() {
+        return state;
+    }
+
+    @Override
+    public String getEventName() {
+        return "TNTTag";
+    }
+
+    @Override
+    public EventType getType() {
+        return EventType.TNTTAG;
+    }
+
+    @Override
+    public boolean hasPlayer(Player player) {
+        return eventPlayers.containsKey(player.getUniqueId()) || spectators.contains(player.getUniqueId());
+    }
+
     public String getRoundDuration() {
-        if (getState() == TNTTagState.STARTING) {
+        if (state == EventState.STARTING) {
             return "00:" + String.format("%02d", roundDuration);
-        } else if (getState() == TNTTagState.RUNNING) {
+        } else if (state == EventState.RUNNING) {
             int remaining = getTimeRemaining();
             return "00:" + String.format("%02d", remaining);
         } else {
@@ -285,60 +306,23 @@ public class TNTTagGame {
     }
 
     public void onRound() {
-        setState(TNTTagState.STARTING);
+        setState(EventState.STARTING);
 
-        for (TNTGamePlayer player : eventPlayers.values()) {
+        for (EventGamePlayer player : eventPlayers.values()) {
             Player alive = Bukkit.getPlayer(player.getUuid());
             if (alive != null) {
                 EventUtil.resetPlayer(alive);
             }
         }
 
-        setEventTask(new TNTTagMatchStartTask(this));
+        setEventTask(new TNTTagGameTask(this));
     }
 
     public void end() {
-        SoupPvP.getInstance().getTntTagHandler().setActiveGame(null);
-        setEventTask(null);
-        Player winner = this.getWinner();
-
-        if (winner == null) {
-            Bukkit.broadcastMessage(CC.t("&cThe TNTTag Event has been cancelled."));
-
-            for (TNTGamePlayer tntGamePlayer : eventPlayers.values()) {
-                Player player = tntGamePlayer.getPlayer();
-                if (player != null) {
-                    Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-                    profile.setProfileState(ProfileState.SPAWN);
-                    profile.setTntTagGame(null);
-                    PlayerUtil.resetPlayer(player);
-                }
-            }
-            getSpectatorsList().forEach(this::removeSpectator);
-        } else {
-            Profile winnerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(winner.getUniqueId());
-            winnerProfile.setEventsWon(winnerProfile.getEventsWon() + 1);
-            winnerProfile.setCredits(winnerProfile.getCredits() + 100);
-
-            Bukkit.broadcastMessage(CC.t("&b" + winner.getName() + " &fhas won the &4TNTTag &fEvent!"));
-            playVictoryEffects(winner);
-
-            Bukkit.getScheduler().runTaskLater(SoupPvP.getInstance(), () -> {
-                for (TNTGamePlayer tntGamePlayer : eventPlayers.values()) {
-                    Player player = tntGamePlayer.getPlayer();
-                    if (player != null) {
-                        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-                        profile.setProfileState(ProfileState.SPAWN);
-                        profile.setTntTagGame(null);
-                        PlayerUtil.resetPlayer(player);
-                    }
-                }
-                getSpectatorsList().forEach(this::removeSpectator);
-            }, 60L);
-        }
+        eventManager.handleEventEnd(this);
     }
 
-    private void playVictoryEffects(Player winner) {
+    public void playVictoryEffects(Player winner) {
         Location loc = winner.getLocation();
 
         winner.playSound(loc, Sound.LEVEL_UP, 1.0F, 1.0F);

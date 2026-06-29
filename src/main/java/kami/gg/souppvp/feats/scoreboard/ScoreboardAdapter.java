@@ -1,12 +1,14 @@
 package kami.gg.souppvp.feats.scoreboard;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.events.Event;
+import kami.gg.souppvp.events.EventManager;
+import kami.gg.souppvp.events.util.EventState;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
-import kami.gg.souppvp.events.impl.sumo.SumoState;
 import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
-import kami.gg.souppvp.events.impl.tnttag.TNTTagState;
 import kami.gg.souppvp.feats.staff.StaffManager;
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.tier.TierCategory;
@@ -28,19 +30,18 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final SoupPvP plugin;
     private final StaffManager staffManager;
     private final ScoreboardManager scoreboardManager;
+    private final EventManager eventManager;
 
     private final List<String> footerLines;
     private final List<String> started_sumoLines;
-    private final List<String> waiting_sumoLines;
+    private final List<String> waiting_eventLines;
     private final List<String> spawnLines;
     private final List<String> statsLines;
     private final List<String> loadingLines;
     private final List<String> noModMode;
     private final List<String> modMode;
-    private final List<String> waiting_tnttagLines;
     private final List<String> running_tnttagLines;
-    private final List<String> done_sumoLines;
-    private final List<String> done_tnttagLines;
+    private final List<String> done_eventLines;
 
     private final String line;
     private final String dateLine;
@@ -49,30 +50,27 @@ public class ScoreboardAdapter implements AssembleAdapter {
     private final boolean footerEnabled;
     private final boolean lastLineEnabled;
     private final boolean showDateBelowTitle;
-    private final boolean waiting_sumoEnabled;
+    private final boolean waiting_eventEnabled;
     private final boolean spawnEnabled;
     private final boolean staffEnabled;
-    private final boolean tnttagEnabled;
-    private final boolean done_sumoEnabled;
-    private final boolean done_tnttagEnabled;
+    private final boolean done_eventEnabled;
 
     public ScoreboardAdapter() {
         this.plugin = SoupPvP.getInstance();
         this.scoreboardManager = plugin.getScoreboardManager();
         this.staffManager = plugin.getStaffManager();
+        this.eventManager = new EventManager(plugin);
 
         this.footerLines = getStringList("FOOTER.LINES");
         this.started_sumoLines = getStringList("SUMO_EVENT.STARTED_EVENT.LINES");
-        this.waiting_sumoLines = getStringList("SUMO_EVENT.WAITING_EVENT.LINES");
+        this.waiting_eventLines = getStringList("EVENT.WAITING.LINES");
         this.spawnLines = getStringList("SPAWN.FORMAT");
         this.statsLines = getStringList("STATS.FORMAT");
         this.loadingLines = getStringList("LOADING.FORMAT");
         this.noModMode = getStringList("STAFF_MODE.VANISH_NO_MODMODE");
         this.modMode = getStringList("STAFF_MODE.MOD_MODE");
-        this.waiting_tnttagLines = getStringList("TNTTAG_EVENT.WAITING_EVENT.LINES");
         this.running_tnttagLines = getStringList("TNTTAG_EVENT.RUNNING_EVENT.LINES");
-        this.done_sumoLines = getStringList("SUMO_EVENT.DONE_EVENT.LINES");
-        this.done_tnttagLines = getStringList("TNTTAG_EVENT.DONE_EVENT.LINES");
+        this.done_eventLines = getStringList("EVENT.DONE.LINES");
 
         this.line = getString("SCOREBOARD_INFO.LINES");
         this.dateLine = getString("SCOREBOARD_INFO.DATE_LINE");
@@ -82,11 +80,9 @@ public class ScoreboardAdapter implements AssembleAdapter {
         this.footerEnabled = getBoolean("FOOTER.ENABLED");
         this.lastLineEnabled = getBoolean("SCOREBOARD_INFO.LAST_LINE_ENABLED");
         this.showDateBelowTitle = getBoolean("SCOREBOARD_INFO.SHOW_DATE_BELOW_TITLE");
-        this.waiting_sumoEnabled = getBoolean("SUMO_EVENT.WAITING_EVENT.ENABLED");
+        this.waiting_eventEnabled = getBoolean("EVENT.WAITING.ENABLED");
         this.spawnEnabled = getBoolean("SPAWN.ENABLED");
-        this.tnttagEnabled = getBoolean("TNTTAG_EVENT.ENABLED");
-        this.done_sumoEnabled = getBoolean("SUMO_EVENT.DONE_EVENT.ENABLED");
-        this.done_tnttagEnabled = getBoolean("TNTTAG_EVENT.DONE_EVENT.ENABLED");
+        this.done_eventEnabled = getBoolean("EVENT.DONE.ENABLED");
     }
 
     @Override
@@ -118,79 +114,13 @@ public class ScoreboardAdapter implements AssembleAdapter {
         List<String> lines = new ArrayList<>();
 
         if (profile.getProfileState() == ProfileState.IN_EVENT || profile.getProfileState() == ProfileState.SPECTATING_EVENT) {
-            Sumo sumo = profile.getSumoEvent();
-            TNTTagGame tnt = profile.getTntTagGame();
+            Event playerEvent = getPlayerEvent(profile);
 
             if (showDateBelowTitle) lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
             if (linesEnabled) lines.add(line);
 
-            if (done_sumoEnabled && sumo != null && sumo.getRemainingPlayers().size() == 1) {
-                String winner = sumo.getRemainingPlayers().getFirst().getDisplayName();
-                for (String s : done_sumoLines) {
-                    lines.add(s.replace("%winner%", winner));
-                }
-            }
-
-            if (sumo != null) {
-                if (sumo.getState() == SumoState.WAITING) {
-                    for (String s : waiting_sumoLines) {
-                        lines.add(s
-                                .replace("%sumo_players%", String.valueOf(sumo.getRemainingPlayers().size()))
-                                .replace("%sumo_max%", String.valueOf(sumo.getMaxPlayers()))
-                                .replace("%sumo_state%", "Waiting...")
-                        );
-                    }
-                } else {
-                    Player a = Bukkit.getPlayer(sumo.getRoundPlayerA().getUsername());
-                    Player b = Bukkit.getPlayer(sumo.getRoundPlayerB().getUsername());
-                    int aping = (a instanceof CraftPlayer) ? ((CraftPlayer) a).getHandle().ping : 0;
-                    int bping = (b instanceof CraftPlayer) ? ((CraftPlayer) b).getHandle().ping : 0;
-
-                    for (String s : started_sumoLines) {
-                        lines.add(s
-                                .replace("%sumo_remaining%", String.valueOf(sumo.getRemainingPlayers().size()))
-                                .replace("%sumo_total%", String.valueOf(sumo.getTotalPlayers()))
-                                .replace("%sumo_duration%", String.valueOf(sumo.getRoundDuration()))
-                                .replace("%sumo_player_a%", sumo.getRoundPlayerA().getUsername())
-                                .replace("%sumo_player_b%", sumo.getRoundPlayerB().getUsername())
-                                .replace("%sumo_ping_a%", String.valueOf(aping))
-                                .replace("%sumo_ping_b%", String.valueOf(bping))
-                        );
-                    }
-                }
-            }
-
-            if (done_tnttagEnabled && tnt != null && tnt.getTotalPlayers() == 1) {
-                String winner = tnt.getRemainingPlayers().getFirst().getDisplayName();
-
-                for (String s : done_tnttagLines) {
-                    lines.add(s.replace("%winner%", winner));
-                }
-
-            }
-
-            if (tnt != null && tnttagEnabled) {
-                if (tnt.getState() == TNTTagState.WAITING) {
-                    for (String s : waiting_tnttagLines) {
-                        lines.add(s
-                                .replace("%tnt_players%", String.valueOf(tnt.getEventPlayers().size()))
-                                .replace("%tnt_max%", String.valueOf(tnt.getMaxPlayers()))
-
-                        );
-                    }
-                } else {
-                    Player holder = Bukkit.getPlayer(tnt.getTntHolder());
-
-                    for (String s : running_tnttagLines) {
-                        lines.add(s
-                                .replace("%tnt_players%", String.valueOf(tnt.getEventPlayers().size()))
-                                .replace("%tnt_holder%", holder != null ? holder.getName() : "None")
-                                .replace("%tnt_time%", String.valueOf(tnt.getRoundDuration()))
-                                .replace("%tnt_total%", String.valueOf(tnt.getTotalPlayers()))
-                        );
-                    }
-                }
-
+            if (playerEvent != null) {
+                addEventScoreboard(lines, playerEvent);
             }
 
             if (footerEnabled) lines.addAll(footerLines);
@@ -250,30 +180,9 @@ public class ScoreboardAdapter implements AssembleAdapter {
             }
         }
 
-        if (waiting_sumoEnabled && profile.getSumoEvent() == null && profile.getProfileState() == ProfileState.SPAWN) {
-            Sumo active = plugin.getSumoHandler().getActiveSumo();
-
-            if (active != null && active.getState() == SumoState.WAITING) {
-                for (String s : waiting_sumoLines) {
-                    lines.add(s
-                            .replace("%sumo_players%", String.valueOf(active.getEventPlayers().size()))
-                            .replace("%sumo_max%", String.valueOf(active.getMaxPlayers()))
-                            .replace("%sumo_state%", "Waiting...")
-                    );
-                }
-            }
-        }
-
-        if (tnttagEnabled && profile.getTntTagGame() == null && profile.getProfileState() == ProfileState.SPAWN) {
-            TNTTagGame game = plugin.getTntTagHandler().getActiveGame();
-
-            if (game != null && game.getState() == TNTTagState.WAITING) {
-                for (String s : waiting_tnttagLines) {
-                    lines.add(s
-                            .replace("%tnt_players%", String.valueOf(game.getEventPlayers().size()))
-                            .replace("%tnt_max%", String.valueOf(game.getMaxPlayers()))
-                    );
-                }
+        if (profile.getProfileState() == ProfileState.SPAWN && getPlayerEvent(profile) == null) {
+            for (Event event : eventManager.getWaitingEvents()) {
+                addWaitingEventScoreboard(lines, event);
             }
         }
 
@@ -283,25 +192,14 @@ public class ScoreboardAdapter implements AssembleAdapter {
             }
         }
 
-        if (scoreboardManager.getScoreboardConfig().getBoolean("TIMERS.ENABLED") && profile.getSumoEvent() == null) {
-            // Spawn Timer
-            long tp = plugin.getSpawnTeleportationHandler().getSpawnTeleporataion().getOrDefault(player.getUniqueId(), 0L);
-
-            if (profile.isTeleportingToSpawn() && tp > System.currentTimeMillis()) {
-                String format = scoreboardManager.getScoreboardConfig().getString("TIMERS.SPAWN");
-                if (format != null) {
-                    String line = format.replace("%time%", TimeUtil.convertToHhMmSs((tp - System.currentTimeMillis()) / 1000));
-                    lines.add(CC.t(line));
-                    lines.add("");
-                }
-            }
-
+        if (scoreboardManager.getScoreboardConfig().getBoolean("TIMERS.ENABLED") && profile.getActiveEvent() == null) {
             // Combat Timer
-            Long combatTime = plugin.getCombatTagsHandler().getCombatTags().get(player.getUniqueId());
-            if (combatTime != null && combatTime > System.currentTimeMillis()) {
+            Timer combatTimer = plugin.getTimerManager().getTimer("Combat");
+            if (combatTimer != null && combatTimer.hasTimer(player)) {
+                long remaining = combatTimer.getRemaining(player);
                 String format = scoreboardManager.getScoreboardConfig().getString("TIMERS.COMBAT");
                 if (format != null) {
-                    String line = format.replace("%time%", TimeUtil.convertToHhMmSs((combatTime - System.currentTimeMillis()) / 1000));
+                    String line = format.replace("%time%", TimeUtil.convertToHhMmSs(remaining / 1000));
                     lines.add(CC.t(line));
                     lines.add("");
                 }
@@ -397,5 +295,89 @@ public class ScoreboardAdapter implements AssembleAdapter {
         String color = (tps > 18 ? "§a" : tps > 16 ? "§e" : "§c");
         String asterisk = (tps > 20 ? "*" : "");
         return color + asterisk + Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
+    }
+
+    private Event getPlayerEvent(Profile profile) {
+        Player player = Bukkit.getPlayer(profile.getUuid());
+        if (player == null) return null;
+        return eventManager.getPlayerEvent(player);
+    }
+
+    private void addEventScoreboard(List<String> lines, Event event) {
+        List<String> runningLines = switch (event.getType()) {
+            case SUMO -> started_sumoLines;
+            case TNTTAG -> running_tnttagLines;
+        };
+
+        boolean isWaiting = event.getState() == EventState.WAITING;
+
+        if (isWaiting) {
+            addWaitingEventScoreboard(lines, event);
+        } else {
+            addRunningEventScoreboard(lines, event, runningLines);
+            
+            // Win check
+            if (done_eventEnabled && eventManager.isEventInWinState(event)) {
+                Player winner = eventManager.getEventWinnerIfFinished(event);
+                if (winner != null) {
+                    for (String s : done_eventLines) {
+                        lines.add(s.replace("%winner%", winner.getDisplayName()).replace("%event_name%", event.getEventName()));
+                    }
+                }
+            }
+        }
+    }
+
+    private void addWaitingEventScoreboard(List<String> lines, Event event) {
+        if (!waiting_eventEnabled) return;
+        
+        for (String s : waiting_eventLines) {
+            String line = s
+                    .replace("%event_name%", event.getEventName())
+                    .replace("%players%", String.valueOf(event.getRemainingPlayers().size()))
+                    .replace("%max_players%", String.valueOf(event.getMaxPlayers()))
+                    .replace("%state%", "Waiting...");
+            
+            lines.add(line);
+        }
+    }
+
+    private void addRunningEventScoreboard(List<String> lines, Event event, List<String> runningLines) {
+        if (runningLines == null) return;
+        
+        switch (event.getType()) {
+            case SUMO:
+                Sumo sumo = (Sumo) event;
+                Player a = Bukkit.getPlayer(sumo.getRoundPlayerA().getUsername());
+                Player b = Bukkit.getPlayer(sumo.getRoundPlayerB().getUsername());
+                int aping = (a instanceof CraftPlayer) ? ((CraftPlayer) a).getHandle().ping : 0;
+                int bping = (b instanceof CraftPlayer) ? ((CraftPlayer) b).getHandle().ping : 0;
+
+                for (String s : runningLines) {
+                    lines.add(s
+                            .replace("%sumo_remaining%", String.valueOf(sumo.getRemainingPlayers().size()))
+                            .replace("%sumo_total%", String.valueOf(sumo.getTotalPlayers()))
+                            .replace("%sumo_duration%", String.valueOf(sumo.getRoundDuration()))
+                            .replace("%sumo_player_a%", sumo.getRoundPlayerA().getUsername())
+                            .replace("%sumo_player_b%", sumo.getRoundPlayerB().getUsername())
+                            .replace("%sumo_ping_a%", String.valueOf(aping))
+                            .replace("%sumo_ping_b%", String.valueOf(bping))
+                    );
+                }
+                break;
+            case TNTTAG:
+                TNTTagGame tnt = (TNTTagGame) event;
+                Player holder = Bukkit.getPlayer(tnt.getTntHolder());
+
+                for (String s : runningLines) {
+                    lines.add(s
+                            .replace("%tnt_players%", String.valueOf(tnt.getEventPlayers().size()))
+                            .replace("%tnt_holder%", holder != null ? holder.getName() : "None")
+                            .replace("%tnt_time%", String.valueOf(tnt.getRoundDuration()))
+                            .replace("%tnt_total%", String.valueOf(tnt.getTotalPlayers()))
+                    );
+                }
+                break;
+        }
     }
 }

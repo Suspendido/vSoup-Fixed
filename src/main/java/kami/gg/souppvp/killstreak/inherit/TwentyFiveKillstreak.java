@@ -34,7 +34,7 @@ public class TwentyFiveKillstreak extends Killstreak implements Listener {
     @Override
     public ItemStack getIcon() {
         return new ItemBuilder(Material.IRON_INGOT)
-                .name(CC.t("&a" + getName()))
+                .name("&a" + getName())
                 .lore(Arrays.asList(
                         CC.MENU_BAR,
                         "&7Fully repairs your armor, giving",

@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -31,6 +32,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class AvatarAbility implements KitAbility {
 
@@ -46,10 +48,15 @@ public class AvatarAbility implements KitAbility {
 
     private final ArrayList<BlockState> toRollback = new ArrayList<>();
 
-    private final ItemStack waterGun = new ItemBuilder(Material.INK_SACK)
-            .name("&bWater Gun")
-            .durability(12)
-            .build();
+    private final Timer waterGunTimer;
+    private final Timer firejumpTimer;
+
+    public AvatarAbility() {
+        this.firejumpTimer = new Timer("Avatar Jump", TimeUnit.SECONDS.toMillis(15));
+        this.waterGunTimer = new Timer("Water Gun", TimeUnit.SECONDS.toMillis(30));
+        SoupPvP.getInstance().getTimerManager().registerTimer(firejumpTimer);
+        SoupPvP.getInstance().getTimerManager().registerTimer(waterGunTimer);
+    }
 
     @Override
     public String getName() {
@@ -68,12 +75,12 @@ public class AvatarAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return waterGun.clone();
+        return new ItemBuilder(Material.INK_SACK).name("&bWater Gun").durability(12).build();
     }
 
     private boolean isAvatar(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        return profile != null && profile.getCurrentKit() != null;
+        return hasAbility(player, profile, getName());
     }
 
     private boolean isInSafe(Profile p) {
@@ -131,29 +138,19 @@ public class AvatarAbility implements KitAbility {
 
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            if (!item.isSimilar(waterGun)) return;
+            if (!AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
 
             // cooldown
-            if (SoupPvP.getInstance().getTimersHandler().hasTimer(p.getUniqueId(), "Water Gun", true)) {
-                long rem = SoupPvP.getInstance().getTimersHandler().getRemaining(p.getUniqueId(), "Water Gun", true);
-                p.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW +
-                        DurationFormatter.getRemaining(rem, true) + ChatColor.RED + ".");
+            if (waterGunTimer.hasTimer(p)) {
+                p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(waterGunTimer.getRemaining(p), true) + "&c."));
                 return;
             }
 
-            // Apply cooldown immediately
-            SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                    p.getUniqueId(),
-                    new Timer("Water Gun", 30_000),
-                    true
-            );
+            waterGunTimer.applyTimer(p);
             XPBarTimer.runXpBar(p, 30);
 
-            // crear proyectil
-            FallingBlock b = p.getWorld().spawnFallingBlock(
-                    p.getEyeLocation(),
-                    Material.STAINED_GLASS, (byte) 3
-            );
+            FallingBlock b = p.getWorld().spawnFallingBlock(p.getEyeLocation(), Material.STAINED_GLASS, (byte) 3);
+
             b.setDropItem(false);
             b.setVelocity(p.getEyeLocation().getDirection().multiply(2.3).add(new Vector(0, 0.3, 0)));
             b.setMetadata("avatar", new FixedMetadataValue(SoupPvP.getInstance(), p.getUniqueId()));
@@ -216,17 +213,12 @@ public class AvatarAbility implements KitAbility {
         if (!e.isSneaking() || isInSafe(profile) || !isAvatar(p) || p.isOnGround()) return;
 
         // cd
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(p.getUniqueId(), "Avatar Jump", false)) {
-            long rem = SoupPvP.getInstance().getTimersHandler().getRemaining(p.getUniqueId(), "Avatar Jump", false);
-            p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
+        if (firejumpTimer.hasTimer(p)) {
+            p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(firejumpTimer.getRemaining(p), true) + "&c."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                p.getUniqueId(),
-                new Timer("Avatar Jump", 15_000),
-                false
-        );
+        firejumpTimer.applyTimer(p);
 
         p.setMetadata("avatar", new FixedMetadataValue(SoupPvP.getInstance(), true));
 

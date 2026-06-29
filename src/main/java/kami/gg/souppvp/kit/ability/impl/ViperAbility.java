@@ -37,14 +37,7 @@ public class ViperAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.POTION)
-                .durability((short) 8196)
-                .name("&a&lViper Strike")
-                .lore(
-                        "&710% chance to poison on hit",
-                        "&7Duration: 10 seconds"
-                )
-                .build();
+        return new ItemBuilder(Material.POTION).lore("Dont Display").durability(8196).build();
     }
 
     @EventHandler
@@ -54,6 +47,8 @@ public class ViperAbility implements KitAbility {
         Profile damagerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getDamager().getUniqueId());
 
         if (damagerProfile.isInEvent() || damagerProfile.getProfileState() == ProfileState.SPAWN) return;
+
+        if (!hasAbility((Player) event.getDamager(), damagerProfile, getName())) return;
 
         if (RANDOM.nextInt(100) <= 10) {
             ((Player) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 10 * 20, 0));

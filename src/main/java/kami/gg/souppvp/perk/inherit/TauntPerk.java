@@ -45,10 +45,6 @@ public class TauntPerk extends Perk implements Listener {
         return 800;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){

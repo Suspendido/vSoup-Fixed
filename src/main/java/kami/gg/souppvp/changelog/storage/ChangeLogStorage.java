@@ -93,7 +93,7 @@ public class ChangeLogStorage {
     }
     
     public void markAsRead(UUID playerUuid, String changeLogId) {
-        File playerFile = new File(plugin.getDataFolder(), "changelog_reads/" + playerUuid.toString() + ".yml");
+        File playerFile = new File(plugin.getDataFolder(), "changelogs/read/" + playerUuid.toString() + ".yml");
         if (!playerFile.getParentFile().exists()) {
             playerFile.getParentFile().mkdirs();
         }

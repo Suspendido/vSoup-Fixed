@@ -16,8 +16,6 @@ import java.util.Random;
 public class CactusAbility implements KitAbility {
 
     private static final Random RANDOM = new Random();
-    private static final double REFLECT_CHANCE = 0.25;
-    private static final double REFLECT_PERCENTAGE = 0.25;
 
     @Override
     public String getName() {
@@ -36,14 +34,7 @@ public class CactusAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.CACTUS)
-                .name("&2&lCactus Thorns")
-                .lore(
-                        "&7Reflect damage back to attackers",
-                        "&7Chance: 25%",
-                        "&7Reflect: 25% of damage"
-                )
-                .build();
+        return new ItemBuilder(Material.CACTUS).lore("Dont Display").build();
     }
 
     @EventHandler
@@ -53,14 +44,15 @@ public class CactusAbility implements KitAbility {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(target.getUniqueId());
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(target, profile, getName())) return;
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(target)) {
             event.setCancelled(true);
             return;
         }
 
-        if (RANDOM.nextDouble() <= REFLECT_CHANCE) {
-            double reflected = event.getDamage() * REFLECT_PERCENTAGE;
+        if (RANDOM.nextDouble() <= 0.25) {
+            double reflected = event.getDamage() * 0.25;
             damager.damage(reflected);
         }
     }

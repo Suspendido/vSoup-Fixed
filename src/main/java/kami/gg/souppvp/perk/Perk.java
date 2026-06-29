@@ -11,6 +11,5 @@ public abstract class Perk {
     public abstract List<String> getDescription();
     public abstract ItemStack getIcon();
     public abstract int getCost();
-    public abstract int getTier();
 
 }

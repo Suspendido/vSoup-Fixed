@@ -4,7 +4,9 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
+import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -14,7 +16,16 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.concurrent.TimeUnit;
+
 public class FishermanAbility implements KitAbility {
+
+    private final Timer fishermanTimer;
+
+    public FishermanAbility() {
+        this.fishermanTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(30));
+        SoupPvP.getInstance().getTimerManager().registerTimer(fishermanTimer);
+    }
 
     @Override
     public String getName() {
@@ -23,7 +34,7 @@ public class FishermanAbility implements KitAbility {
 
     @Override
     public String getDescription() {
-        return "Hook players and pull them towards you";
+        return "&fHook players and pull them towards you";
     }
 
     @Override
@@ -33,13 +44,7 @@ public class FishermanAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.FISHING_ROD)
-                .name("&e&lFisherman Rod")
-                .lore(
-                        "&7Hook players and pull",
-                        "&7them towards you"
-                )
-                .build();
+        return new ItemBuilder(Material.FISHING_ROD).name("&aFishing Rod").build();
     }
 
     @EventHandler
@@ -49,6 +54,7 @@ public class FishermanAbility implements KitAbility {
 
         if (profile == null) return;
         if (profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY) {
             Entity caught = event.getCaught();
@@ -62,11 +68,14 @@ public class FishermanAbility implements KitAbility {
                     return;
                 }
 
-                // Pull target towards player
+                if (fishermanTimer.hasTimer(player)) {
+                    player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(fishermanTimer.getRemaining(player), true) + "&c."));
+                    return;
+                }
+
+                fishermanTimer.applyTimer(player);
                 Vector vector = player.getLocation().toVector().subtract(target.getLocation().toVector()).normalize().multiply(1.5);
                 target.setVelocity(vector);
-                
-                event.setCancelled(true);
             }
         }
     }

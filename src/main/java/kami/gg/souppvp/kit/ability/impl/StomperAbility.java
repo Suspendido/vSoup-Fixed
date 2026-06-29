@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.timer.Timer;
@@ -28,27 +29,16 @@ import java.util.concurrent.TimeUnit;
 
 public class StomperAbility implements KitAbility {
 
-    private static final long COOLDOWN_MILLIS = TimeUnit.SECONDS.toMillis(25);
-    private static final int COOLDOWN_SECONDS = 25;
-    private static final double LAUNCH_VELOCITY = 1.7;
-    private static final double SLAM_VELOCITY = -6.0;
-    private static final int MAX_Y_LEVEL = 176;
-    private static final int DAMAGE_RADIUS = 3;
-    private static final int SNEAKING_DAMAGE = 6;
-    private static final int BLOCKING_DAMAGE = 6;
-    private static final int NORMAL_DAMAGE = 12;
-    private static final double FALL_DAMAGE_REDUCTION = 0.5;
-
-    private static final Vector LAUNCH_VECTOR = new Vector(0, LAUNCH_VELOCITY, 0);
-    private static final Vector SLAM_VECTOR = new Vector(0, SLAM_VELOCITY, 0);
-
-    private ItemStack stomperItem;
-
+    private static final Vector LAUNCH_VECTOR = new Vector(0, 1.7, 0);
+    private static final Vector SLAM_VECTOR = new Vector(0, -6.0, 0);
     private static final Set<UUID> CHARGED_PLAYERS = ConcurrentHashMap.newKeySet();
     private static final Set<UUID> SLAMMING_PLAYERS = ConcurrentHashMap.newKeySet();
 
+    private final Timer stomperTimer;
+
     public StomperAbility() {
-        this.stomperItem = new ItemBuilder(Material.ANVIL).name("&6Stomper").build();
+        this.stomperTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(25));
+        SoupPvP.getInstance().getTimerManager().registerTimer(stomperTimer);
     }
 
     @Override
@@ -68,7 +58,7 @@ public class StomperAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return stomperItem.clone();
+        return new ItemBuilder(Material.ANVIL).name("&6Stomper").build();
     }
 
     @Override
@@ -85,11 +75,7 @@ public class StomperAbility implements KitAbility {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onWater(PlayerMoveEvent event) {
-        if (event.getFrom().getBlockX() == event.getTo().getBlockX() &&
-                event.getFrom().getBlockY() == event.getTo().getBlockY() &&
-                event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
-            return;
-        }
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) return;
 
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -98,6 +84,7 @@ public class StomperAbility implements KitAbility {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         if (event.getTo().getBlock().isLiquid()) {
             CHARGED_PLAYERS.remove(uuid);
@@ -106,9 +93,7 @@ public class StomperAbility implements KitAbility {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
+        if (event.getAction() != Action.RIGHT_CLICK_AIR || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
@@ -123,18 +108,17 @@ public class StomperAbility implements KitAbility {
             return;
         }
 
-        if (!item.isSimilar(stomperItem)) return;
+        if (!hasAbility(player, profile, getName())) return;
+        if (!AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
         UUID uuid = player.getUniqueId();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, "Stomper", true)) {
-            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, "Stomper", true);
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+        if (stomperTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(stomperTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
-        // Apply cooldown immediately
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(uuid, new Timer("Stomper", COOLDOWN_MILLIS), true);
-        XPBarTimer.runXpBar(player, COOLDOWN_SECONDS);
+        stomperTimer.applyTimer(player);
+        XPBarTimer.runXpBar(player, 25);
 
         CHARGED_PLAYERS.add(uuid);
         SLAMMING_PLAYERS.remove(uuid);
@@ -151,6 +135,7 @@ public class StomperAbility implements KitAbility {
         Profile profile = SoupPvP .getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile == null) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         UUID uuid = player.getUniqueId();
         CHARGED_PLAYERS.remove(uuid);
@@ -159,7 +144,7 @@ public class StomperAbility implements KitAbility {
             handleSlamDamage(player, event);
             SLAMMING_PLAYERS.remove(uuid);
         } else {
-            event.setDamage(event.getDamage() * FALL_DAMAGE_REDUCTION);
+            event.setDamage(event.getDamage() * 0.5);
         }
     }
 
@@ -172,8 +157,9 @@ public class StomperAbility implements KitAbility {
 
         if (profile == null) return;
         if (profile.isInEvent() || SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) return;
+        if (!hasAbility(player, profile, getName())) return;
 
-        if (player.getLocation().getBlockY() >= MAX_Y_LEVEL) {
+        if (player.getLocation().getBlockY() >= 176) {
             player.sendMessage(CC.t("&cStomper is blocked at this y level."));
             return;
         }
@@ -192,7 +178,7 @@ public class StomperAbility implements KitAbility {
         World world = player.getWorld();
         double damage = event.getDamage();
 
-        for (Entity entity : player.getNearbyEntities(DAMAGE_RADIUS, DAMAGE_RADIUS, DAMAGE_RADIUS)) {
+        for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
             if (!(entity instanceof LivingEntity)) continue;
             if (!(entity instanceof Player target)) continue;
 
@@ -210,9 +196,9 @@ public class StomperAbility implements KitAbility {
 
     private double calculateDamage(Player target, double baseDamage) {
         if (target.isSneaking()) {
-            return target.isBlocking() ? BLOCKING_DAMAGE : SNEAKING_DAMAGE;
+            return 6;
         }
-        return Math.min(NORMAL_DAMAGE, baseDamage);
+        return Math.min(12, baseDamage);
     }
 
     public static void cleanup(UUID uuid) {

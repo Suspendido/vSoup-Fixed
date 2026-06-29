@@ -13,7 +13,7 @@ import kami.gg.souppvp.killstreak.inherit.*;
 import kami.gg.souppvp.listener.impl.*;
 import kami.gg.souppvp.perk.inherit.*;
 import kami.gg.souppvp.tier.TiersListener;
-import kami.gg.souppvp.timer.TimersListener;
+import kami.gg.souppvp.timer.listener.TimersListener;
 import kami.gg.souppvp.util.menu.MenuListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -51,8 +51,7 @@ public class ListenerManager {
                 new SoupListeners(),
                 new SpawnEventItemsListener(),
                 new SpawnListeners(),
-                new SpawnTeleporatationListener(),
-                new StrengthAndInstantHarmNerfListener(),
+                new NerfsListener(),
                 new WorldListener(),
                 new NametagListener(),
                 new TablistListener(),

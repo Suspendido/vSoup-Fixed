@@ -27,6 +27,12 @@ public class StopArgument extends Argument {
     @Override
     public void execute(CommandSender sender, String[] args) {
         SoupSaysManager manager = SoupPvP.getInstance().getSoupSaysManager();
+
+        if (manager.getActiveTask() == null) {
+            sendMessage(sender, "&cNo active task");
+            return;
+        }
+
         manager.getActiveTask().deactivate(null);
         sendMessage(sender, "&aDeactivated active task");
     }

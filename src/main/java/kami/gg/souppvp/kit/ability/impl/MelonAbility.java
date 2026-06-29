@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -25,7 +26,12 @@ import java.util.concurrent.TimeUnit;
 
 public class MelonAbility implements KitAbility {
 
-    private final ItemStack melonTossItem = new ItemBuilder(Material.SPECKLED_MELON).name("&2Melon Toss").build();
+    private final Timer melonTimer;
+
+    public MelonAbility() {
+        this.melonTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(30));
+        SoupPvP.getInstance().getTimerManager().registerTimer(melonTimer);
+    }
 
     @Override
     public String getName() {
@@ -44,7 +50,7 @@ public class MelonAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return melonTossItem.clone();
+        return new ItemBuilder(Material.SPECKLED_MELON).name("&2Melon Toss").build();
     }
 
     @EventHandler
@@ -53,17 +59,18 @@ public class MelonAbility implements KitAbility {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         ItemStack item = event.getItem();
-        if (item == null || !item.isSimilar(melonTossItem)) return;
+        if (item == null || !AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
 
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 
         event.setCancelled(true);
         player.updateInventory();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Melon Toss", true)) {
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Melon Toss", true), true) + "&c."));
+        if (melonTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(melonTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
@@ -72,7 +79,7 @@ public class MelonAbility implements KitAbility {
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Melon Toss", TimeUnit.SECONDS.toMillis(30)), true);
+        melonTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 30);
         PlayerUtil.playSound(player, Sound.EXPLODE, 1.0);
         
@@ -97,8 +104,7 @@ public class MelonAbility implements KitAbility {
 
                     if (other.getUniqueId().equals(player.getUniqueId())) continue;
 
-                    Profile targetProfile = SoupPvP.getInstance().getProfilesHandler()
-                            .getProfileByUUID(other.getUniqueId());
+                    Profile targetProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(other.getUniqueId());
 
                     if (targetProfile.getProfileState() == ProfileState.SPAWN) continue;
 

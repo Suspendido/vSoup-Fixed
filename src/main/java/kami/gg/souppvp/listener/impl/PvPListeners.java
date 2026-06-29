@@ -32,17 +32,7 @@ public class PvPListeners implements Listener {
 
         Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        // Cancel spawn teleport if damaged
-        if (profile.isTeleportingToSpawn()) {
-            profile.removeSpawnTeleportation();
-            player.sendMessage(CC.t("&cYour spawn teleportation was cancelled because you were combat-tagged."));
-        }
-
-        // No tag if player is in spawn
-        if (profile.getProfileState() == ProfileState.SPAWN) return;
-        if (plugin.getSpawnHandler().getCuboid().contains(player)) return;
-
-//        profile.addCombatTag();
+        if (profile.getProfileState() == ProfileState.SPAWN || plugin.getSpawnHandler().getCuboid().contains(player)) return;
     }
 
     @EventHandler
@@ -55,6 +45,14 @@ public class PvPListeners implements Listener {
         // Prevent combat in spawn
         if (damagerProfile.getProfileState() == ProfileState.SPAWN || damagedProfile.getProfileState() == ProfileState.SPAWN) return;
         if (plugin.getSpawnHandler().getCuboid().contains(damager) || plugin.getSpawnHandler().getCuboid().contains(damaged)) return;
+
+        if (!damagerProfile.isCombatTagged()) {
+            damager.sendMessage(CC.t("&eYou have been spawn tagged for &c" + damagerProfile.getCombatTag(damager) + " &eseconds."));
+        }
+
+        if (!damagedProfile.isCombatTagged()) {
+            damaged.sendMessage(CC.t("&eYou have been spawn tagged for &c" + damagedProfile.getCombatTag(damaged) + " &eseconds."));
+        }
 
         damagerProfile.addCombatTag();
         damagedProfile.addCombatTag();

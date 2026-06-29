@@ -48,10 +48,6 @@ public class InfernoPerk extends Perk implements Listener {
         return 850;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onEntityDamageEvent(EntityDamageEvent event){

@@ -48,10 +48,6 @@ public class ReverseCopyCatPerk extends Perk implements Listener {
         return 350;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){

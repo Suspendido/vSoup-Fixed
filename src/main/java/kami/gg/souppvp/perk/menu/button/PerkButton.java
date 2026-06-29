@@ -52,6 +52,13 @@ public class PerkButton extends Button {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         int selectedSlot = AllPerksMenu.getSelectedSlot(player);
 
+        // Impossibility but just in case
+        if (SoupPvP.getInstance().getPerksHandler().isPerkDisabled(perk.getName())) {
+            sendMessage(player, "&cThis perk is currently disabled by administrators.");
+            playFail(player);
+            return;
+        }
+
         if (!profile.getUnlockedPerks().contains(perk.getName())) {
             if (profile.getCredits() < perk.getCost()) {
                 sendMessage(player, "&cInsufficient credits! You're " + (perk.getCost() - profile.getCredits()) + " credits short.");

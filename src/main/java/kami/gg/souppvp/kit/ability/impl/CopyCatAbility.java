@@ -28,7 +28,7 @@ public class CopyCatAbility implements KitAbility {
 
     @Override
     public String getDescription() {
-        return "&fCopy your victim's kit on kill";
+        return "&fCopy your victim's kit on each kill";
     }
 
     @Override
@@ -38,25 +38,20 @@ public class CopyCatAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.MONSTER_EGG)
-                .durability((short) 98)
-                .name("&e&lCopy Cat")
-                .lore(
-                        "&7Start with Default kit",
-                        "&7Copy victim's kit on kill"
-                )
-                .build();
+        return new ItemBuilder(Material.MONSTER_EGG).lore("Dont Display").durability(98).build();
     }
 
     @Override
     public void onKitSelect(Player player) {
         player.setMetadata("CopyCat", new FixedMetadataValue(SoupPvP.getInstance(), true));
+        player.setMetadata("CopyCatPlayer", new FixedMetadataValue(SoupPvP.getInstance(), true));
     }
 
     @Override
     public void onKitDeselect(Player player) {
         try {
             player.removeMetadata("CopyCat", SoupPvP.getInstance());
+            player.removeMetadata("CopyCatPlayer", SoupPvP.getInstance());
         } catch (Exception ignore) {}
     }
 
@@ -74,6 +69,7 @@ public class CopyCatAbility implements KitAbility {
 
         if (killerProfile == null || victimProfile == null) return;
         if (killerProfile.isInEvent() || killerProfile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(killer, killerProfile, getName()) && !killer.hasMetadata("CopyCatPlayer")) return;
 
         Kit victimKit = plugin.getKitsHandler().getKitByName(victimProfile.getCurrentKit());
 
@@ -83,11 +79,11 @@ public class CopyCatAbility implements KitAbility {
             return;
         }
 
-        if (!isKitUnlocked(killerProfile, victimKit)) {
-            killer.sendMessage(CC.t("&cYou don't have " + victim.getName() + "'s &f" + victimKit.getName() + " &ckit unlocked!"));
-            killer.playSound(killer.getLocation(), Sound.DIG_GRASS, 1F, 1F);
-            return;
-        }
+//        if (!isKitUnlocked(killerProfile, victimKit)) {
+//            killer.sendMessage(CC.t("&cYou don't have " + victim.getName() + "'s &f" + victimKit.getName() + " &ckit unlocked!"));
+//            killer.playSound(killer.getLocation(), Sound.DIG_GRASS, 1F, 1F);
+//            return;
+//        }
 
         copyVictimKit(killer, killerProfile, victimKit);
         killer.playSound(killer.getLocation(), Sound.CAT_MEOW, 1F, 1F);

@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -22,7 +23,12 @@ import java.util.concurrent.TimeUnit;
 
 public class PhantomAbility implements KitAbility {
 
-    private static final ItemStack PHANTOM_FEATHER = new ItemBuilder(Material.FEATHER).name(CC.t("&7Phantom")).build();
+    private final Timer phantomTimer;
+
+    public PhantomAbility() {
+        this.phantomTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(30));
+        SoupPvP.getInstance().getTimerManager().registerTimer(phantomTimer);
+    }
 
     @Override
     public String getName() {
@@ -41,12 +47,7 @@ public class PhantomAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return PHANTOM_FEATHER.clone();
-    }
-
-    @Override
-    public void onKitSelect(Player player) {
-        // Nothing
+        return new ItemBuilder(Material.FEATHER).name("&7Phantom").build();
     }
 
     @EventHandler
@@ -54,13 +55,14 @@ public class PhantomAbility implements KitAbility {
         Player player = event.getPlayer();
         ItemStack item = player.getItemInHand();
 
-        if (item == null || !item.isSimilar(PHANTOM_FEATHER)) return;
+        if (item == null || !AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
 
         Action act = event.getAction();
         if (act != Action.RIGHT_CLICK_AIR && act != Action.RIGHT_CLICK_BLOCK) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile.isInEvent()) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         event.setCancelled(true);
 
@@ -69,12 +71,12 @@ public class PhantomAbility implements KitAbility {
             return;
         }
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Phantom Flight", true)) {
-            player.sendMessage(CC.t("&cYou can't use this for another " + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Phantom Flight", true), true) + "&c."));
+        if (phantomTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(phantomTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Phantom Flight", TimeUnit.SECONDS.toMillis(30)), true);
+        phantomTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 30);
 
         player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
@@ -99,6 +101,7 @@ public class PhantomAbility implements KitAbility {
         Player player = event.getEntity();
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (!hasAbility(player, profile, getName())) return;
 
         if (profile.getCurrentKit() != null) {
             player.setAllowFlight(false);

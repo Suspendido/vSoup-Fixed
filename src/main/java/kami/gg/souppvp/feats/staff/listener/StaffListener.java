@@ -152,10 +152,6 @@ public class StaffListener implements Listener {
         }
 
         if (instance.getStaffManager().isStaffEnabled(player)) {
-            if (!instance.getStaffManager().isStaffBuild(player)) {
-                e.setCancelled(true);
-            }
-
             if (interactCooldown.hasCooldown(player)) return;
 
             interactCooldown.applyCooldownTicks(player, 100); // 0.1s
@@ -218,7 +214,7 @@ public class StaffListener implements Listener {
     public void onInventory(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
 
-        if (!instance.getStaffManager().isStaffBuild(player) && instance.getStaffManager().isStaffEnabled(player)) {
+        if (instance.getStaffManager().isStaffEnabled(player)) {
             e.setCancelled(true);
         }
     }
@@ -227,7 +223,7 @@ public class StaffListener implements Listener {
     public void onBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
 
-        if (!instance.getStaffManager().isStaffBuild(player) && instance.getStaffManager().isStaffEnabled(player)) {
+        if (instance.getStaffManager().isStaffEnabled(player)) {
             e.setCancelled(true);
             player.sendMessage(CC.t("&cYou cannot break blocks while on staff mode!"));
         }
@@ -237,7 +233,7 @@ public class StaffListener implements Listener {
     public void onPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
 
-        if (!instance.getStaffManager().isStaffBuild(player) && instance.getStaffManager().isStaffEnabled(player)) {
+        if (instance.getStaffManager().isStaffEnabled(player)) {
             e.setCancelled(true);
             player.sendMessage(CC.t("&cYou cannot place blocks while on staff mode!"));
         }
@@ -246,8 +242,6 @@ public class StaffListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent e) {
         Player player = e.getPlayer();
-
-        if (instance.getStaffManager().isStaffBuild(player)) return;
 
         if (instance.getStaffManager().isStaffEnabled(player) || instance.getStaffManager().isVanished(player)) {
             e.setCancelled(true);

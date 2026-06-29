@@ -64,9 +64,9 @@ public class PlayerUtil {
     *
     * */
 
-    public static void giveSoup(Player player){
-        for (ItemStack itemStack : player.getInventory().getContents()){
-            if (itemStack == null){
+    public static void giveSoup(Player player) {
+        for (ItemStack itemStack : player.getInventory().getContents()) {
+            if (itemStack == null) {
                 ItemStack soup = new ItemBuilder(Material.MUSHROOM_SOUP).build();
                 player.getInventory().addItem(soup);
             }
@@ -117,12 +117,9 @@ public class PlayerUtil {
             player.removePotionEffect(potionEffect.getType());
         }
 
-        SoupPvP.getInstance().getTimersHandler().removeAllPlayerTimers(player.getUniqueId());
         TasksUtility.runTaskAsync(() -> XPBarTimer.remove(player));
-        SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().remove(player.getUniqueId());
+        SoupPvP.getInstance().getTimerManager().getTimer("Combat").removeTimer(player);
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
-        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(player.getUniqueId());
-
     }
 
     public static void repairPlayer(Player player) {

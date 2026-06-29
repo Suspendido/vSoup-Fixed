@@ -47,10 +47,6 @@ public class DistortionPerk extends Perk implements Listener {
         return 750;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){

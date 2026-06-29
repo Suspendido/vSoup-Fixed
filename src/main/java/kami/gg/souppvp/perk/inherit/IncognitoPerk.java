@@ -38,9 +38,5 @@ public class IncognitoPerk extends Perk {
         return 450;
     }
 
-    @Override
-    public int getTier() {
-        return 3;
-    }
 
 }

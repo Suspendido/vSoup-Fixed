@@ -10,32 +10,32 @@ import java.util.UUID;
 @Getter
 public class CoinFlipsHandler {
 
-    private List<CoinFlip> coinFlips;
+    private final List<CoinFlip> coinFlips;
 
-    public CoinFlipsHandler(){
+    public CoinFlipsHandler() {
         this.coinFlips = new ArrayList<>();
     }
 
-    public void addNewCoinFlip(CoinFlip coinFlip){
+    public void addNewCoinFlip(CoinFlip coinFlip) {
         coinFlips.add(coinFlip);
     }
 
-    public void removeCoinFlip(CoinFlip coinFlip){
+    public void removeCoinFlip(CoinFlip coinFlip) {
         coinFlips.remove(coinFlip);
     }
 
-    public Boolean hasCoinFlipWager(UUID uuid){
-        for (CoinFlip coinFlip : coinFlips){
-            if (coinFlip.getCreator().equals(uuid)){
+    public Boolean hasCoinFlipWager(UUID uuid) {
+        for (CoinFlip coinFlip : coinFlips) {
+            if (coinFlip.getCreator().equals(uuid)) {
                 return true;
             }
         }
         return false;
     }
 
-    public CoinFlip getPlayerCoinFlip(UUID uuid){
-        for (CoinFlip coinFlip : coinFlips){
-            if (coinFlip.getCreator().equals(uuid)){
+    public CoinFlip getPlayerCoinFlip(UUID uuid) {
+        for (CoinFlip coinFlip : coinFlips) {
+            if (coinFlip.getCreator().equals(uuid)) {
                 return coinFlip;
             }
         }

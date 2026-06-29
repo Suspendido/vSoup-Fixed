@@ -36,10 +36,10 @@ public class OPLeaveCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        if (profile.getSumoEvent() == null) {
+        if (profile.getActiveEvent() == null) {
             PlayerUtil.resetPlayer(player);
         } else {
-            player.sendMessage(CC.t("&cYou're currently in a sumo event."));
+            player.sendMessage(CC.t("&cYou're currently in an event."));
         }
     }
 }

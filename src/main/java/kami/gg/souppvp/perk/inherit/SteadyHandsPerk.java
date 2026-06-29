@@ -44,10 +44,6 @@ public class SteadyHandsPerk extends Perk implements Listener {
         return 475  ;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onPlayerDropItemEvent(PlayerDropItemEvent event){

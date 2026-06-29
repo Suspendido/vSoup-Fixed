@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -13,28 +14,23 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SpidermanAbility implements KitAbility {
-
-    private final ItemStack WEB_SHOOTER = new ItemBuilder(Material.WEB).name("&dWeb Shooter").build();
 
     private static final Vector[] WEB_OFFSETS = new Vector[]{
             new Vector(1, 1, -1), new Vector(-1, 1, -1),
@@ -43,6 +39,13 @@ public class SpidermanAbility implements KitAbility {
             new Vector(-1, 1, 0), new Vector(1, 1, 0),
             new Vector(0, 1, -1), new Vector(0, 1, 1)
     };
+
+    private final Timer webTimer;
+
+    public SpidermanAbility() {
+        this.webTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(45));
+        SoupPvP.getInstance().getTimerManager().registerTimer(webTimer);
+    }
 
     @Override
     public String getName() {
@@ -61,7 +64,7 @@ public class SpidermanAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return WEB_SHOOTER.clone();
+        return new ItemBuilder(Material.WEB).name("&dWeb Shooter").build();
     }
 
     private List<Location> getSurrounding(Location loc) {
@@ -95,9 +98,10 @@ public class SpidermanAbility implements KitAbility {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(p.getUniqueId());
 
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(p, profile, getName())) return;
 
         ItemStack hand = p.getItemInHand();
-        if (!hand.isSimilar(WEB_SHOOTER)) return;
+        if (!AbilityItemComparator.isSameAbilityItem(hand, getItem())) return;
 
         if (!(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 
@@ -108,13 +112,12 @@ public class SpidermanAbility implements KitAbility {
             return;
         }
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(p.getUniqueId(), "Web Shooter", true)) {
-            long rem = SoupPvP.getInstance().getTimersHandler().getRemaining(p.getUniqueId(), "Web Shooter", true);
-            p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(rem, true) + "&c."));
+        if (webTimer.hasTimer(p)) {
+            p.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(webTimer.getRemaining(p), true) + "&c."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(p.getUniqueId(), new Timer("Web Shooter", TimeUnit.SECONDS.toMillis(45)), true);
+        webTimer.applyTimer(p);
         XPBarTimer.runXpBar(p, 45);
 
         FallingBlock fb = p.getWorld().spawnFallingBlock(
@@ -165,5 +168,14 @@ public class SpidermanAbility implements KitAbility {
                 }
             }
         }.runTaskTimer(SoupPvP.getInstance(), 2L, 2L);
+    }
+
+    @EventHandler
+    public void onFallingBlockLand(EntityChangeBlockEvent e) {
+        if (!(e.getEntity() instanceof FallingBlock fb)) return;
+        if (!fb.hasMetadata("spiderman")) return;
+
+        e.setCancelled(true);
+        fb.remove();
     }
 }

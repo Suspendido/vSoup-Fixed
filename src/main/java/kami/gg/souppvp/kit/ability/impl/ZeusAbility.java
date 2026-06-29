@@ -1,9 +1,11 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
+import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.*;
 import lombok.Setter;
 import org.bukkit.Material;
@@ -14,14 +16,17 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Setter
 public class ZeusAbility implements KitAbility {
 
-    private List<ItemStack> combatEquipments;
+    private final Timer zeusTimer;
+
+    public ZeusAbility() {
+        this.zeusTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(45));
+        SoupPvP.getInstance().getTimerManager().registerTimer(zeusTimer);
+    }
 
     @Override
     public String getName() {
@@ -30,7 +35,7 @@ public class ZeusAbility implements KitAbility {
 
     @Override
     public String getDescription() {
-        return "Strike lightning on nearby players within 10 blocks";
+        return "&fStrike lightning on nearby players within 10 blocks";
     }
 
     @Override
@@ -40,18 +45,7 @@ public class ZeusAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.BLAZE_ROD)
-                .name("&6&lZeus Lightning")
-                .lore(
-                        "&7Right-click to strike lightning",
-                        "&7on nearby enemies"
-                )
-                .build();
-    }
-
-    @Override
-    public void onKitSelect(Player player) {
-        // Nothing special
+        return new ItemBuilder(Material.GLOWSTONE_DUST).name("&6Lightning Bolt").build();
     }
 
     @EventHandler
@@ -61,25 +55,25 @@ public class ZeusAbility implements KitAbility {
 
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
         if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-        
-        if (combatEquipments == null || combatEquipments.size() < 2) return;
-        if (!player.getItemInHand().isSimilar(combatEquipments.get(1))) return;
+
+        // Check if player has Zeus ability
+        if (!hasAbility(player, profile, getName())) return;
+        if (!AbilityItemComparator.isSameAbilityItem(player.getItemInHand(), getItem())) return;
 
         event.setCancelled(true);
         player.updateInventory();
 
-        if (hasTimer(player.getUniqueId(), getName())) {
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(getRemaining(player.getUniqueId(), getName()), true) + "&c."));
+        if (zeusTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(zeusTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
-        if (isInSpawn(player, profile)) {
+        if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
             player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
-        // Apply cooldown immediately
-        addTimer(player.getUniqueId(), getName(), TimeUnit.SECONDS.toMillis(45));
+        zeusTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 45);
 
         boolean hit = false;
@@ -98,27 +92,10 @@ public class ZeusAbility implements KitAbility {
 
         if (!hit) {
             player.sendMessage(CC.t("&cNo players nearby."));
-            // Refund cooldown if no players nearby
-            SoupPvP.getInstance().getTimersHandler().removePlayerTimer(player.getUniqueId(), true);
+            zeusTimer.removeTimer(player);
             return;
         }
 
         PlayerUtil.playSound(player, Sound.AMBIENCE_THUNDER, 1.0);
-    }
-
-    private boolean isInSpawn(Player player, Profile profile) {
-        return profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player);
-    }
-
-    private boolean hasTimer(UUID uuid, String name) {
-        return SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, name + " Charge", true);
-    }
-
-    private long getRemaining(UUID uuid, String name) {
-        return SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, name + " Charge", true);
-    }
-
-    private void addTimer(UUID uuid, String name, long cooldown) {
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(uuid, new kami.gg.souppvp.timer.Timer(name + " Charge", cooldown), true);
     }
 }

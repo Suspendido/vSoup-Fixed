@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -26,7 +27,12 @@ import java.util.concurrent.TimeUnit;
 
 public class GrapplerAbility implements KitAbility {
 
-    private final ItemStack grapplerRod = new ItemBuilder(Material.FISHING_ROD).name(CC.t("&aGrappler")).build();
+    private final Timer grappleTimer;
+
+    public GrapplerAbility() {
+        this.grappleTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(30));
+        SoupPvP.getInstance().getTimerManager().registerTimer(grappleTimer);
+    }
 
     @Override
     public String getName() {
@@ -45,7 +51,7 @@ public class GrapplerAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return grapplerRod.clone();
+        return new ItemBuilder(Material.FISHING_ROD).name("&aGrappler").build();
     }
 
     private boolean isInvalid(Profile p) {
@@ -59,19 +65,10 @@ public class GrapplerAbility implements KitAbility {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null || isInvalid(profile)) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
             player.sendMessage(CC.t("&cYou can't do this in spawn."));
-            return;
-        }
-
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Grappler", true)) {
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Grappler", true), true) + "&c."));
-            event.setCancelled(true);
-        } else {
-            // Apply cooldown immediately when launching hook
-            SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Grappler", TimeUnit.SECONDS.toMillis(30)), true);
-            XPBarTimer.runXpBar(player, 30);
         }
     }
 
@@ -80,8 +77,9 @@ public class GrapplerAbility implements KitAbility {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null || isInvalid(profile)) return;
+        if (!hasAbility(player, profile, getName())) return;
 
-        if (!player.getItemInHand().isSimilar(grapplerRod)) return;
+        if (!AbilityItemComparator.isSameAbilityItem(player.getItemInHand(), getItem())) return;
         if (!event.getHook().isValid()) return;
         if (event.getState() == PlayerFishEvent.State.FISHING) return;
 
@@ -92,6 +90,14 @@ public class GrapplerAbility implements KitAbility {
             event.getHook().remove();
             return;
         }
+
+        if (grappleTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(grappleTimer.getRemaining(player), true) + "&c."));
+            return;
+        }
+
+        grappleTimer.applyTimer(player);
+        XPBarTimer.runXpBar(player, 30);
 
         Location pLoc = player.getLocation();
         Location hookLoc = hooked.getLocation();

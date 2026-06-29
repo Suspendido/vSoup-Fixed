@@ -33,7 +33,7 @@ public class FifteenKillstreak extends Killstreak implements Listener {
     public ItemStack getIcon() {
         return new ItemBuilder(Material.POTION)
                 .durability(8259)
-                .name(CC.t("&a" + getName()))
+                .name("&a" + getName())
                 .lore(
                         CC.MENU_BAR,
                         "&7Gives you a potion that will apply",

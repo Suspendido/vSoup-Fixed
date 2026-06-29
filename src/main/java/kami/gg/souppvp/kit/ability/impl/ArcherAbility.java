@@ -8,6 +8,7 @@ import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,11 +44,8 @@ public class ArcherAbility implements KitAbility {
     @Override
     public ItemStack getItem() {
         return new ItemBuilder(Material.BOW)
-                .name("&5&lArcher Bow")
-                .lore(
-                        "&7Longer distance = more damage",
-                        "&7with your arrows"
-                )
+                .enchantment(Enchantment.DURABILITY, 3)
+                .enchantment(Enchantment.ARROW_INFINITE, 1)
                 .build();
     }
 
@@ -74,6 +72,8 @@ public class ArcherAbility implements KitAbility {
             event.setCancelled(true);
             return;
         }
+
+        if (!hasAbility(player, profile, getName())) return;
 
         shotLocations.put(player.getUniqueId(), player.getLocation());
     }

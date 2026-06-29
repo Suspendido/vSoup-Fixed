@@ -9,8 +9,10 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import kami.gg.souppvp.changelog.ChangeLogHandler;
 import kami.gg.souppvp.changelog.task.ChangeLogNotificationTask;
+import kami.gg.souppvp.events.EventManager;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
 import kami.gg.souppvp.events.impl.tnttag.TNTTagHandler;
+import kami.gg.souppvp.feats.actionbar.ActionBarManager;
 import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
 import kami.gg.souppvp.feats.quest.QuestManager;
 import kami.gg.souppvp.feats.soupsays.SoupSaysManager;
@@ -34,13 +36,14 @@ import kami.gg.souppvp.feats.scoreboard.ScoreboardManager;
 import kami.gg.souppvp.feats.storage.FlatFileHandler;
 import kami.gg.souppvp.feats.storage.StorageType;
 import kami.gg.souppvp.feats.tablist.TablistManager;
-import kami.gg.souppvp.tasks.CanaPerkAndFiremanKitTask;
+import kami.gg.souppvp.tasks.WaterDamageTask;
 import kami.gg.souppvp.tasks.ClearDropsTask;
-import kami.gg.souppvp.tasks.ClearTimerCacheTask;
 import kami.gg.souppvp.tasks.SaveProfilesTask;
-import kami.gg.souppvp.timer.TimersHandler;
+import kami.gg.souppvp.timer.TimerManager;
 import kami.gg.souppvp.lang.Lang;
 import kami.gg.souppvp.lang.LangManager;
+import kami.gg.souppvp.timer.type.CombatTimer;
+import kami.gg.souppvp.timer.type.CreditsTimer;
 import kami.gg.souppvp.util.assemble.Assemble;
 import kami.gg.souppvp.util.command.CommandManager;
 import kami.gg.souppvp.util.menu.MenuManager;
@@ -54,6 +57,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Getter @Setter
 public class SoupPvP extends JavaPlugin {
@@ -75,19 +79,18 @@ public class SoupPvP extends JavaPlugin {
     private KitStorage kitStorage;
     private ProfilesHandler profilesHandler;
     private CombatTagsHandler combatTagsHandler;
-    private SpawnTeleportationHandler spawnTeleportationHandler;
     private CoinFlipsHandler coinFlipsHandler;
     private SpawnHandler spawnHandler;
     private ClearDropsTask clearDropsTask;
     private SaveProfilesTask saveProfilesTask;
-    private ClearTimerCacheTask clearTimerCacheTask;
-    private CanaPerkAndFiremanKitTask canaPerkAndFiremanKitTask;
+    private WaterDamageTask waterDamageTask;
     private SumoHandler sumoHandler;
     private TNTTagHandler tntTagHandler;
     private NoFallDamageHandler noFallDamageHandler;
     private PerksHandler perksHandler;
     private KillstreaksHandler killstreaksHandler;
-    private TimersHandler timersHandler;
+    private TimerManager timerManager;
+    private CreditsTimer creditsTimer;
     private TablistManager tablistManager;
     private ScoreboardManager scoreboardManager;
     private Assemble assemble;
@@ -105,6 +108,8 @@ public class SoupPvP extends JavaPlugin {
     private QuestManager questManager;
     private ChangeLogHandler changeLogHandler;
     private MenuManager menuManager;
+    private EventManager eventManager;
+    private ActionBarManager actionBarManager;
 
     @Override
     public void onEnable() {
@@ -127,24 +132,23 @@ public class SoupPvP extends JavaPlugin {
         scoreboardManager = new ScoreboardManager(this);
         nametagManager = new NametagManager();
         staffManager = new StaffManager(this);
+        timerManager = new TimerManager(this);
+        timerManager.registerTimer(new CombatTimer(this, TimeUnit.SECONDS.toMillis(15)));
+        creditsTimer = new CreditsTimer("Credits", TimeUnit.MINUTES.toMillis(10), 20);
         kitAbilityRegistry = new KitAbilityRegistry();
         kitStorage = new KitStorage(this, kitAbilityRegistry);
-        
+
         // Register ability events
         for (KitAbility ability : kitAbilityRegistry.getAbilities().values()) {
             getServer().getPluginManager().registerEvents(ability, this);
         }
-        
+
         // Copy default kit YAML files from resources to data folder BEFORE loading kits
         KitsHandler.copyDefaultKits();
-        
         kitsHandler = new KitsHandler(kitStorage);
-        
         menuManager = new MenuManager(this);
-        
         profilesHandler = new ProfilesHandler();
         combatTagsHandler = new CombatTagsHandler();
-        spawnTeleportationHandler = new SpawnTeleportationHandler();
         coinFlipsHandler = new CoinFlipsHandler();
         spawnHandler = new SpawnHandler();
         sumoHandler = new SumoHandler();
@@ -153,14 +157,12 @@ public class SoupPvP extends JavaPlugin {
         perksHandler = new PerksHandler();
         killstreaksHandler = new KillstreaksHandler();
         listenerManager = new ListenerManager();
-        timersHandler = new TimersHandler();
         mapManager = new MapManager();
         leaderboardManager = new LeaderboardManager();
         kitProgressManager = new KitProgressManager();
         clearDropsTask = new ClearDropsTask();
         saveProfilesTask = new SaveProfilesTask();
-        clearTimerCacheTask = new ClearTimerCacheTask();
-        canaPerkAndFiremanKitTask = new CanaPerkAndFiremanKitTask();
+        waterDamageTask = new WaterDamageTask();
         rankHook = new IRankHook();
         clientHook = new ClientHook();
         placeholderHook = new PlaceholderHook();
@@ -168,6 +170,9 @@ public class SoupPvP extends JavaPlugin {
         questManager = new QuestManager();
         changeLogHandler = new ChangeLogHandler(this);
         ChangeLogNotificationTask.start(this);
+
+        eventManager = new EventManager(this);
+        actionBarManager = new ActionBarManager(this);
         
         (new PacketBorderHandler()).start();
 

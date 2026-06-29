@@ -1,7 +1,7 @@
 package kami.gg.souppvp.events.menu;
 
-import kami.gg.souppvp.events.menu.button.*;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.events.EventType;
+import kami.gg.souppvp.events.menu.button.EventButton;
 import kami.gg.souppvp.util.menu.Button;
 import kami.gg.souppvp.util.menu.Menu;
 import org.bukkit.Material;
@@ -18,14 +18,17 @@ public class HostEventsMenu extends Menu {
 
     @Override
     public Map<Integer, Button> getButtons() {
-        Map<Integer, Button> buttonMap = new HashMap<>();
-        buttonMap.put(10, new SumoEventButton());
-        buttonMap.put(13, new TNTTagEventButton());
-        buttonMap.put(16, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        buttonMap.put(28, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        buttonMap.put(31, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
-        buttonMap.put(34, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+        Map<Integer, Button> button = new HashMap<>();
+
+        button.put(10, new EventButton(EventType.SUMO));
+        button.put(13, new EventButton(EventType.TNTTAG));
+
+        button.put(16, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+        button.put(28, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+        button.put(31, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+        button.put(34, Button.placeholder(Material.STAINED_GLASS_PANE, (byte) 14, " "));
+
         setFillEnabled(true);
-        return buttonMap;
+        return button;
     }
 }

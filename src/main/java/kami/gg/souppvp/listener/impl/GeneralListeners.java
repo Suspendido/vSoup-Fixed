@@ -1,7 +1,6 @@
 package kami.gg.souppvp.listener.impl;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.*;
@@ -39,33 +38,32 @@ public class GeneralListeners implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity();
+        if (!(event.getEntity() instanceof Player player)) return;
 
         event.setDeathMessage(null);
         event.getDrops().clear();
         event.setDroppedExp(0);
 
-        Profile playerProfile = plugin.getProfilesHandler().getProfileByUUID(victim.getUniqueId());
+        Profile profile = plugin.getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        if (playerProfile != null && playerProfile.isInEvent()) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> victim.spigot().respawn(), 2L);
+        if (profile != null && profile.isInEvent()) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 2L);
             return;
         }
 
         // Conartist perk check
-        if (playerProfile != null && !playerProfile.getActivePerks().isEmpty() && playerProfile.getActivePerks().size() > 2) {
-            Perk profilePerk = plugin.getPerksHandler().getPerkByName(playerProfile.getActivePerks().get(2));
-            Perk conartistPerk = plugin.getPerksHandler().getPerkByName("Conartist");
+        if (profile != null && !profile.getActivePerks().isEmpty()) {
+            if (!profile.getActivePerks().contains("Conartist")) return;
 
-            if (profilePerk != null && profilePerk.equals(conartistPerk) && RANDOM.nextInt(101) <= 50) {
-                Bukkit.getScheduler().runTaskLater(plugin, () -> victim.spigot().respawn(), 2L);
+            if (RANDOM.nextInt(101) <= 50) {
+                Bukkit.getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 2L);
                 return;
             }
         }
 
         // Drop mushroom soup
-        Location deathLocation = victim.getLocation();
-        World world = victim.getWorld();
+        Location deathLocation = player.getLocation();
+        World world = player.getWorld();
         ItemStack mushroom = new ItemStack(Material.MUSHROOM_SOUP);
 
         for (int i = 0; i < 9; i++) {
@@ -80,7 +78,7 @@ public class GeneralListeners implements Listener {
                 }
             }
         }, 60L);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> victim.spigot().respawn(), 2L);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> player.spigot().respawn(), 2L);
     }
 
     @EventHandler

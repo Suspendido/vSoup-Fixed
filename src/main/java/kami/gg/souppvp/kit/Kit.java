@@ -4,7 +4,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.timer.Timer;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.XPBarTimer;
@@ -17,7 +16,6 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Getter @Setter
 public abstract class Kit implements Listener {
@@ -47,10 +45,21 @@ public abstract class Kit implements Listener {
 
     }
 
+    private boolean shouldDisplayItem(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return true;
+        List<String> lore = item.getItemMeta().getLore();
+        if (lore == null) return true;
+        for (String line : lore) {
+            if (line != null && line.contains("Dont Display")) return false;
+        }
+        return true;
+    }
+
     public void equipKit(Player player) {
         XPBarTimer.remove(player.getPlayer());
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         profile.setProfileState(ProfileState.COMBAT);
+
         player.getInventory().clear();
         player.getInventory().setArmorContents(this.getArmor());
 
@@ -59,48 +68,34 @@ public abstract class Kit implements Listener {
             player.getInventory().setItem(i++, item);
         }
 
-        PlayerUtil.giveSoup(player);
-
-        for (PotionEffect potionEffect : this.getPotionEffects()) {
-            player.addPotionEffect(potionEffect);
-        }
-
         if (primaryAbility != null) {
             primaryAbility.onKitSelect(player);
             ItemStack abilityItem = primaryAbility.getItem();
-            if (abilityItem != null) {
-                player.getInventory().addItem(abilityItem);
+
+            if (shouldDisplayItem(abilityItem)) {
+                player.getInventory().setItem(i++, abilityItem);
             }
         }
 
         if (secondaryAbility != null) {
             secondaryAbility.onKitSelect(player);
             ItemStack abilityItem = secondaryAbility.getItem();
-            if (abilityItem != null) {
-                player.getInventory().addItem(abilityItem);
+
+            if (shouldDisplayItem(abilityItem)) {
+                player.getInventory().setItem(i++, abilityItem);
             }
+        }
+
+        PlayerUtil.giveSoup(player);
+
+        for (PotionEffect potionEffect : this.getPotionEffects()) {
+            player.addPotionEffect(potionEffect);
         }
 
         onSelect(player);
         setup();
         SoupPvP.getInstance().getKitProgressManager().handleKitUse(profile);
         player.sendMessage(CC.t("&aSuccessfully given you the kit &r" + getRarityType().getColor() + getName() + "&a."));
-    }
-
-    public boolean isInSpawn(Player player, Profile profile) {
-        return profile.getProfileState() == ProfileState.SPAWN && SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player);
-    }
-
-    public boolean hasTimer(UUID uuid) {
-        return SoupPvP.getInstance().getTimersHandler().hasTimer(uuid, getName() + " Charge", true);
-    }
-
-    public long getRemaining(UUID uuid) {
-        return SoupPvP.getInstance().getTimersHandler().getRemaining(uuid, getName() + " Charge", true);
-    }
-
-    public void addTimer(UUID uuid, long cooldown) {
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(uuid, new Timer(getName() + " Charge", cooldown), true);
     }
 
 }

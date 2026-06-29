@@ -38,9 +38,5 @@ public class HardlinePerk extends Perk {
         return 1000;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
 }

@@ -46,10 +46,6 @@ public class MartydomPerk extends Perk implements Listener {
         return 150;
     }
 
-    @Override
-    public int getTier() {
-        return 1;
-    }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){

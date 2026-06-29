@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter @Setter
@@ -25,6 +26,16 @@ public class KitViewMenu extends Menu {
         this.kit = kit;
     }
 
+    private boolean shouldDisplayItem(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return true;
+        List<String> lore = item.getItemMeta().getLore();
+        if (lore == null) return true;
+        for (String line : lore) {
+            if (line != null && line.contains("Dont Display")) return false;
+        }
+        return true;
+    }
+
     @Override
     public Map<Integer, Button> getButtons() {
         Map<Integer, Button> buttons = new HashMap<>();
@@ -32,6 +43,16 @@ public class KitViewMenu extends Menu {
         int slot = 14;
         for (int i = 0; i < kit.getCombatEquipments().size(); i++) {
             buttons.put(slot++, new CombatEquipmentButton(kit, i));
+        }
+
+        ItemStack primaryAbility = kit.getPrimaryAbility() != null ? kit.getPrimaryAbility().getItem() : null;
+        if (shouldDisplayItem(primaryAbility)) {
+            buttons.put(slot++, new PrimaryAbilityButton(kit));
+        }
+
+        ItemStack secondaryAbility = kit.getSecondaryAbility() != null ? kit.getSecondaryAbility().getItem() : null;
+        if (shouldDisplayItem(secondaryAbility)) {
+            buttons.put(slot++, new SecondaryAbilityButton(kit));
         }
 
         ItemStack[] armor = kit.getArmor();

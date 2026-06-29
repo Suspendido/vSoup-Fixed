@@ -50,10 +50,6 @@ public class RevengePerk extends Perk implements Listener {
         return 850;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){

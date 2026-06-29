@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -26,15 +27,12 @@ import java.util.concurrent.TimeUnit;
 
 public class BarbarianAbility implements KitAbility {
 
-    private static final String TIMER_NAME = "Silverfish Swarm";
-    private static final int SILVERFISH_AMOUNT = 4;
-    private static final int RADIUS = 10;
+    private final Timer swarmTimer;
 
-    private final ItemStack swarmItem =
-            new ItemBuilder(Material.INK_SACK)
-                    .name(CC.t("&9Silverfish Swarm"))
-                    .durability((short) 6)
-                    .build();
+    public BarbarianAbility() {
+        this.swarmTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(35));
+        SoupPvP.getInstance().getTimerManager().registerTimer(swarmTimer);
+    }
 
     @Override
     public String getName() {
@@ -53,7 +51,7 @@ public class BarbarianAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return swarmItem.clone();
+        return new ItemBuilder(Material.INK_SACK).name("&9Silverfish Swarm").durability(6).build();
     }
 
     @EventHandler
@@ -68,8 +66,8 @@ public class BarbarianAbility implements KitAbility {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
 
-        // Must be right-clicking the swarm item
-        if (!item.isSimilar(swarmItem)) return;
+        if (!hasAbility(player, profile, getName())) return;
+        if (!AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
 
         // Spawn check
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
@@ -78,18 +76,13 @@ public class BarbarianAbility implements KitAbility {
         }
 
         // Cooldown check
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), TIMER_NAME, true)) {
-            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), TIMER_NAME, true);
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+        if (swarmTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(swarmTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
         // Apply cooldown immediately
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                player.getUniqueId(),
-                new Timer(TIMER_NAME, TimeUnit.SECONDS.toMillis(35)),
-                true
-        );
+        swarmTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 35);
 
         // Slow effect
@@ -99,7 +92,7 @@ public class BarbarianAbility implements KitAbility {
         Player closest = null;
         double closestDistance = Double.MAX_VALUE;
 
-        for (Entity entity : player.getNearbyEntities(RADIUS, RADIUS, RADIUS)) {
+        for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
             if (!(entity instanceof Player p)) continue;
 
             if (p.getUniqueId().equals(player.getUniqueId())) continue;
@@ -115,7 +108,7 @@ public class BarbarianAbility implements KitAbility {
         }
 
         // Spawn silverfish swarm
-        for (int i = 0; i < SILVERFISH_AMOUNT; i++) {
+        for (int i = 0; i < 4; i++) {
             Silverfish sf = (Silverfish) player.getWorld().spawnEntity(player.getLocation(), EntityType.SILVERFISH);
 
             sf.setMetadata("owner", new FixedMetadataValue(SoupPvP.getInstance(), player.getUniqueId()));
@@ -140,7 +133,7 @@ public class BarbarianAbility implements KitAbility {
         if (victim instanceof Silverfish sf && damager instanceof Player player) {
             if (sf.hasMetadata("owner") && UUID.fromString(sf.getMetadata("owner").getFirst().asString()).equals(player.getUniqueId())) {
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "You cannot damage your own silverfish.");
+                player.sendMessage(CC.t("&cYou cannot damage your own silverfish."));
             }
             return;
         }

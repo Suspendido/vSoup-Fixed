@@ -38,9 +38,5 @@ public class TricksterPerk extends Perk {
         return 350;
     }
 
-    @Override
-    public int getTier() {
-        return 1;
-    }
 
 }

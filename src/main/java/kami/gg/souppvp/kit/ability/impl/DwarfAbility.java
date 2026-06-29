@@ -29,6 +29,13 @@ public class DwarfAbility implements KitAbility {
     @Getter
     private static final Map<UUID, Float> chargeUp = new HashMap<>();
     private static final Map<UUID, Boolean> fullChargeNotified = new HashMap<>();
+    private final Timer dwarfTimer;
+
+    public DwarfAbility() {
+        this.dwarfTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(10));
+        SoupPvP.getInstance().getTimerManager().registerTimer(dwarfTimer);
+        setup();
+    }
 
     @Override
     public String getName() {
@@ -48,7 +55,7 @@ public class DwarfAbility implements KitAbility {
     @Override
     public ItemStack getItem() {
         return new ItemBuilder(Material.GOLD_AXE)
-                .name(ChatColor.BLUE + "Dwarf's Axe")
+                .name("&9Dwarf's Axe")
                 .enchantment(Enchantment.DAMAGE_ALL, 3)
                 .enchantment(Enchantment.DURABILITY, 10)
                 .build();
@@ -73,9 +80,10 @@ public class DwarfAbility implements KitAbility {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
                     if (profile == null) continue;
+                    if (!hasAbility(player, profile, getName())) continue;
 
                     if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) continue;
-                    if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Charged Up", true)) continue;
+                    if (dwarfTimer.hasTimer(player)) continue;
 
                     float charge = chargeUp.getOrDefault(player.getUniqueId(), 0F);
                     boolean wasFullyCharged = charge >= 1.0F;
@@ -113,11 +121,11 @@ public class DwarfAbility implements KitAbility {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damager.getUniqueId());
         if (profile == null) return;
-
+        if (!hasAbility(damager, profile, getName())) return;
 
         if (chargeUp.getOrDefault(damager.getUniqueId(), 0F) < 1.0F) return;
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(damager.getUniqueId(), "Charged Up", true)) {
+        if (dwarfTimer.hasTimer(damager)) {
             damager.sendMessage(CC.t("&cYou can't use this yet!"));
             return;
         }
@@ -143,11 +151,7 @@ public class DwarfAbility implements KitAbility {
             victim.playSound(victim.getLocation(), Sound.EXPLODE, 1f, 1f);
             damager.playSound(damager.getLocation(), Sound.EXPLODE, 1f, 0.8f);
 
-            SoupPvP.getInstance().getTimersHandler().addPlayerTimer(
-                    damager.getUniqueId(),
-                    new Timer("Charged Up", TimeUnit.SECONDS.toMillis(10)),
-                    true
-            );
+            dwarfTimer.applyTimer(damager);
             XPBarTimer.runXpBar(damager, 10);
 
             chargeUp.put(damager.getUniqueId(), 0F);
@@ -161,7 +165,7 @@ public class DwarfAbility implements KitAbility {
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         if (profile == null) return;
-
+        if (!hasAbility(player, profile, "Dwarf")) return;
 
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             event.setDamage(event.getDamage() / 3.0);

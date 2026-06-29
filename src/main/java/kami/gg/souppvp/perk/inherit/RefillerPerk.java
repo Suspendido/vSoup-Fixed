@@ -45,10 +45,6 @@ public class RefillerPerk extends Perk implements Listener {
         return 500;
     }
 
-    @Override
-    public int getTier() {
-        return 1;
-    }
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){

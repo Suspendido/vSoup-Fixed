@@ -14,7 +14,7 @@ public class SpawnHandler {
     private Location b;
     private Cuboid cuboid;
 
-    public SpawnHandler(){
+    public SpawnHandler() {
         a = LocationUtil.convertStringToLocation(SoupPvP.getInstance().getConfig().getString("SPAWN.LOCATION-A"));
         b = LocationUtil.convertStringToLocation(SoupPvP.getInstance().getConfig().getString("SPAWN.LOCATION-B"));
         cuboid = new Cuboid(a, b);

@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -11,25 +12,25 @@ import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.XPBarTimer;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class YodaAbility implements KitAbility {
 
-    private final ItemStack theForce = new ItemBuilder(Material.INK_SACK).durability((short) 2).name("&aThe Force").build();
+    private final Timer yodatimer;
+
+    public YodaAbility() {
+        this.yodatimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(45));
+        SoupPvP.getInstance().getTimerManager().registerTimer(yodatimer);
+    }
 
     @Override
     public String getName() {
@@ -48,7 +49,7 @@ public class YodaAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return theForce.clone();
+        return new ItemBuilder(Material.INK_SACK).durability((short) 2).name("&aThe Force").build();
     }
 
     @EventHandler
@@ -56,7 +57,7 @@ public class YodaAbility implements KitAbility {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        if (event.getPlayer().getItemInHand().isSimilar(theForce) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
+        if (AbilityItemComparator.isSameAbilityItem(player.getItemInHand(), getItem()) && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
             event.setCancelled(true);
             player.updateInventory();
 
@@ -65,12 +66,15 @@ public class YodaAbility implements KitAbility {
                 return;
             }
 
-            if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "The Force", true)) {
-                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "The Force", true), true) + "&c."));
+            // Check if player has Yoda ability
+            if (!hasAbility(player, profile, getName())) return;
+
+            if (yodatimer.hasTimer(player)) {
+                player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(yodatimer.getRemaining(player), true) + "&c."));
                 return;
             }
 
-            SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("The Force", TimeUnit.SECONDS.toMillis(45)), true);
+            yodatimer.applyTimer(player);
             XPBarTimer.runXpBar(player, 45);
             PlayerUtil.playSound(player, Sound.ENDERMAN_STARE, 1.0);
 

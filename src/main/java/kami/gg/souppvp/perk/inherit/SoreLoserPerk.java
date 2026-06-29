@@ -46,10 +46,6 @@ public class SoreLoserPerk extends Perk implements Listener {
         return 50;
     }
 
-    @Override
-    public int getTier() {
-        return 1;
-    }
 
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){

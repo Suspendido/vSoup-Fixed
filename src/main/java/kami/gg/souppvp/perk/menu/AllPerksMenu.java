@@ -42,6 +42,7 @@ public class AllPerksMenu extends Menu {
         int slot = 9;
         for (Perk perk : SoupPvP.getInstance().getPerksHandler().getPerks()) {
             if (slot >= 36) break;
+            if (SoupPvP.getInstance().getPerksHandler().getDisabledPerks().contains(perk.getName())) continue;
             buttons.put(slot, new PerkButton(perk));
             slot++;
         }

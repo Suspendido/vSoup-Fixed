@@ -46,10 +46,6 @@ public class JammerPerk extends Perk implements Listener {
         return 125;
     }
 
-    @Override
-    public int getTier() {
-        return 2;
-    }
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
@@ -63,10 +59,10 @@ public class JammerPerk extends Perk implements Listener {
         if (currentPerk == jammerPerk){
             if (event.getEntity().hasMetadata("jammed")) return;
             event.getEntity().setMetadata("jammed", new FixedMetadataValue(SoupPvP.getInstance(), "jammed"));
-            ((Player) event.getEntity()).sendMessage(CC.t("&cYou've been jammed by &e" + ((Player) event.getDamager()).getName() + "&c."));
+            event.getEntity().sendMessage(CC.t("&cYou've been jammed by &e" + event.getDamager().getName() + "&c."));
             TaskUtil.runLater(() -> {
                 event.getEntity().removeMetadata("jammed", SoupPvP.getInstance());
-                ((Player) event.getEntity()).sendMessage(CC.t("&cYou're no longer jammed."));
+                event.getEntity().sendMessage(CC.t("&cYou're no longer jammed."));
             }, 10 * 20L);
         }
     }

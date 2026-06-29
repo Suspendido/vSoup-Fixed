@@ -45,10 +45,6 @@ public class RelinquishPerk extends Perk implements Listener {
         return 250;
     }
 
-    @Override
-    public int getTier() {
-        return 1;
-    }
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){

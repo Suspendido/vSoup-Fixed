@@ -39,13 +39,8 @@ public class SpawnCommand extends Command {
             return;
         }
 
-        if (profile.getSumoEvent() != null) {
-            player.sendMessage(CC.t("&cYou're currently in a sumo event."));
-            return;
-        }
-
-        if (profile.isTeleportingToSpawn()) {
-            player.sendMessage(CC.t("&cYou're already teleporting."));
+        if (profile.getActiveEvent() != null) {
+            player.sendMessage(CC.t("&cYou're currently in an event."));
             return;
         }
 

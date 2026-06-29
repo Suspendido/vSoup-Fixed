@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class InspectionMenu extends Menu {
 
@@ -87,7 +88,7 @@ public class InspectionMenu extends Menu {
         };
     }
 
-    private Button armorButton(java.util.function.Supplier<ItemStack> supplier) {
+    private Button armorButton(Supplier<ItemStack> supplier) {
         return new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {

@@ -9,8 +9,7 @@ import kami.gg.souppvp.command.bounty.*;
 import kami.gg.souppvp.command.credit.*;
 import kami.gg.souppvp.command.RepairCommand;
 import kami.gg.souppvp.command.spawn.*;
-import kami.gg.souppvp.events.impl.sumo.command.SumoCommand;
-import kami.gg.souppvp.events.impl.tnttag.command.TNTTagCommand;
+import kami.gg.souppvp.events.command.EventCommand;
 import kami.gg.souppvp.feats.leaderboard.command.LeaderboardCommand;
 import kami.gg.souppvp.feats.soupsays.command.SoupSaysCommand;
 import kami.gg.souppvp.feats.staff.command.*;
@@ -47,7 +46,6 @@ public class CommandManager {
                 new VanishCommand(this),
                 new FreezeCommand(this),
                 new HideStaffCommand(this),
-                new StaffBuildCommand(this),
                 new BuildCommand(this),
                 new SetCuboidCommand(this),
                 new StorageStatsCommand(this),
@@ -70,14 +68,14 @@ public class CommandManager {
                 new TiersCommand(this),
                 new SetKillstreakCommand(this),
                 new PerksCommand(this),
+                new TogglePerksCommand(this),
                 new LeaderboardCommand(this),
                 new KitsCommand(this),
                 new MarketCommand(this),
                 new ChangeLogCommand(this),
 
                 // Event
-                new SumoCommand(this),
-                new TNTTagCommand(this),
+                new EventCommand(this),
                 new SoupSaysCommand(this),
 
                 // Credits

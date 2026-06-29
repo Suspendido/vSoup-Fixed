@@ -1,4 +1,5 @@
 STAFF_MODE:
+  ACTION_BAR_STRING: '&eVanish: %vanished% &7| &eHide Staff: %hidestaff%'
   FREEZE_MESSAGE_INTERVAL: 3
   RANDOM_TP_MINER_Y: 25 # For random tp miner player has to be below this y level
   DISABLED_COMMANDS_FROZEN:

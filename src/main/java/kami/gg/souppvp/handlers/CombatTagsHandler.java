@@ -10,7 +10,7 @@ public class CombatTagsHandler {
 
     private final HashMap<UUID, Long> combatTags;
 
-    public CombatTagsHandler(){
+    public CombatTagsHandler() {
         combatTags = new HashMap<>();
     }
 

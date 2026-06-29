@@ -32,7 +32,6 @@ public class StaffManager {
 
     private final Set<UUID> vanished;
     private final Set<UUID> frozen;
-    private final Set<UUID> staffBuild;
     private final Set<UUID> hideStaff;
 
     private FileConfiguration staffConfig;
@@ -46,7 +45,6 @@ public class StaffManager {
 
         this.vanished = new HashSet<>();
         this.frozen = new HashSet<>();
-        this.staffBuild = new HashSet<>();
         this.hideStaff = new HashSet<>();
 
         this.loadConfig();
@@ -151,7 +149,6 @@ public class StaffManager {
             player.setGameMode(staff.getGameMode());
 
             staffMembers.remove(player.getUniqueId());
-            staffBuild.remove(player.getUniqueId());
             disableVanish(player);
             this.getHideStaff().remove(player.getUniqueId());
         }
@@ -237,10 +234,6 @@ public class StaffManager {
 
     public boolean isStaffEnabled(Player player) {
         return staffMembers.containsKey(player.getUniqueId());
-    }
-
-    public boolean isStaffBuild(Player player) {
-        return staffBuild.contains(player.getUniqueId());
     }
 
     public boolean isHideStaff(Player player) {

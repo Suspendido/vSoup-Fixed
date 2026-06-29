@@ -1,6 +1,7 @@
 package kami.gg.souppvp.events.impl.sumo.listener;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.events.Event;
 import kami.gg.souppvp.events.impl.sumo.Sumo;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.util.SpectatorUtil;
@@ -24,8 +25,8 @@ public class SumoListener implements Listener {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
 
-        Sumo sumo = profile.getSumoEvent();
-        if (sumo == null) return;
+        Event activeEvent = profile.getActiveEvent();
+        if (!(activeEvent instanceof Sumo sumo)) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
 
         Material block = player.getLocation().getBlock().getType();
@@ -40,9 +41,8 @@ public class SumoListener implements Listener {
     public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Sumo sumo = profile.getSumoEvent();
-
-        if (sumo == null) return;
+        Event activeEvent = profile.getActiveEvent();
+        if (!(activeEvent instanceof Sumo sumo)) return;
         if (!sumo.isFighting(player.getUniqueId())) event.setCancelled(true);
     }
 
@@ -52,10 +52,10 @@ public class SumoListener implements Listener {
         if (!(event.getEntity() instanceof Player player)) return;
 
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Sumo sumo = profile.getSumoEvent();
+        Event activeEvent = profile.getActiveEvent();
+        if (!(activeEvent instanceof Sumo sumo)) return;
         EntityDamageEvent.DamageCause cause = event.getCause();
 
-        if (sumo == null) return;
         if (cause == EntityDamageEvent.DamageCause.VOID || cause == EntityDamageEvent.DamageCause.LAVA) {
             event.setCancelled(true);
             player.setFireTicks(0);
@@ -89,9 +89,10 @@ public class SumoListener implements Listener {
 
         Profile damagedProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(damaged.getUniqueId());
         Profile attackerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(attacker.getUniqueId());
-        Sumo sumo = damagedProfile.getSumoEvent();
-
-        if (sumo == null || sumo != attackerProfile.getSumoEvent()) return;
+        Event damagedEvent = damagedProfile.getActiveEvent();
+        Event attackerEvent = attackerProfile.getActiveEvent();
+        if (!(damagedEvent instanceof Sumo sumo)) return;
+        if (damagedEvent != attackerEvent) return;
         if (!sumo.isFighting() || !sumo.isFighting(damaged.getUniqueId()) || !sumo.isFighting(attacker.getUniqueId())) {
             event.setCancelled(true);
         }
@@ -100,9 +101,9 @@ public class SumoListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId());
-
-        if (profile.getSumoEvent() != null) {
-            profile.getSumoEvent().handleLeave(event.getPlayer());
+        Event activeEvent = profile.getActiveEvent();
+        if (activeEvent != null) {
+            activeEvent.handleLeave(event.getPlayer());
         }
     }
 

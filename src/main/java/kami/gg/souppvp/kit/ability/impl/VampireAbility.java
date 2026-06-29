@@ -33,6 +33,13 @@ import java.util.concurrent.TimeUnit;
 
 public class VampireAbility implements KitAbility {
 
+    private final Timer vampireTimer;
+
+    public VampireAbility() {
+        this.vampireTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(45));
+        SoupPvP.getInstance().getTimerManager().registerTimer(vampireTimer);
+    }
+
     @Override
     public String getName() {
         return "Vampire";
@@ -50,20 +57,7 @@ public class VampireAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.MONSTER_EGG)
-                .durability((short) 65)
-                .name("&8&lBat Blast")
-                .lore(
-                        "&7Right-click to shoot bats",
-                        "&7Bats damage enemies",
-                        "&7Kill bonus: Regen V for 10s"
-                )
-                .build();
-    }
-
-    @Override
-    public void onKitSelect(Player player) {
-        // Nothing special
+        return new ItemBuilder(Material.MONSTER_EGG).durability(65).name("&9Bat Blast").build();
     }
 
     @EventHandler
@@ -75,6 +69,7 @@ public class VampireAbility implements KitAbility {
         if (item == null || item.getType() != Material.MONSTER_EGG || item.getDurability() != 65) return;
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         event.setCancelled(true);
 
@@ -88,13 +83,13 @@ public class VampireAbility implements KitAbility {
             return;
         }
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Bat Blast", true)) {
-            player.sendMessage(ChatColor.RED + "You can't use this for another " + ChatColor.YELLOW + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Bat Blast", true), true) + ChatColor.RED + ".");
+        if (vampireTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(vampireTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
         // Apply cooldown immediately
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Bat Blast", TimeUnit.SECONDS.toMillis(45)), true);
+        vampireTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 45);
         player.getLocation().getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 1F);
 
@@ -151,6 +146,7 @@ public class VampireAbility implements KitAbility {
         if (event.getEntity().getKiller() == null) return;
         Player killer = event.getEntity().getKiller();
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(killer.getUniqueId());
+        if (!hasAbility(killer, profile, getName())) return;
 
         if (!killer.getUniqueId().equals(event.getEntity().getUniqueId())) {
             killer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 10, 4));

@@ -10,10 +10,8 @@ import kami.gg.souppvp.util.DurationFormatter;
 import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.XPBarTimer;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,11 +22,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class EnhancerAbility implements KitAbility {
+    private final Timer stimBeaconTimer;
+
+    public EnhancerAbility() {
+        this.stimBeaconTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(60));
+        SoupPvP.getInstance().getTimerManager().registerTimer(stimBeaconTimer);
+    }
 
     @Override
     public String getName() {
@@ -59,6 +61,7 @@ public class EnhancerAbility implements KitAbility {
 
         if (profile.isInEvent()) return;
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (!hasAbility(player, profile, getName())) return;
 
         ItemStack hand = player.getItemInHand();
         if (hand == null || hand.getType() != Material.BREWING_STAND_ITEM) return;
@@ -67,17 +70,17 @@ public class EnhancerAbility implements KitAbility {
         event.setCancelled(true);
         player.updateInventory();
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), "Stim Beacon", true)) {
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), "Stim Beacon", true), true) + "&c."));
-            return;
-        }
-
         if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(player)) {
             player.sendMessage(CC.t("&cYou can't do this in spawn."));
             return;
         }
 
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer("Stim Beacon", TimeUnit.SECONDS.toMillis(60)), true);
+        if (stimBeaconTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(stimBeaconTimer.getRemaining(player), true) + "&c."));
+            return;
+        }
+
+        stimBeaconTimer.applyTimer(player);
         XPBarTimer.runXpBar(player, 60);
         PlayerUtil.playSound(player, Sound.CLICK, 1.0);
         BlockUtil.generateTemporaryStimBeacon(event.getClickedBlock().getLocation().add(0, 1, 0));

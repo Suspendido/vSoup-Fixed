@@ -1,7 +1,6 @@
 package kami.gg.souppvp.kit.menu.editor;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.kit.CustomKit;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.storage.KitStorage;
 import kami.gg.souppvp.util.CC;
@@ -70,30 +69,7 @@ public class KitItemsEditMenu extends Menu {
     }
 
     private void saveKit() {
-        // Convert to CustomKit if not already
-        if (!(kit instanceof CustomKit)) {
-            CustomKit customKit = new CustomKit(
-                    kit.getName(),
-                    kit.getRarityType(),
-                    kit.getPrice(),
-                    kit.getIcon(),
-                    kit.getDescription(),
-                    kit.getCombatEquipments(),
-                    kit.getArmor(),
-                    kit.getPotionEffects(),
-                    kit.getPrimaryAbility(),
-                    kit.getSecondaryAbility()
-            );
-            customKit.setEnabled(kit.isEnabled());
-
-            // Replace in handler
-            SoupPvP.getInstance().getKitsHandler().getKits().remove(kit);
-            SoupPvP.getInstance().getKitsHandler().getKits().add(customKit);
-
-            kitStorage.saveKit(customKit);
-        } else {
-            kitStorage.saveKit(kit);
-        }
+        kitStorage.saveKit(kit);
     }
 
     @Override

@@ -15,7 +15,6 @@ public class KitAbilityRegistry {
     }
 
     private void registerDefaultAbilities() {
-        registerAbility(new NoneAbility());
         registerAbility(new ZeusAbility());
         registerAbility(new ArcherAbility());
         registerAbility(new FishermanAbility());

@@ -4,15 +4,16 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlipState;
-import kami.gg.souppvp.events.impl.sumo.Sumo;
-import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
+import kami.gg.souppvp.events.Event;
 import kami.gg.souppvp.feats.storage.StorageType;
 import kami.gg.souppvp.kit.progress.KitProgress;
 import kami.gg.souppvp.tier.TierCategory;
+import kami.gg.souppvp.timer.type.CombatTimer;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -24,8 +25,6 @@ public class Profile {
     private String username;
     private ProfileState profileState;
     private CoinFlipState coinFlipState;
-    private Sumo sumoEvent;
-    private TNTTagGame tntTagGame;
     private int tier;
     private String selectedTierIcon;
 
@@ -130,8 +129,6 @@ public class Profile {
         this.profileState = ProfileState.SPAWN;
         this.coinFlipState = CoinFlipState.NONE;
 
-        this.sumoEvent = null;
-        this.tntTagGame = null;
         this.eventsWon = 0;
 
         this.juggernaut = false;
@@ -322,25 +319,38 @@ public class Profile {
         return kitProgress.computeIfAbsent(kitName.toLowerCase(), k -> new KitProgress());
     }
 
+    public Event getActiveEvent() {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return null;
+        return SoupPvP.getInstance().getEventManager().getPlayerEvent(player);
+    }
+
     public boolean isInEvent() {
-        return this.sumoEvent != null || this.tntTagGame != null;
-    }
-
-    public void removeSpawnTeleportation() {
-        SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().remove(uuid);
-    }
-
-    public boolean isTeleportingToSpawn() {
-        return SoupPvP.getInstance().getSpawnTeleportationHandler().getSpawnTeleporataion().containsKey(uuid);
+        return getActiveEvent() != null;
     }
 
     public void addCombatTag() {
-        SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().put(uuid, System.currentTimeMillis() + (15 * 1000));
+        CombatTimer combatTimer = (CombatTimer) SoupPvP.getInstance().getTimerManager().getTimer("Combat");
+        if (combatTimer != null) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                combatTimer.applyCombatTag(player);
+            }
+        }
     }
 
     public boolean isCombatTagged() {
-        Long t = SoupPvP.getInstance().getCombatTagsHandler().getCombatTags().get(uuid);
-        return t != null && t - System.currentTimeMillis() > 0;
+        CombatTimer combatTimer = (CombatTimer) SoupPvP.getInstance().getTimerManager().getTimer("Combat");
+        if (combatTimer == null) return false;
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return false;
+        return combatTimer.isCombatTagged(player);
+    }
+
+    public long getCombatTag(Player player) {
+        CombatTimer combatTimer = (CombatTimer) SoupPvP.getInstance().getTimerManager().getTimer("Combat");
+        if (combatTimer == null) return 0;
+        return combatTimer.getRemainingCombatTime(player);
     }
 
     public double getWinPercent() {

@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.kit.ability.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -24,12 +25,13 @@ import java.util.concurrent.TimeUnit;
 public class CyclopsAbility implements KitAbility {
 
     private static final Random RANDOM = new Random();
-    private static final String LASER_NAME = "Laser Beam";
-    private static final int LASER_COOLDOWN = 45;
-    private static final int LASER_TICKS = 30;
-    private static final double LASER_CHANCE_RED = 0.5;
 
-    private final ItemStack laserItem = new ItemBuilder(Material.REDSTONE).name("&cLaser Beam").build();
+    private final Timer laserTimer;
+
+    public CyclopsAbility() {
+        this.laserTimer = new Timer(getName(), TimeUnit.SECONDS.toMillis(45));
+        SoupPvP.getInstance().getTimerManager().registerTimer(laserTimer);
+    }
 
     @Override
     public String getName() {
@@ -48,7 +50,7 @@ public class CyclopsAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return laserItem.clone();
+        return new ItemBuilder(Material.REDSTONE).name("&cLaser Beam").build();
     }
 
     @EventHandler
@@ -58,7 +60,10 @@ public class CyclopsAbility implements KitAbility {
         ItemStack item = event.getItem();
 
         if (!isRightClick(event.getAction())) return;
-        if (item == null || !item.isSimilar(laserItem)) return;
+        if (item == null || !AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
+
+        // Check if player has Cyclops ability
+        if (!hasAbility(player, profile, getName())) return;
 
         event.setCancelled(true);
         player.updateInventory();
@@ -68,15 +73,14 @@ public class CyclopsAbility implements KitAbility {
             return;
         }
 
-        if (SoupPvP.getInstance().getTimersHandler().hasTimer(player.getUniqueId(), LASER_NAME, true)) {
-            long remaining = SoupPvP.getInstance().getTimersHandler().getRemaining(player.getUniqueId(), LASER_NAME, true);
-            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(remaining, true) + "&c."));
+        if (laserTimer.hasTimer(player)) {
+            player.sendMessage(CC.t("&cYou can't use this for another &e" + DurationFormatter.getRemaining(laserTimer.getRemaining(player), true) + "&c."));
             return;
         }
 
         // Apply cooldown
-        SoupPvP.getInstance().getTimersHandler().addPlayerTimer(player.getUniqueId(), new Timer(LASER_NAME, TimeUnit.SECONDS.toMillis(LASER_COOLDOWN)), true);
-        XPBarTimer.runXpBar(player, LASER_COOLDOWN);
+        laserTimer.applyTimer(player);
+        XPBarTimer.runXpBar(player, 45);
         PlayerUtil.playSound(player, Sound.GHAST_SCREAM, 1.0);
         player.getNearbyEntities(5, 5, 5)
                 .stream()
@@ -89,12 +93,12 @@ public class CyclopsAbility implements KitAbility {
 
             @Override
             public void run() {
-                if (ticks++ >= LASER_TICKS || !player.isOnline()) {
+                if (ticks++ >= 30 || !player.isOnline()) {
                     cancel();
                     return;
                 }
 
-                boolean red = RANDOM.nextDouble() <= LASER_CHANCE_RED;
+                boolean red = RANDOM.nextDouble() <= 0.5;
                 spawnLaserBeam(player, red);
             }
         }.runTaskTimer(SoupPvP.getInstance(), 1L, 1L);

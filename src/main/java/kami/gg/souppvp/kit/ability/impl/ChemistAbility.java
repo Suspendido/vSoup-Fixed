@@ -33,15 +33,7 @@ public class ChemistAbility implements KitAbility {
 
     @Override
     public ItemStack getItem() {
-        return new ItemBuilder(Material.POTION)
-                .durability(HARMING_POTION)
-                .name("&d&lPotion Refill")
-                .lore(
-                        "&7Refill splash potions on kill",
-                        "&7- Instant Damage",
-                        "&7- Poison"
-                )
-                .build();
+        return new ItemBuilder(Material.POTION).durability(HARMING_POTION).amount(3).build();
     }
 
     @EventHandler
@@ -53,6 +45,7 @@ public class ChemistAbility implements KitAbility {
 
         if (profile == null) return;
         if (profile.isInEvent() || profile.getProfileState() == ProfileState.SPAWN) return;
+        if (!hasAbility(killer, profile, getName())) return;
 
         giveRefillPotions(killer);
     }
@@ -66,9 +59,7 @@ public class ChemistAbility implements KitAbility {
                     .durability(POISON_POTION)
                     .build();
 
-            if (!tryStackPotion(killer, poisonPotion, 1)) {
-                killer.getWorld().dropItemNaturally(killer.getLocation(), poisonPotion);
-            }
+            killer.getInventory().addItem(poisonPotion);
         }
 
         int harmingCount = countPotions(killer);
@@ -79,9 +70,7 @@ public class ChemistAbility implements KitAbility {
                     .durability(HARMING_POTION)
                     .build();
 
-            if (!tryStackPotion(killer, harmingPotions, 2)) {
-                killer.getWorld().dropItemNaturally(killer.getLocation(), harmingPotions);
-            }
+            killer.getInventory().addItem(harmingPotions);
             return;
         }
 
@@ -112,24 +101,5 @@ public class ChemistAbility implements KitAbility {
             }
         }
         return count;
-    }
-
-    private boolean tryStackPotion(Player player, ItemStack item, int maxAdd) {
-        for (ItemStack slot : player.getInventory().getContents()) {
-            if (slot != null && slot.isSimilar(item)) {
-                int newAmount = slot.getAmount() + item.getAmount();
-                if (newAmount <= 64) {
-                    slot.setAmount(newAmount);
-                    return true;
-                }
-            }
-        }
-
-        if (player.getInventory().firstEmpty() != -1) {
-            player.getInventory().addItem(item);
-            return true;
-        }
-
-        return false;
     }
 }
