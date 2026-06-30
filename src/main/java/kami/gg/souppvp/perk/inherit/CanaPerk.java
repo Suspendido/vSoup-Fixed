@@ -4,7 +4,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.TasksUtility;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +14,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CanaPerk extends Perk implements Listener {
@@ -32,9 +30,7 @@ public class CanaPerk extends Perk implements Listener {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7Water acts as lava, and lava acts as water"));
-        return lore;
+        return List.of("&7Water acts as lava, and lava acts as water");
     }
 
     @Override

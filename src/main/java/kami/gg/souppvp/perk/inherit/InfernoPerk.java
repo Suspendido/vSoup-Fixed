@@ -3,7 +3,6 @@ package kami.gg.souppvp.perk.inherit;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.TaskUtil;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -13,9 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InfernoPerk extends Perk implements Listener {
@@ -32,10 +29,7 @@ public class InfernoPerk extends Perk implements Listener {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7After being on fire for 10 seconds"));
-        lore.add(CC.t("&7You will be extinguished."));
-        return lore;
+        return List.of("&7After being on fire for 10 seconds", "&7You will be extinguished");
     }
 
     @Override
@@ -48,24 +42,29 @@ public class InfernoPerk extends Perk implements Listener {
         return 850;
     }
 
-
     @EventHandler
-    public void onEntityDamageEvent(EntityDamageEvent event){
-        if (!(event.getEntity() instanceof Player)) return;
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getUniqueId());
-        Perk currentPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1));
-        Perk infernoPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Inferno");
-        if (currentPerk == infernoPerk){
-            if (event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK || event.getCause() == EntityDamageEvent.DamageCause.FIRE) {
-                TaskUtil.runLater(() -> {
-                    if (event.getEntity().getFireTicks() > 0) {
-                        event.getEntity().setFireTicks(0);
-                        event.getEntity().getLocation().getWorld().playSound(event.getEntity().getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
-                        event.getEntity().getWorld().spigot().playEffect(event.getEntity().getLocation().add(new Vector(0, 1.5, 0)), Effect.LARGE_SMOKE, 26, 0, 0.1F, 0.5F, 0.1F, 0.2F, 50, 50);
-                    }
-                }, 20 * 10);
-            }
-        }
+    public void onEntityDamageEvent(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
+        if (profile.isInEvent()) return;
+        if (!profile.getActivePerks().contains(getName())) return;
+
+        EntityDamageEvent.DamageCause cause = event.getCause();
+        if (cause != EntityDamageEvent.DamageCause.FIRE_TICK && cause != EntityDamageEvent.DamageCause.FIRE) return;
+
+        TaskUtil.runLater(() -> {
+            if (!player.isOnline() || player.getFireTicks() <= 0) return;
+
+            player.setFireTicks(0);
+            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 1F, 1F);
+            player.getWorld().spigot().playEffect(
+                    player.getLocation().add(0, 1.5, 0),
+                    Effect.LARGE_SMOKE, 26, 0,
+                    0.1F, 0.5F, 0.1F, 0.2F, 50, 50
+            );
+        }, 20 * 10);
     }
 
 }

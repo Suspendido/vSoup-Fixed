@@ -3,9 +3,10 @@ package kami.gg.souppvp.perk.inherit;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,11 +14,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class DeathDoUsApartPerk extends Perk implements Listener {
+
+    private static final List<ItemStack> DEBUFFS = List.of(
+            new ItemBuilder(Material.POTION).durability(16388).build(), // Slowness
+            new ItemBuilder(Material.POTION).durability(16420).build(), // Slowness II
+            new ItemBuilder(Material.POTION).durability(16452).build(), // Slowness III
+            new ItemBuilder(Material.POTION).durability(16424).build(), // Weakness
+            new ItemBuilder(Material.POTION).durability(16456).build(), // Weakness II
+            new ItemBuilder(Material.POTION).durability(16426).build(), // Poison
+            new ItemBuilder(Material.POTION).durability(16458).build(), // Poison II
+            new ItemBuilder(Material.POTION).durability(16460).build(), // Blindness
+            new ItemBuilder(Material.POTION).durability(16428).build()  // Nausea
+    );
 
     @Override
     public String getName() {
@@ -31,10 +43,7 @@ public class DeathDoUsApartPerk extends Perk implements Listener {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7Have a chance to spawn a random debuff"));
-        lore.add(CC.t("&7potions at your death point."));
-        return lore;
+        return List.of("&7Have a chance to spawn a random debuff at your death point");
     }
 
     @Override
@@ -48,28 +57,21 @@ public class DeathDoUsApartPerk extends Perk implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getUniqueId());
+    public void onPlayerDeathEvent(PlayerDeathEvent e) {
+        if (!(e.getEntity() instanceof Player player)) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
         if (profile.isInEvent()) return;
-        Perk currentPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(1));
-        if (currentPerk == null) return;
-        Perk deathDoUsApartPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Death Do Us Apart");
-        if (currentPerk == deathDoUsApartPerk){
-            if (new Random().nextDouble() >= 0.5){
-                for (int i=0; i<2; i++){
-                    Random random = new Random();
-                    int randomNumber = random.nextInt(SoupPvP.getInstance().getPerksHandler().getDeathDoUsApartDebuffsList().size());
-                    ItemStack itemStack = SoupPvP.getInstance().getPerksHandler().getDeathDoUsApartDebuffsList().get(randomNumber);
-                    ThrownPotion thrownPotion = (ThrownPotion) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation().add(0, 5, 0), EntityType.SPLASH_POTION);
-                    thrownPotion.setItem(itemStack);
-                }
-            } else {
-                Random random = new Random();
-                int randomNumber = random.nextInt(SoupPvP.getInstance().getPerksHandler().getDeathDoUsApartDebuffsList().size());
-                ItemStack itemStack = SoupPvP.getInstance().getPerksHandler().getDeathDoUsApartDebuffsList().get(randomNumber);
-                ThrownPotion thrownPotion = (ThrownPotion) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation().add(0, 5, 0), EntityType.SPLASH_POTION);
-                thrownPotion.setItem(itemStack);
-            }
+        if (!profile.getActivePerks().contains(getName())) return;
+
+        Random random = new Random();
+        int count = random.nextDouble() >= 0.5 ? 2 : 1;
+
+        for (int i = 0; i < count; i++) {
+            ItemStack itemStack = DEBUFFS.get(random.nextInt(DEBUFFS.size()));
+            ThrownPotion potion = (ThrownPotion) player.getWorld().spawnEntity(player.getLocation().add(0, 5, 0), EntityType.SPLASH_POTION);
+            potion.setItem(itemStack);
         }
     }
 

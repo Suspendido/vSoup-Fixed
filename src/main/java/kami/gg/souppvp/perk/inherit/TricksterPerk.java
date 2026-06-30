@@ -22,10 +22,7 @@ public class TricksterPerk extends Perk {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add("&7You will never display the correct");
-        lore.add("&7health or bounty above your head.");
-        return CC.t(lore);
+        return List.of("&7You will never display the correct", "&7health or bounty above your head.");
     }
 
     @Override
@@ -37,6 +34,5 @@ public class TricksterPerk extends Perk {
     public int getCost() {
         return 350;
     }
-
 
 }

@@ -3,8 +3,8 @@ package kami.gg.souppvp.perk.inherit;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.CC;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -30,10 +29,7 @@ public class JuggernautPerk extends Perk implements Listener {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7Enemy kills give you Regeneration I"));
-        lore.add(CC.t("&7for up to 10 seconds."));
-        return lore;
+        return List.of("&7Enemy kills gives you Regen I", "&7for up to 10 seconds");
     }
 
     @Override
@@ -46,17 +42,17 @@ public class JuggernautPerk extends Perk implements Listener {
         return 2000;
     }
 
-
     @EventHandler
-    public void onPlayerDeathEvent(PlayerDeathEvent event){
-        if (event.getEntity().getKiller() == null) return;
-        Perk juggernautPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Juggernaut");
-        Profile killerProfile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getKiller().getUniqueId());
-        if (killerProfile.isInEvent()) return;
-        if (SoupPvP.getInstance().getPerksHandler().getPerkByName(killerProfile.getActivePerks().get(2)) == juggernautPerk){
-            int number = new Random().nextInt(11);
-            event.getEntity().getKiller().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number * 20, 0));
-        }
+    public void onPlayerDeathEvent(PlayerDeathEvent e) {
+        if (!(e.getEntity().getKiller() instanceof Player player)) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
+        if (profile.isInEvent()) return;
+        if (!profile.getActivePerks().contains(getName())) return;
+
+        int seconds = new Random().nextInt(10) + 1;
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, seconds * 20, 0));
     }
 
 }

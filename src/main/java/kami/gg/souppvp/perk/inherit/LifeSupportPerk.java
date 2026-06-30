@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -30,10 +29,7 @@ public class LifeSupportPerk extends Perk implements Listener {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7Chance to be saved from death by"));
-        lore.add(CC.t("&7receiving bonus hearts."));
-        return lore;
+        return List.of("&7Chance to be saved from death by", "&7receiving bonus hearts.");
     }
 
     @Override
@@ -46,21 +42,19 @@ public class LifeSupportPerk extends Perk implements Listener {
         return 2000;
     }
 
-
     @EventHandler
-    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event){
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player){
-            Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getEntity().getUniqueId());
-            Perk currentPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName(profile.getActivePerks().get(2));
-            Perk lifeSupportPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Life Support");
-            if (currentPerk == lifeSupportPerk){
-                if (((Player) event.getEntity()).getHealth() < 3.0){
-                    if (new Random().nextDouble() <= 0.3){
-                        ((Player) event.getEntity()).setHealth(((Player) event.getEntity()).getMaxHealth());
-                        event.getEntity().sendMessage(CC.t("&cYour Life Support Perk came in clutch."));
-                    }
-                }
-            }
+    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player player)) return;
+        if (!(e.getDamager() instanceof Player)) return;
+
+        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
+        if (profile == null) return;
+        if (profile.isInEvent()) return;
+        if (!profile.getActivePerks().contains(getName())) return;
+
+        if (player.getHealth() < 3.0 && new Random().nextDouble() <= 0.3) {
+            player.setHealth(player.getMaxHealth());
+            player.sendMessage(CC.t("&cYour Life Support Perk came in clutch."));
         }
     }
 

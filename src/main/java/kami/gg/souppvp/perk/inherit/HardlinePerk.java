@@ -22,10 +22,7 @@ public class HardlinePerk extends Perk {
 
     @Override
     public List<String> getDescription() {
-        List<String> lore = new ArrayList<>();
-        lore.add(CC.t("&7Require 1 less kill for your killstreaks."));
-        lore.add(CC.t("&c&lNOTE: &7Resets your current killstreak when removed."));
-        return lore;
+        return List.of("&7Require 1 less kill for your killstreaks.", "&c&lNOTE: &7Resets your current killstreak when removed.");
     }
 
     @Override
@@ -37,6 +34,5 @@ public class HardlinePerk extends Perk {
     public int getCost() {
         return 1000;
     }
-
 
 }
