@@ -4,20 +4,23 @@ price: 5000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: GOLD_AXE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Dwarf§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §6Dwarf'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Crouch to charge up a blast that'
 - '&7knocks players away.'
 enabled: true
-combatEquipments:
-- ==: org.bukkit.inventory.ItemStack
-  type: GOLD_AXE
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §9Dwarf's Axe
-    enchants:
-      DAMAGE_ALL: 3
-      DURABILITY: 10
+combatEquipments: []
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

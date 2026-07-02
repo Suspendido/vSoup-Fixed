@@ -5,6 +5,18 @@ icon:
   ==: org.bukkit.inventory.ItemStack
   type: INK_SACK
   damage: 2
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Yoda§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §aYoda'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7With the capabilities of Yoda, the jet master,'
 - '&7create a pulling force to pull enemies towards you.'
@@ -12,13 +24,6 @@ enabled: true
 combatEquipments:
 - ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
-- ==: org.bukkit.inventory.ItemStack
-  type: INK_SACK
-  damage: 2
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §aThe Force
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

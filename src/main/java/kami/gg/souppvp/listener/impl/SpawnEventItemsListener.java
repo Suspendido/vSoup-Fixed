@@ -6,7 +6,7 @@ import kami.gg.souppvp.events.menu.HostEventsMenu;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.kit.KitsHandler;
 import kami.gg.souppvp.kit.menu.KitsSelectMenu;
-import kami.gg.souppvp.options.OptionsMenu;
+import kami.gg.souppvp.profile.menus.options.OptionsMenu;
 import kami.gg.souppvp.perk.menu.AllPerksMenu;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.shop.ShopMenu;

@@ -4,6 +4,18 @@ price: 5000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: FEATHER
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Phantom§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §7Phantom'
+    - '§b┃ §fSecondary Ability: §dChemist'
 description:
 - '&7Fly high into the sky to escape from awkward'
 - '&7situations.'
@@ -16,12 +28,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DAMAGE_ALL: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: FEATHER
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §7Phantom
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: LEATHER_BOOTS

@@ -3,6 +3,7 @@ package kami.gg.souppvp.util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public class ItemUtils {
@@ -45,5 +46,18 @@ public class ItemUtils {
         }
 
         return material;
+    }
+
+    public static String getName(ItemStack item) {
+        if (item == null) {
+            return "Unknown";
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName()) {
+            return meta.getDisplayName();
+        }
+
+        return item.getType().name().replace("_", " ").toLowerCase();
     }
 }

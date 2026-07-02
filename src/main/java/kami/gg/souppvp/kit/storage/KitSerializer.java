@@ -42,23 +42,40 @@ public class KitSerializer {
         KitRarity rarity = KitRarity.valueOf(section.getString("rarity"));
         Integer price = section.getInt("price");
         ItemStack icon = section.getItemStack("icon");
+        if (icon != null) {
+            icon = icon.clone(); // Clone icon to avoid memory leak
+        }
 
         @SuppressWarnings("unchecked")
-        List<String> description = (List<String>) section.getList("description", new ArrayList<>());
+        List<String> description = new ArrayList<>((List<String>) section.getList("description", new ArrayList<>()));
         boolean enabled = section.getBoolean("enabled", true);
 
         @SuppressWarnings("unchecked")
-        List<ItemStack> combatEquipments = (List<ItemStack>) section.getList("combatEquipments", new ArrayList<>());
+        List<ItemStack> rawCombatEquipments = (List<ItemStack>) section.getList("combatEquipments", new ArrayList<>());
+        List<ItemStack> combatEquipments = new ArrayList<>();
+        for (ItemStack item : rawCombatEquipments) {
+            if (item != null) {
+                combatEquipments.add(item.clone()); // Clone each item to avoid memory leak
+            }
+        }
 
         @SuppressWarnings("unchecked")
         List<ItemStack> armorList = (List<ItemStack>) section.getList("armor", new ArrayList<>());
         ItemStack[] armor = new ItemStack[4];
         for (int i = 0; i < Math.min(4, armorList.size()); i++) {
-            armor[i] = armorList.get(i);
+            if (armorList.get(i) != null) {
+                armor[i] = armorList.get(i).clone(); // Clone each armor piece to avoid memory leak
+            }
         }
 
         @SuppressWarnings("unchecked")
-        List<PotionEffect> potionEffects = (List<PotionEffect>) section.getList("potionEffects", new ArrayList<>());
+        List<PotionEffect> rawPotionEffects = (List<PotionEffect>) section.getList("potionEffects", new ArrayList<>());
+        List<PotionEffect> potionEffects = new ArrayList<>();
+        for (PotionEffect effect : rawPotionEffects) {
+            if (effect != null) {
+                potionEffects.add(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.hasParticles())); // Clone potion effect
+            }
+        }
 
         CustomKit kit = new CustomKit(name, rarity, price, icon, description, combatEquipments, armor, potionEffects, primaryAbility, secondaryAbility);
         kit.setEnabled(enabled);

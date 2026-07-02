@@ -1,6 +1,7 @@
 package kami.gg.souppvp.timer;
 
 import kami.gg.souppvp.SoupPvP;
+import kami.gg.souppvp.util.TaskUtil;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
@@ -14,7 +15,7 @@ public class TimerManager {
     public TimerManager(SoupPvP plugin) {
         this.playerTimers = new LinkedHashMap<>();
 
-        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this::tickAll, 2L, 2L);
+        TaskUtil.runAsync(this::tickAll);
     }
 
     public void registerTimer(Timer timer) {

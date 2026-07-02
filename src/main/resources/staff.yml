@@ -10,85 +10,65 @@ STAFF_MODE:
     - 'logout'
   STAFF_ITEMS:
     VANISH_ON:
-      NAME: '&3Vanish &c(Disabled)'
-      ACTION: 'VANISH_ON' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      NAME: '&bVanish &c(Disabled)'
+      ACTION: 'VANISH_ON' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER
       MATERIAL: 'INK_SACK'
       DATA: 8
       SLOT: 1
       REPLACE: 'VANISH_OFF' # When clicked, which item should replace this one.
       COMMAND: ''
       LORE:
-        - '&eClick to appear to all online players. '
+        - '&fClick to appear to all online players. '
     VANISH_OFF:
-      NAME: '&3Vanish &a(Enabled)'
-      ACTION: 'VANISH_OFF' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      NAME: '&bVanish &a(Enabled)'
+      ACTION: 'VANISH_OFF' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER
       MATERIAL: 'INK_SACK'
       DATA: 10
       SLOT: 1
       REPLACE: 'VANISH_ON' # When clicked, which item should replace this one.
       COMMAND: ''
       LORE:
-        - '&eClick to vanish from all online players.'
+        - '&7Click to vanish from all online players.'
     FREEZE:
       NAME: '&bFreeze'
-      ACTION: 'FREEZE' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      ACTION: 'FREEZE' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER
       MATERIAL: 'ICE'
       DATA: 0
       SLOT: 2
       REPLACE: '' # When clicked, which item should replace this one.
       COMMAND: ''
       LORE:
-        - '&eClick a player to freeze them.'
+        - '&7Click a player to freeze them.'
     RANDOM_TP:
-      NAME: '&6Random Teleport'
-      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
-      MATERIAL: 'FEATHER'
+      NAME: '&bRandom Teleport'
+      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER
+      MATERIAL: 'WATCH'
       DATA: 0
       SLOT: 8
       REPLACE: '' # When clicked, which item should replace this one.
       COMMAND: '/randomtp'
       LORE:
-        - '&eClick to randomly teleport to a online player.'
-    RANDOM_TP_COMBAT:
-      NAME: '&4Teleport Combat'
-      ACTION: 'COMBAT_TP' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
-      MATERIAL: 'BLAZE_ROD'
-      DATA: 0
-      SLOT: 6
-      REPLACE: '' # When clicked, which item should replace this one.
-      COMMAND: ''
-      LORE:
-        - '&eClick to randomly teleport to players in combat.'
+        - '&7Click to randomly teleport to a online player..'
     INSPECTION:
-      NAME: '&dInventory Inspect'
-      ACTION: 'INSPECTION' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      NAME: '&bInventory Inspect'
+      ACTION: 'INSPECTION' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER
       MATERIAL: 'BOOK'
       DATA: 0
       SLOT: 9
       REPLACE: '' # When clicked, which item should replace this one.
       COMMAND: ''
       LORE:
-        - '&eClick a player to inspect their inventory.'
+        - '&7Click a player to inspect their inventory.'
     COMPASS:
-      NAME: '&cWall Teleport'
-      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
+      NAME: '&bWall Teleport'
+      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER
       MATERIAL: 'COMPASS'
       DATA: 0
       SLOT: 5
       REPLACE: '' # When clicked, which item should replace this one.
       COMMAND: ''
       LORE:
-        - '&eClick a wall to teleport through it.'
-    CARPET:
-      NAME: '&5Online Staff'
-      ACTION: '' # Can be: VANISH_OFF, VANISH_ON, INSPECTION, FREEZE, INTERACT_PLAYER, COMBAT_TP
-      MATERIAL: 'SKULL_ITEM'
-      DATA: 0
-      SLOT: 4
-      REPLACE: '' # When clicked, which item should replace this one.
-      COMMAND: '/staffonline'
-      LORE:
-        - '&eClick to view online staff.'
+        - '&7Click a wall to teleport through it.'
   INSPECTION_MENU:
     TITLE: '&dInspection Menu'
     SIZE: 54
@@ -126,12 +106,11 @@ STAFF_MODE:
     TITLE: '&dOnline Staff'
     SIZE: 27
     STAFF_HEAD:
-      NAME: '%rank-prefix%&d%color%%player%'
+      NAME: '%rank-prefix%%color%%player%'
       MATERIAL: 'SKULL_ITEM'
       DATA: 3
-      COMMAND: '/teleport %player%'
+      COMMAND: '/tp %player%'
       LORE:
-        - '&ePlaytime: &d%playtime%'
         - ''
         - '&eStaff Mode: %staff%'
         - '&eVanished: %vanish%'
@@ -158,3 +137,8 @@ STAFF_MODE:
     - '&d&lYou are currently frozen!'
     - '&eJoin the teamspeak: &dts.azurite.cc'
     - '&7&m---------------------------'
+HIDE_STAFF_COMMAND:
+  ENABLED: '&dHide Staff: &aEnabled'
+  DISABLED: '&dHide Staff: &cDisabled'
+INVSEE_COMMAND:
+  USAGE: '&cUsage: /invsee <player>'

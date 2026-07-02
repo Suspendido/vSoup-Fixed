@@ -17,6 +17,7 @@ import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
 import kami.gg.souppvp.feats.quest.QuestManager;
 import kami.gg.souppvp.feats.soupsays.SoupSaysManager;
 import kami.gg.souppvp.feats.staff.StaffManager;
+import kami.gg.souppvp.feats.treasurechest.TreasureChestHandler;
 import kami.gg.souppvp.handlers.*;
 import kami.gg.souppvp.feats.hooks.clients.ClientHook;
 import kami.gg.souppvp.feats.hooks.ranks.IRankHook;
@@ -110,6 +111,7 @@ public class SoupPvP extends JavaPlugin {
     private MenuManager menuManager;
     private EventManager eventManager;
     private ActionBarManager actionBarManager;
+    private TreasureChestHandler treasureChestHandler;
 
     @Override
     public void onEnable() {
@@ -143,8 +145,6 @@ public class SoupPvP extends JavaPlugin {
             getServer().getPluginManager().registerEvents(ability, this);
         }
 
-        // Copy default kit YAML files from resources to data folder BEFORE loading kits
-        KitsHandler.copyDefaultKits();
         kitsHandler = new KitsHandler(kitStorage);
         menuManager = new MenuManager(this);
         profilesHandler = new ProfilesHandler();
@@ -155,7 +155,7 @@ public class SoupPvP extends JavaPlugin {
         tntTagHandler = new TNTTagHandler();
         noFallDamageHandler = new NoFallDamageHandler();
         perksHandler = new PerksHandler();
-        killstreaksHandler = new KillstreaksHandler();
+        killstreaksHandler = new KillstreaksHandler(this);
         listenerManager = new ListenerManager();
         mapManager = new MapManager();
         leaderboardManager = new LeaderboardManager();
@@ -173,6 +173,7 @@ public class SoupPvP extends JavaPlugin {
 
         eventManager = new EventManager(this);
         actionBarManager = new ActionBarManager(this);
+        treasureChestHandler = new TreasureChestHandler(this);
         
         (new PacketBorderHandler()).start();
 
@@ -207,6 +208,7 @@ public class SoupPvP extends JavaPlugin {
             SoupPvP.getInstance().getProfilesHandler().saveProfiles();
         }
 
+        treasureChestHandler.saveData();
         tablistManager.cleanup();
         scoreboardManager.cleanup();
         assemble.cleanup();

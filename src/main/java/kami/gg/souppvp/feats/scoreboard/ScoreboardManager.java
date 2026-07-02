@@ -91,6 +91,10 @@ public class ScoreboardManager {
             return this.getScoreboardConfig().getString("SCOREBOARD_INFO.STATIC_TITLE");
         }
 
+        if (currentTitleFrame >= titleFrames.size()) {
+            currentTitleFrame = 0;
+        }
+
         String frame = titleFrames.get(currentTitleFrame);
         return processPlaceholders(player, frame);
     }

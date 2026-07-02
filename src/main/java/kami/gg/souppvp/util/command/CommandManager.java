@@ -13,6 +13,7 @@ import kami.gg.souppvp.events.command.EventCommand;
 import kami.gg.souppvp.feats.leaderboard.command.LeaderboardCommand;
 import kami.gg.souppvp.feats.soupsays.command.SoupSaysCommand;
 import kami.gg.souppvp.feats.staff.command.*;
+import kami.gg.souppvp.feats.treasurechest.command.TreasureChestCommand;
 import kami.gg.souppvp.map.command.MapCommand;
 import kami.gg.souppvp.feats.storage.StorageStatsCommand;
 import kami.gg.souppvp.command.KitEditCommand;
@@ -54,6 +55,8 @@ public class CommandManager {
                 new MapCommand(this),
                 new KitEditCommand(this),
                 new ChangeLogAdminCommand(this),
+                new InvseeCommand(this),
+                new KillstreakEditorCommand(this),
 
                 // Normal
                 new SpawnCommand(this),
@@ -94,7 +97,10 @@ public class CommandManager {
                 new SetDeathsCommand(this),
                 new SetExpCommand(this),
                 new SetCreditsCommand(this),
-                new SetLevelCommand(this)
+                new SetLevelCommand(this),
+
+                // Treasure Chest
+                new TreasureChestCommand(this)
         ));
     }
 

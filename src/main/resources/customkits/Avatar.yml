@@ -5,6 +5,18 @@ icon:
   ==: org.bukkit.inventory.ItemStack
   type: INK_SACK
   damage: 12
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Avatar§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §bAvatar'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Have the ability to control elements. Shoot water'
 - '&7guns to slow enemies. Jump over enemies to set'
@@ -13,13 +25,6 @@ enabled: true
 combatEquipments:
 - ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
-- ==: org.bukkit.inventory.ItemStack
-  type: INK_SACK
-  damage: 12
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §bWater Gun
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

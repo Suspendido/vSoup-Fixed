@@ -7,6 +7,7 @@ import java.util.*;
 public class CC {
 
     public static String t(String string) {
+        if (string == null) return "";
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 

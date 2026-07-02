@@ -4,6 +4,18 @@ price: 0
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §7Default§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §7Common'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b0'
+    - '§b┃ §fPrimary Ability: §eCopyCat'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7The basic PvP kit that all players have access to. There are no'
 - '&7special abilities but this kit is still durable against others.'

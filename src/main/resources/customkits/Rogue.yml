@@ -4,6 +4,18 @@ price: 4500
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: GOLD_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §bRogue§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §bUltimate'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4500'
+    - '§b┃ §fPrimary Ability: §6Rogue'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Go rogue and backstab enemies.'
 - '&7A precise backstab deals massive damage.'
@@ -17,14 +29,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 3
-- ==: org.bukkit.inventory.ItemStack
-  type: GOLD_SWORD
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §6Backstab Dagger
-    enchants:
-      DURABILITY: 10
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: CHAINMAIL_BOOTS

@@ -1,7 +1,6 @@
 package kami.gg.souppvp.command;
 
-import kami.gg.souppvp.options.OptionsMenu;
-import kami.gg.souppvp.util.CC;
+import kami.gg.souppvp.profile.menus.options.OptionsMenu;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
 import org.bukkit.command.CommandSender;

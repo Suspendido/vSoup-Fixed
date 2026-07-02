@@ -4,6 +4,18 @@ price: 3500
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: FISHING_ROD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §aGrappler§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §aUncommon'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b3500'
+    - '§b┃ §fPrimary Ability: §aGrappler'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Have the ability to take daily vacations. Using your grappler, you can'
 - '&7hook yourself onto locations and can travel a vast distance if accurate.'
@@ -17,12 +29,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 3
-- ==: org.bukkit.inventory.ItemStack
-  type: FISHING_ROD
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §aGrappler
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

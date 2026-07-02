@@ -100,6 +100,8 @@ public class GeneralListeners implements Listener {
             return;
         }
 
+        if (plugin.getStaffManager().isStaffEnabled(player)) return;
+
         if (plugin.getSpawnHandler().getCuboid().contains(player)) {
             event.setCancelled(true);
         }

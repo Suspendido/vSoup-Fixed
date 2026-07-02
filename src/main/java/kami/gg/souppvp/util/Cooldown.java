@@ -38,9 +38,9 @@ public class Cooldown {
 
 	public String getTimeLeft() {
 		if (this.getRemaining() >= 60_000) {
-			return TimeUtil.millisToRoundedTime(this.getRemaining());
+			return Formatter.millisToRoundedTime(this.getRemaining());
 		} else {
-			return TimeUtil.millisToSeconds(this.getRemaining());
+			return Formatter.millisToSeconds(this.getRemaining());
 		}
 	}
     public boolean hasCooldown(Player player) {

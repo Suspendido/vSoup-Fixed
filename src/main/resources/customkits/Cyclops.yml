@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: REDSTONE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Cyclops§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §cCyclops'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Laser beam enemies with penetrable blocks to set'
 - '&7the exciting fights straight and scare off enemies.'
@@ -17,12 +29,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 3
-- ==: org.bukkit.inventory.ItemStack
-  type: REDSTONE
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §cLaser Beam
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

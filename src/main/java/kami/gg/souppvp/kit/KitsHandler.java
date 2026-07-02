@@ -8,9 +8,6 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,77 +124,5 @@ public class KitsHandler {
     public boolean isKitAvailable(String kitName) {
         Kit kit = getKitByName(kitName);
         return kit != null && kit.isEnabled();
-    }
-
-    public static void copyDefaultKits() {
-        File customKitsFolder = new File(SoupPvP.getInstance().getDataFolder(), "customkits");
-        if (!customKitsFolder.exists()) {
-            customKitsFolder.mkdirs();
-        }
-
-        // Get all .yml files from resources/customkits
-        try {
-            for (String kitFile : getResourceFolderFiles("customkits")) {
-                if (kitFile.endsWith(".yml")) {
-                    File targetFile = new File(customKitsFolder, kitFile);
-                    if (!targetFile.exists()) {
-                        try (InputStream inputStream = SoupPvP.getInstance().getResource("customkits/" + kitFile);
-                             FileOutputStream outputStream = new FileOutputStream(targetFile)) {
-                            if (inputStream != null) {
-                                byte[] buffer = new byte[1024];
-                                int length;
-                                while ((length = inputStream.read(buffer)) > 0) {
-                                    outputStream.write(buffer, 0, length);
-                                }
-                                SoupPvP.getInstance().getLogger().info("Copied default kit: " + kitFile);
-                            }
-                        } catch (Exception e) {
-                            SoupPvP.getInstance().getLogger().warning("Failed to copy default kit: " + kitFile);
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            SoupPvP.getInstance().getLogger().warning("Failed to list default kit files from resources");
-            e.printStackTrace();
-        }
-    }
-
-    private static String[] getResourceFolderFiles(String folderPath) {
-        try {
-            java.util.List<String> files = new java.util.ArrayList<>();
-            java.net.URL url = KitsHandler.class.getClassLoader().getResource(folderPath);
-            if (url != null && url.getProtocol().equals("jar")) {
-                // Running from JAR
-                java.util.jar.JarInputStream jar = new java.util.jar.JarInputStream(
-                    new java.io.FileInputStream(new java.io.File(KitsHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()))
-                );
-                java.util.jar.JarEntry entry;
-                while ((entry = jar.getNextJarEntry()) != null) {
-                    String name = entry.getName();
-                    if (name.startsWith(folderPath + "/") && !name.equals(folderPath + "/")) {
-                        files.add(name.substring(folderPath.length() + 1));
-                    }
-                }
-                jar.close();
-            } else {
-                // Running from IDE
-                File folder = new File(KitsHandler.class.getClassLoader().getResource(folderPath).toURI());
-                if (folder.exists() && folder.isDirectory()) {
-                    File[] fileList = folder.listFiles();
-                    if (fileList != null) {
-                        for (File file : fileList) {
-                            files.add(file.getName());
-                        }
-                    }
-                }
-            }
-            return files.toArray(new String[0]);
-        } catch (Exception e) {
-            SoupPvP.getInstance().getLogger().warning("Failed to list resource folder files: " + folderPath);
-            e.printStackTrace();
-            return new String[0];
-        }
     }
 }

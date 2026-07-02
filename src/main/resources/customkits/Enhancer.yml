@@ -4,6 +4,19 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: BREWING_STAND_ITEM
+  meta:
+    ==: ItemMeta
+    meta-type: TILE_ENTITY
+    display-name: §9Enhancer§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §dEnhancer'
+    - '§b┃ §fSecondary Ability: §cNone'
+    blockMaterial: BREWING_STAND_ITEM
 description:
 - '&7Gain access to a portable effects enhancer to gain advantages'
 - '&7above other players through effects like strength, regeneration, etc.'
@@ -17,13 +30,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 3
-- ==: org.bukkit.inventory.ItemStack
-  type: BREWING_STAND_ITEM
-  meta:
-    ==: ItemMeta
-    meta-type: TILE_ENTITY
-    display-name: §dStim Beacon
-    blockMaterial: BREWING_STAND_ITEM
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: GOLD_BOOTS

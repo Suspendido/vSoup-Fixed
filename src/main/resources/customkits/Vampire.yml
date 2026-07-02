@@ -5,6 +5,18 @@ icon:
   ==: org.bukkit.inventory.ItemStack
   type: MONSTER_EGG
   damage: 65
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §bVampire§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §bUltimate'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4500'
+    - '§b┃ §fPrimary Ability: §8Vampire'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Gain a bat shooting ability with a perk'
 - '&7of Regen V after each kill.'
@@ -18,13 +30,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: MONSTER_EGG
-  damage: 65
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §9Bat Blast
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: CHAINMAIL_BOOTS

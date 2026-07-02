@@ -1,7 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.kit.ability.AbilityItemComparator;
+import kami.gg.souppvp.kit.ability.util.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.timer.Timer;

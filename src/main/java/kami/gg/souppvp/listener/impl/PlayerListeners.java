@@ -7,7 +7,6 @@ import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.PlayerUtil;
 import kami.gg.souppvp.util.TaskUtil;
-import kami.gg.souppvp.util.TasksUtility;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -86,7 +85,7 @@ public class PlayerListeners implements Listener {
 
         if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.SPONGE) return;
 
-        TasksUtility.runTaskLater(() -> {
+        TaskUtil.runLater(() -> {
             player.setVelocity(player.getVelocity().setY(2.5));
             PlayerUtil.playSound(player, Sound.CHICKEN_EGG_POP, 1.0);
         }, 2L);

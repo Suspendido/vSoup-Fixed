@@ -4,6 +4,18 @@ price: 5000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: MELON
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Melon§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §2Melon'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Chop your enemies up with your melon and shoot'
 - '&7your melon tosser and toss your enemies into'
@@ -17,12 +29,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DAMAGE_ALL: 4
-- ==: org.bukkit.inventory.ItemStack
-  type: SPECKLED_MELON
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §2Melon Toss
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

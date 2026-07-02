@@ -4,7 +4,7 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.perk.Perk;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
-import kami.gg.souppvp.util.TasksUtility;
+import kami.gg.souppvp.util.TaskUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -89,15 +89,15 @@ public class CanaPerk extends Perk implements Listener {
         boolean inWater = feet == Material.WATER || feet == Material.STATIONARY_WATER || legs == Material.WATER || legs == Material.STATIONARY_WATER || head == Material.WATER || head == Material.STATIONARY_WATER;
 
         if (inLava) {
-            TasksUtility.runTaskLater(() -> player.setFireTicks(0), 2L);
+            TaskUtil.runLater(() -> player.setFireTicks(0), 2L);
             return;
         }
 
         if (inWater) {
             if (player.getFireTicks() > 0) {
-                TasksUtility.runTaskLater(() -> player.setFireTicks(0), 2L);
+                TaskUtil.runLater(() -> player.setFireTicks(0), 2L);
             } else {
-                TasksUtility.runTaskLater(() -> player.setFireTicks(200), 2L);
+                TaskUtil.runLater(() -> player.setFireTicks(200), 2L);
             }
         }
     }

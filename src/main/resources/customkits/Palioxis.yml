@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: ENDER_PEARL
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Palioxis§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §5Palioxis'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Like an enderman, teleport fast'
 - '&7and efficiently to your destination.'
@@ -16,8 +28,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DAMAGE_ALL: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: ENDER_PEARL
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

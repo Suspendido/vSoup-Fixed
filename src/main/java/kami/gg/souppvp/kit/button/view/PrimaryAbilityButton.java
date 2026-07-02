@@ -1,6 +1,7 @@
 package kami.gg.souppvp.kit.button.view;
 
 import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.util.ItemBuilder;
 import kami.gg.souppvp.util.menu.Button;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,6 +22,6 @@ public class PrimaryAbilityButton extends Button {
 
     @Override
     public ItemStack getButtonItem(Player player) {
-        return kit.getPrimaryAbility() != null ? kit.getPrimaryAbility().getItem() : Button.placeholder(Material.AIR).getButtonItem(player);
+        return kit.getPrimaryAbility() != null ? kit.getPrimaryAbility().getItem() : new ItemBuilder(Material.STAINED_GLASS_PANE).name(" ").data(15).build();
     }
 }

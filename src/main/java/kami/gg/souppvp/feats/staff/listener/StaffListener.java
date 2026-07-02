@@ -103,7 +103,7 @@ public class StaffListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClickFrozen(PlayerInteractEvent e) {
         Player player = e.getPlayer();
 
@@ -142,7 +142,7 @@ public class StaffListener implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (!e.getAction().name().contains("RIGHT")) return;
 
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
@@ -175,7 +175,7 @@ public class StaffListener implements Listener {
         Player player = e.getPlayer();
 
         if (instance.getStaffManager().isStaffEnabled(player)) {
-            ItemStack hand = getItemInHand(player);
+            ItemStack hand = player.getItemInHand();
 
             if (hand == null) return;
 
@@ -188,7 +188,7 @@ public class StaffListener implements Listener {
             interactCooldown.applyCooldownTicks(player, 100); // 0.1s
 
             if (staffItem.action() == StaffItemAction.INSPECTION) {
-                new InspectionMenu(player).update();
+                new InspectionMenu(player).open();
 
             } else if (staffItem.action() == StaffItemAction.FREEZE) {
                 player.chat("/freeze " + clicked.getName());
@@ -335,48 +335,40 @@ public class StaffListener implements Listener {
     }
 
     private void handleClick(Player player) {
-        ItemStack hand = getItemInHand(player);
+        ItemStack hand = player.getItemInHand();
 
-        if (hand != null) {
-            StaffItem staffItem = instance.getStaffManager().getItem(hand);
+        if (hand == null || hand.getType() == Material.AIR) {
+            return;
+        }
 
-            // Not a staff item.
-            if (staffItem == null) return;
+        StaffItem staffItem = instance.getStaffManager().getItem(hand);
 
-            // Handle replacing of hand
-            if (staffItem.replacement() != null) {
-                for (StaffItem item : instance.getStaffManager().getStaffItems().values()) {
-                    if (!item.name().equals(staffItem.replacement())) continue;
-                    setItemInHand(player, item.item());
-                }
-            }
+        // Not a staff item.
+        if (staffItem == null) return;
 
-            if (!staffItem.command().isEmpty()) {
-                player.chat(staffItem.command());
-            }
-
-            if (staffItem.action() != null) {
-                switch (staffItem.action()) {
-                    case VANISH_OFF:
-                        instance.getStaffManager().disableVanish(player);
-                        break;
-
-                    case VANISH_ON:
-                        instance.getStaffManager().enableVanish(player);
-                        break;
-                }
+        // Handle replacing of hand
+        if (staffItem.replacement() != null) {
+            for (StaffItem item : instance.getStaffManager().getStaffItems().values()) {
+                if (!item.name().equals(staffItem.replacement())) continue;
+                player.getInventory().setItemInHand(item.item());
+                player.updateInventory();
             }
         }
-    }
-    public ItemStack getItemInHand(Player player) {
-        ItemStack hand = player.getInventory().getItemInHand();
-        if (hand.getType() == Material.AIR) return null;
 
-        return hand;
-    }
+        if (!staffItem.command().isEmpty()) {
+            player.chat(staffItem.command());
+        }
 
-    public void setItemInHand(Player player, ItemStack item) {
-        player.getInventory().setItemInHand(item);
-        player.updateInventory();
+        if (staffItem.action() != null) {
+            switch (staffItem.action()) {
+                case VANISH_OFF:
+                    instance.getStaffManager().disableVanish(player);
+                    break;
+
+                case VANISH_ON:
+                    instance.getStaffManager().enableVanish(player);
+                    break;
+            }
+        }
     }
 }

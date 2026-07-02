@@ -87,6 +87,7 @@ public class PlayerUtil {
         spawn.add(0.5, 0, 0.5);
         player.teleport(spawn);
 
+        profile.saveExtraItems(player);
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[4]);
 
@@ -117,7 +118,7 @@ public class PlayerUtil {
             player.removePotionEffect(potionEffect.getType());
         }
 
-        TasksUtility.runTaskAsync(() -> XPBarTimer.remove(player));
+        TaskUtil.runAsync(() -> XPBarTimer.remove(player));
         SoupPvP.getInstance().getTimerManager().getTimer("Combat").removeTimer(player);
         SoupPvP.getInstance().getNoFallDamageHandler().getNoFallDamage().remove(player.getUniqueId());
     }

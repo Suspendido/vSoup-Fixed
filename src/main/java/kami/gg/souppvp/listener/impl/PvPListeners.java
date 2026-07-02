@@ -17,14 +17,18 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PvPListeners implements Listener {
 
     private final SoupPvP plugin = SoupPvP.getInstance();
+    private final HashMap<UUID, UUID> revengeMap = new HashMap<>();
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
@@ -91,6 +95,22 @@ public class PvPListeners implements Listener {
 
                 if (hasProAbility) credits *= 2;
                 if (easySoupDisabled) credits *= 2;
+
+                // Revenge perk logic
+                if (profile.getActivePerks().contains("Revenge")) {
+                    revengeMap.put(profile.getUuid(), killer.getUniqueId());
+                    player.sendMessage(CC.t("&cYou need to take your revenge on &e" + killer.getName() + "&c."));
+                }
+
+                boolean hasRevenge = killerProfile.getActivePerks().contains("Revenge");
+                if (hasRevenge) {
+                    UUID revengeTarget = revengeMap.get(killer.getUniqueId());
+                    if (revengeTarget != null && revengeTarget.equals(profile.getUuid())) {
+                        credits *= 3;
+                        killer.sendMessage(CC.t("&aYou earned triple credits for killing &e" + player.getName() + "&a."));
+                        revengeMap.remove(killer.getUniqueId());
+                    }
+                }
 
                 killerProfile.setCredits(killerProfile.getCredits() + credits);
                 killerProfile.setExperiences(killerProfile.getExperiences() + 3);
@@ -170,5 +190,10 @@ public class PvPListeners implements Listener {
         for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, soup.clone());
 
         player.openInventory(inv);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        revengeMap.remove(event.getPlayer().getUniqueId());
     }
 }

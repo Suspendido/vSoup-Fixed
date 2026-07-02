@@ -3,7 +3,7 @@ package kami.gg.souppvp.feats.actionbar.type;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.actionbar.ActionBarPriority;
 import kami.gg.souppvp.feats.actionbar.ActionBarProvider;
-import kami.gg.souppvp.kit.ability.AbilityItemComparator;
+import kami.gg.souppvp.kit.ability.util.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.kit.ability.KitAbilityRegistry;
 import kami.gg.souppvp.profile.Profile;

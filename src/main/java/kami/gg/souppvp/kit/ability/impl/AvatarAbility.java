@@ -1,7 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.kit.ability.AbilityItemComparator;
+import kami.gg.souppvp.kit.ability.util.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -139,6 +139,12 @@ public class AvatarAbility implements KitAbility {
         if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             if (!AbilityItemComparator.isSameAbilityItem(item, getItem())) return;
+
+            // Spawn check
+            if (SoupPvP.getInstance().getSpawnHandler().getCuboid().contains(p)) {
+                p.sendMessage(CC.t("&cYou can't do this in Spawn."));
+                return;
+            }
 
             // cooldown
             if (waterGunTimer.hasTimer(p)) {

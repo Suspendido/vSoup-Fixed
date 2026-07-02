@@ -41,6 +41,16 @@ public abstract class Button {
         player.sendMessage(CC.t(s));
     }
 
+    public void sendMessage(Player player, List<String> s) {
+        s.forEach(string -> player.sendMessage(CC.t(string)));
+    }
+
+    public void sendMessage(Player player, String... s) {
+        for (String string : s) {
+            player.sendMessage(CC.t(string));
+        }
+    }
+
     public void broadcast(String... s) {
         for (String string : s) {
             String finalString = CC.t(string);

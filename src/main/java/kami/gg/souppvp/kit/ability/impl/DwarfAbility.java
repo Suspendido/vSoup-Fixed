@@ -111,7 +111,7 @@ public class DwarfAbility implements KitAbility {
                     player.setExp(charge);
                 }
             }
-        }.runTaskTimer(SoupPvP.getInstance(), 0L, 10L);
+        }.runTaskTimerAsynchronously(SoupPvP.getInstance(), 0L, 10L);
     }
 
     @EventHandler

@@ -1,18 +1,15 @@
 package kami.gg.souppvp.killstreak.menu.button;
 
-import kami.gg.souppvp.killstreak.Killstreak;
+import kami.gg.souppvp.killstreak.ConfigurableKillstreak;
 import kami.gg.souppvp.util.menu.Button;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-
 public class KillstreakButton extends Button {
 
-    private final Killstreak killstreak;
+    private final ConfigurableKillstreak killstreak;
 
-    public KillstreakButton(Killstreak killstreak) {
+    public KillstreakButton(ConfigurableKillstreak killstreak) {
         this.killstreak = killstreak;
     }
 

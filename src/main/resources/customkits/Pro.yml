@@ -4,6 +4,18 @@ price: 3000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: DIAMOND
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §7Pro§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §7Common'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b3000'
+    - '§b┃ §fPrimary Ability: §bPro'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Although this kit has no special abilities like the default'
 - '&7kit, upon every kill, you are guaranteed double credits.'
@@ -11,6 +23,11 @@ enabled: true
 combatEquipments:
 - ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DAMAGE_ALL: 1
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

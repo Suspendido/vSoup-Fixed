@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: GLOWSTONE_DUST
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Zeus§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §6Zeus'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7With the immense ability of a god, you possess control over lightning,'
 - '&7striking anyone who stands in front of you.'
@@ -11,12 +23,6 @@ enabled: true
 combatEquipments:
 - ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
-- ==: org.bukkit.inventory.ItemStack
-  type: GLOWSTONE_DUST
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §6Lightning Bolt
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: LEATHER_BOOTS

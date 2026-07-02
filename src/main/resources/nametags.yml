@@ -7,7 +7,7 @@ NAMETAGS:
       - "%rank-prefix%%player%"
     BOUNTY:
       - "&aBounty: &e%bounty%"
-      - "&a%player%"
+      - "%rank-color%%player%"
       - "&f%health% &4❤"
     JUGGERNAUT:
       - "&4&lJuggernaut"
@@ -22,7 +22,7 @@ NAMETAGS:
     TNTTAG_NORMAL:
       - "&a%player%"
     SUMO:
-      - "%player%"
+      - "%rank-color%%player%"
     NORMAL:
-      - "&a%player%"
+      - "%rank_color%%player%"
       - "&f%health% &4❤"

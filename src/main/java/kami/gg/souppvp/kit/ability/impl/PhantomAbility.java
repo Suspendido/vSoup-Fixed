@@ -1,7 +1,7 @@
 package kami.gg.souppvp.kit.ability.impl;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.kit.ability.AbilityItemComparator;
+import kami.gg.souppvp.kit.ability.util.AbilityItemComparator;
 import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
@@ -90,7 +90,7 @@ public class PhantomAbility implements KitAbility {
             }
         }
 
-        TasksUtility.runTaskLater(() -> {
+        TaskUtil.runLater(() -> {
             player.setFlying(false);
             player.setAllowFlight(false);
         }, 20 * 5);

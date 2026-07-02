@@ -13,7 +13,7 @@ import kami.gg.souppvp.profile.Profile;
 import kami.gg.souppvp.profile.ProfileState;
 import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.util.CC;
-import kami.gg.souppvp.util.TimeUtil;
+import kami.gg.souppvp.util.Formatter;
 import kami.gg.souppvp.util.assemble.AssembleAdapter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
@@ -116,7 +116,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
         if (profile.getProfileState() == ProfileState.IN_EVENT || profile.getProfileState() == ProfileState.SPECTATING_EVENT) {
             Event playerEvent = getPlayerEvent(profile);
 
-            if (showDateBelowTitle) lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
+            if (showDateBelowTitle) lines.add(dateLine.replace("%date%", Formatter.formatScoreboardDate(date)));
             if (linesEnabled) lines.add(line);
 
             if (playerEvent != null) {
@@ -131,7 +131,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
 
         if (staffEnabled && staff) {
             if (showDateBelowTitle) {
-                lines.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
+                lines.add(dateLine.replace("%date%", Formatter.formatScoreboardDate(date)));
             }
 
             if (linesEnabled) {
@@ -163,7 +163,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
                     .replace("%kills%", String.valueOf(profile.getKills()))
                     .replace("%deaths%", String.valueOf(profile.getDeaths()))
                     .replace("%killstreak%", String.valueOf(profile.getCurrentKillstreak()))
-                    .replace("%credits%", String.valueOf(profile.getCredits()))
+                    .replace("%credits%", Formatter.formatBalance(profile.getCredits()))
                     .replace("%bounty%", String.valueOf(profile.getBounty()))
             );
         }
@@ -199,7 +199,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
                 long remaining = combatTimer.getRemaining(player);
                 String format = scoreboardManager.getScoreboardConfig().getString("TIMERS.COMBAT");
                 if (format != null) {
-                    String line = format.replace("%time%", TimeUtil.convertToHhMmSs(remaining / 1000));
+                    String line = format.replace("%time%", Formatter.convertToHhMmSs(remaining / 1000));
                     lines.add(CC.t(line));
                     lines.add("");
                 }
@@ -218,7 +218,7 @@ public class ScoreboardAdapter implements AssembleAdapter {
             List<String> clone = new ArrayList<>();
 
             if (showDateBelowTitle) {
-                clone.add(dateLine.replace("%date%", TimeUtil.formatScoreboardDate(date)));
+                clone.add(dateLine.replace("%date%", Formatter.formatScoreboardDate(date)));
             }
 
             if (!lines.getFirst().equals(line)) {

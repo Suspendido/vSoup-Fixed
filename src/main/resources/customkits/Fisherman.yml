@@ -4,6 +4,18 @@ price: 3500
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: COOKED_FISH
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §aFisherman§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §aUncommon'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b3500'
+    - '§b┃ §fPrimary Ability: §eFisherman'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Become a fisherman, when both on land and on water. Instead of fishing for enemies,'
 - '&7hook enemies towards you with instantaneous speeds so that they won''t get loose.'
@@ -11,12 +23,6 @@ enabled: true
 combatEquipments:
 - ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
-- ==: org.bukkit.inventory.ItemStack
-  type: FISHING_ROD
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §aFishing Rod
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: GOLD_BOOTS

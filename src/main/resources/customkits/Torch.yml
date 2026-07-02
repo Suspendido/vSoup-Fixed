@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: BLAZE_POWDER
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Torch§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §cTorch'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Set enemies standing in front of you fire and burn them to crisps.'
 - '&7With your dragon breath, scare off your enemies and set them fleeing.'
@@ -16,12 +28,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DAMAGE_ALL: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: BLAZE_POWDER
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §cDragon Breath
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: LEATHER_BOOTS

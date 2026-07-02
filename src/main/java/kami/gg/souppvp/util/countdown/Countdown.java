@@ -1,7 +1,7 @@
 package kami.gg.souppvp.util.countdown;
 
 import kami.gg.souppvp.SoupPvP;
-import kami.gg.souppvp.util.TimeUtils;
+import kami.gg.souppvp.util.Formatter;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.ChatColor;
@@ -47,7 +47,7 @@ public class Countdown extends BukkitRunnable {
         }
         for (int index : this.broadcastAt) {
             if (this.seconds != index) continue;
-            String message = this.broadcastMessage.replace("{time}", TimeUtils.formatIntoDetailedString(this.seconds));
+            String message = this.broadcastMessage.replace("{time}", Formatter.formatIntoDetailedString(this.seconds));
             for (Player player : this.messageFilter){
                 player.sendMessage(message);
             }

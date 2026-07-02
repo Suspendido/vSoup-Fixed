@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: ANVIL
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Stomper§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §6Stomper'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7You depend on locations with high altitudes. You take no fall damage'
 - '&7and for each fall damage taken, you deal that amount to whoever you are'
@@ -18,12 +30,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: ANVIL
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §6Stomper
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

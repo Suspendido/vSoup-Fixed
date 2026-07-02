@@ -1,0 +1,113 @@
+killstreaks:
+  '1':
+    name: Nigga
+    required_kills: 5
+    reward_type: EFFECTS
+    icon_material: DIAMOND
+    lore: []
+    reward_data:
+      items:
+        - DIAMOND_SWORD:1:0:§bKits_Selector_§7(Right_Click)
+      effects:
+        - SPEED:2147483647:2
+  '2':
+    name: Full Repair I
+    required_kills: 5
+    reward_type: SPECIAL
+    icon_material: IRON_INGOT
+    lore:
+      - '&7Fully repairs your armor,'
+      - '&7giving them maximum durability.'
+    reward_data:
+      special_type: REPAIR
+  '3':
+    name: Golden Apples
+    required_kills: 10
+    reward_type: SPECIAL
+    icon_material: GOLDEN_APPLE
+    lore:
+      - '&7Gives you 8 golden apples for'
+      - '&7extra absorption hearts.'
+    reward_data:
+      special_type: GOLDEN_APPLES
+  '4':
+    name: Fire Resistance Potion
+    required_kills: 15
+    reward_type: SPECIAL
+    icon_material: POTION
+    lore:
+      - '&7Gives you a potion that will apply'
+      - '&7fire resistance for 8 minutes.'
+    reward_data:
+      special_type: FIRE_RESISTANCE_POTION
+  '5':
+    name: Grandma Soups
+    required_kills: 20
+    reward_type: SPECIAL
+    icon_material: MUSHROOM_SOUP
+    lore:
+      - '&7Gives you 2 Grandma Soups, that will'
+      - '&7instantly give maximum health on consumption.'
+    reward_data:
+      special_type: GRANDMA_SOUPS
+  '6':
+    name: Full Repair II
+    required_kills: 25
+    reward_type: SPECIAL
+    icon_material: IRON_INGOT
+    lore:
+      - '&7Fully repairs your armor,'
+      - '&7giving them maximum durability.'
+    reward_data:
+      special_type: REPAIR
+  '7':
+    name: Attack Dogs
+    required_kills: 30
+    reward_type: SPECIAL
+    icon_material: MONSTER_EGG
+    lore:
+      - '&7Spawns a squad of loyal wolves'
+      - '&7that attack your enemies.'
+    reward_data:
+      special_type: ATTACK_DOGS
+  '8':
+    name: Extra Credits
+    required_kills: 35
+    reward_type: SPECIAL
+    icon_material: GOLD_INGOT
+    lore:
+      - '&7Receive an additional 1000'
+      - '&7extra credits.'
+    reward_data:
+      special_type: EXTRA_CREDITS
+  '9':
+    name: Security Guard
+    required_kills: 40
+    reward_type: SPECIAL
+    icon_material: SKULL_ITEM
+    lore:
+      - '&7Spawns a Security Guard'
+      - '&7whose only goal is to protect you.'
+    reward_data:
+      special_type: SECURITY_GUARD
+  '10':
+    name: Angry Snowman
+    required_kills: 45
+    reward_type: SPECIAL
+    icon_material: SNOW_BALL
+    lore:
+      - '&fSpawns an Angry Snowman'
+      - '&fthat shoots strong snowballs'
+      - '&ffor 5 minutes.'
+    reward_data:
+      special_type: ANGRY_SNOWMAN
+  '11':
+    name: Nuke
+    required_kills: 50
+    reward_type: SPECIAL
+    icon_material: TNT
+    lore:
+      - '&7Will start a 10 second timer and upon finish,'
+      - '&7it will decimate all enemies in a 25 block radius.'
+    reward_data:
+      special_type: NUKE

@@ -1,7 +1,7 @@
 package kami.gg.souppvp.feats.soupsays;
 
 import kami.gg.souppvp.feats.soupsays.type.*;
-import kami.gg.souppvp.util.TasksUtility;
+import kami.gg.souppvp.util.TaskUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,11 +41,15 @@ public class SoupSaysManager {
     }
 
     public void activateRandom() {
+        if (this.activeTask != null) {
+            this.activeTask.deactivate(null);
+        }
+
         this.activeTask = tasks.get(ThreadLocalRandom.current().nextInt(tasks.size()));
         this.activeTask.activate();
     }
 
     private void startScheduler() {
-        TasksUtility.runTaskLaterAsync(20L * 60 * 10, 20L * 60 * 10, () -> TasksUtility.runTask(this::activateRandom));
+        TaskUtil.runTimerAsync(() -> TaskUtil.run(this::activateRandom), 20L * 60 * 10, 20L * 60 * 10);
     }
 }

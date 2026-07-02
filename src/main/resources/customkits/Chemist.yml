@@ -5,6 +5,18 @@ icon:
   ==: org.bukkit.inventory.ItemStack
   type: POTION
   damage: 16428
+  meta:
+    ==: ItemMeta
+    meta-type: POTION
+    display-name: §6Chemist§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §dChemist'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Begin with splash potions of instant damage and'
 - '&7poisons. After each kill, get a refill of splash'
@@ -19,10 +31,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 3
-- ==: org.bukkit.inventory.ItemStack
-  type: POTION
-  damage: 16428
-  amount: 3
 - ==: org.bukkit.inventory.ItemStack
   type: POTION
   damage: 16420

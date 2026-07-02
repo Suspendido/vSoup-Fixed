@@ -2,7 +2,6 @@ package kami.gg.souppvp.killstreak;
 
 import kami.gg.souppvp.util.ItemBuilder;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class KillstreakReward {

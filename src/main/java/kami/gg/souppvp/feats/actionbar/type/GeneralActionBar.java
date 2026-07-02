@@ -61,8 +61,11 @@ public class GeneralActionBar implements ActionBarProvider {
     }
 
     public static void sendMessage(Player player, String text) {
-        perkMessages.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>())
-                .add(new PerkMessage(text, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3)));
+        sendMessage(player, text, 3);
+    }
+
+    public static void sendMessage(Player player, String text, long time) {
+        perkMessages.computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>()).add(new PerkMessage(text, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(time)));
     }
 
     public static void clear() {

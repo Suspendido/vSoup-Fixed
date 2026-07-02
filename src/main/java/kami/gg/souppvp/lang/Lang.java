@@ -1,5 +1,8 @@
 package kami.gg.souppvp.lang;
 
+import kami.gg.souppvp.util.CC;
+
+import java.util.List;
 import java.util.Map;
 
 public class Lang {
@@ -113,115 +116,204 @@ public class Lang {
     public static String MARKET_DELISTED;
     public static String MARKET_NO_LISTINGS;
 
+    public static List<String> TREASURE_CHEST_HOLOGRAM;
+    public static List<String> TREASURE_CHEST_BUTTON_LORE;
+    public static List<String> TREASURE_CHEST_BROADCAST;
+    public static String TREASURE_CHEST_BUTTON_ADMIN;
+    public static String TREASURE_CHEST_BUTTON_NO_CHESTS;
+    public static String TREASURE_CHEST_BUTTON_HAS_CHESTS;
+    public static String TREASURE_CHEST_HEADER;
+    public static String TREASURE_CHEST_TITLE;
+    public static String TREASURE_CHEST_OPENED_BY;
+    public static String TREASURE_CHEST_REWARDS_HEADER;
+    public static String TREASURE_CHEST_FOOTER;
+    public static String TREASURE_CHEST_UNLOCKED_AT;
+    public static String TREASURE_CHEST_ALREADY_USING;
+    public static String TREASURE_CHEST_ALREADY_OPENED;
+    public static String TREASURE_CHEST_ALL_OPENED;
+    public static String TREASURE_CHEST_REWARD_HOLOGRAM;
+    public static String TREASURE_CHEST_IN_USE;
+    public static String TREASURE_CHEST_NO_CHESTS;
+    public static String TREASURE_CHEST_ALREADY_OPENING;
+    public static String TREASURE_CHEST_CHESTS_APPEARED;
+    public static String TREASURE_CHEST_NO_REWARDS;
+    public static String TREASURE_CHEST_WON_BROADCAST;
+    public static String TREASURE_CHEST_CMD_END_CURRENT;
+    public static String TREASURE_CHEST_CMD_RELOAD;
+    public static String TREASURE_CHEST_CMD_NOT_FOUND;
+    public static List<String> TREASURE_CHEST_CMD_GIVE_TARGET;
+    public static String TREASURE_CHEST_CMD_GIVE_SENDER;
+    public static String TREASURE_CHEST_CMD_TAKE_TARGET;
+    public static String TREASURE_CHEST_CMD_TAKE_SENDER;
+    public static String TREASURE_CHEST_CMD_SHOW;
+    public static String TREASURE_CHEST_CMD_INVALID_MATERIAL;
+    public static String TREASURE_CHEST_CMD_INVALID_SLOT;
+    public static String TREASURE_CHEST_CMD_ALREADY_EXISTS;
+    public static String TREASURE_CHEST_CMD_CREATED;
+    public static String TREASURE_CHEST_CMD_DELETED;
+    public static String TREASURE_CHEST_CMD_SETUP_CENTRAL;
+    public static String TREASURE_CHEST_CMD_NEEDS_CENTRAL;
+    public static String TREASURE_CHEST_CMD_INVALID_COUNT;
+    public static String TREASURE_CHEST_CMD_MAX_CHESTS;
+    public static String TREASURE_CHEST_CMD_INVALID_RADIUS;
+    public static String TREASURE_CHEST_CMD_SKIPPED_OCCUPIED;
+    public static String TREASURE_CHEST_CMD_SKIPPED_ADJACENT;
+    public static String TREASURE_CHEST_CMD_GENERATED;
+
     public static void load(LangManager manager) {
         // General
-        NO_PERMISSION = manager.getMessage("GENERAL.NO_PERMISSION");
-        ONLY_PLAYERS = manager.getMessage("GENERAL.ONLY_PLAYERS");
-        PLAYER_NOT_FOUND = manager.getMessage("GENERAL.PLAYER_NOT_FOUND");
-        INVALID_NUMBER = manager.getMessage("GENERAL.INVALID_NUMBER");
-        INVALID_PROFILE = manager.getMessage("GENERAL.INVALID_PROFILE");
-        SUCCESSFULLY_UPDATED = manager.getMessage("GENERAL.SUCCESSFULLY_UPDATED");
+        NO_PERMISSION = manager.getString("GENERAL.NO_PERMISSION");
+        ONLY_PLAYERS = manager.getString("GENERAL.ONLY_PLAYERS");
+        PLAYER_NOT_FOUND = manager.getString("GENERAL.PLAYER_NOT_FOUND");
+        INVALID_NUMBER = manager.getString("GENERAL.INVALID_NUMBER");
+        INVALID_PROFILE = manager.getString("GENERAL.INVALID_PROFILE");
+        SUCCESSFULLY_UPDATED = manager.getString("GENERAL.SUCCESSFULLY_UPDATED");
 
         // Kits
-        KITS_NOT_IN_SPAWN = manager.getMessage("KITS.NOT_IN_SPAWN");
-        KITS_NO_KIT_SELECTED = manager.getMessage("KITS.NO_KIT_SELECTED");
-        KITS_KIT_EQUIPPED = manager.getMessage("KITS.KIT_EQUIPPED");
-        KITS_KIT_LOCKED = manager.getMessage("KITS.KIT_LOCKED");
-        KITS_KIT_COOLDOWN = manager.getMessage("KITS.KIT_COOLDOWN");
+        KITS_NOT_IN_SPAWN = manager.getString("KITS.NOT_IN_SPAWN");
+        KITS_NO_KIT_SELECTED = manager.getString("KITS.NO_KIT_SELECTED");
+        KITS_KIT_EQUIPPED = manager.getString("KITS.KIT_EQUIPPED");
+        KITS_KIT_LOCKED = manager.getString("KITS.KIT_LOCKED");
+        KITS_KIT_COOLDOWN = manager.getString("KITS.KIT_COOLDOWN");
 
         // Spawn
-        SPAWN_TELEPORTED = manager.getMessage("SPAWN.TELEPORTED");
-        SPAWN_CANNOT_TELEPORT = manager.getMessage("SPAWN.CANNOT_TELEPORT");
+        SPAWN_TELEPORTED = manager.getString("SPAWN.TELEPORTED");
+        SPAWN_CANNOT_TELEPORT = manager.getString("SPAWN.CANNOT_TELEPORT");
 
         // Combat
-        COMBAT_TAGGED = manager.getMessage("COMBAT.TAGGED");
-        COMBAT_NOT_TAGGED = manager.getMessage("COMBAT.NOT_TAGGED");
+        COMBAT_TAGGED = manager.getString("COMBAT.TAGGED");
+        COMBAT_NOT_TAGGED = manager.getString("COMBAT.NOT_TAGGED");
 
         // Coinflip
-        COINFLIP_CREATED = manager.getMessage("COINFLIP.CREATED");
-        COINFLIP_ACCEPTED = manager.getMessage("COINFLIP.ACCEPTED");
-        COINFLIP_CANCELLED = manager.getMessage("COINFLIP.CANCELLED");
-        COINFLIP_WINNER = manager.getMessage("COINFLIP.WINNER");
-        COINFLIP_NO_ACTIVE_WAGERS = manager.getMessage("COINFLIP.NO_ACTIVE_WAGERS");
+        COINFLIP_CREATED = manager.getString("COINFLIP.CREATED");
+        COINFLIP_ACCEPTED = manager.getString("COINFLIP.ACCEPTED");
+        COINFLIP_CANCELLED = manager.getString("COINFLIP.CANCELLED");
+        COINFLIP_WINNER = manager.getString("COINFLIP.WINNER");
+        COINFLIP_NO_ACTIVE_WAGERS = manager.getString("COINFLIP.NO_ACTIVE_WAGERS");
 
         // Bounty
-        BOUNTY_PLACED = manager.getMessage("BOUNTY.PLACED");
-        BOUNTY_RECEIVED = manager.getMessage("BOUNTY.RECEIVED");
-        BOUNTY_CLAIMED = manager.getMessage("BOUNTY.CLAIMED");
+        BOUNTY_PLACED = manager.getString("BOUNTY.PLACED");
+        BOUNTY_RECEIVED = manager.getString("BOUNTY.RECEIVED");
+        BOUNTY_CLAIMED = manager.getString("BOUNTY.CLAIMED");
 
         // Repair
-        REPAIR_REPAIRED = manager.getMessage("REPAIR.REPAIRED");
-        REPAIR_NOT_ENOUGH_CREDITS = manager.getMessage("REPAIR.NOT_ENOUGH_CREDITS");
-        REPAIR_NO_ITEMS = manager.getMessage("REPAIR.NO_ITEMS");
+        REPAIR_REPAIRED = manager.getString("REPAIR.REPAIRED");
+        REPAIR_NOT_ENOUGH_CREDITS = manager.getString("REPAIR.NOT_ENOUGH_CREDITS");
+        REPAIR_NO_ITEMS = manager.getString("REPAIR.NO_ITEMS");
 
         // Shop
-        SHOP_PURCHASED = manager.getMessage("SHOP.PURCHASED");
-        SHOP_NOT_ENOUGH_CREDITS = manager.getMessage("SHOP.NOT_ENOUGH_CREDITS");
-        SHOP_INVENTORY_FULL = manager.getMessage("SHOP.INVENTORY_FULL");
+        SHOP_PURCHASED = manager.getString("SHOP.PURCHASED");
+        SHOP_NOT_ENOUGH_CREDITS = manager.getString("SHOP.NOT_ENOUGH_CREDITS");
+        SHOP_INVENTORY_FULL = manager.getString("SHOP.INVENTORY_FULL");
 
         // Perks
-        PERKS_EQUIPPED = manager.getMessage("PERKS.EQUIPPED");
-        PERKS_UNEQUIPPED = manager.getMessage("PERKS.UNEQUIPPED");
-        PERKS_NOT_UNLOCKED = manager.getMessage("PERKS.NOT_UNLOCKED");
+        PERKS_EQUIPPED = manager.getString("PERKS.EQUIPPED");
+        PERKS_UNEQUIPPED = manager.getString("PERKS.UNEQUIPPED");
+        PERKS_NOT_UNLOCKED = manager.getString("PERKS.NOT_UNLOCKED");
 
         // Sumo
-        SUMO_JOINED = manager.getMessage("SUMO.JOINED");
-        SUMO_LEFT = manager.getMessage("SUMO.LEFT");
-        SUMO_STARTED = manager.getMessage("SUMO.STARTED");
-        SUMO_ENDED = manager.getMessage("SUMO.ENDED");
-        SUMO_NO_ACTIVE_EVENT = manager.getMessage("SUMO.NO_ACTIVE_EVENT");
+        SUMO_JOINED = manager.getString("SUMO.JOINED");
+        SUMO_LEFT = manager.getString("SUMO.LEFT");
+        SUMO_STARTED = manager.getString("SUMO.STARTED");
+        SUMO_ENDED = manager.getString("SUMO.ENDED");
+        SUMO_NO_ACTIVE_EVENT = manager.getString("SUMO.NO_ACTIVE_EVENT");
 
         // TNT Tag
-        TNTTAG_JOINED = manager.getMessage("TNTTAG.JOINED");
-        TNTTAG_LEFT = manager.getMessage("TNTTAG.LEFT");
-        TNTTAG_STARTED = manager.getMessage("TNTTAG.STARTED");
-        TNTTAG_TAGGED = manager.getMessage("TNTTAG.TAGGED");
-        TNTTAG_WINNER = manager.getMessage("TNTTAG.WINNER");
-        TNTTAG_NO_ACTIVE_EVENT = manager.getMessage("TNTTAG.NO_ACTIVE_EVENT");
+        TNTTAG_JOINED = manager.getString("TNTTAG.JOINED");
+        TNTTAG_LEFT = manager.getString("TNTTAG.LEFT");
+        TNTTAG_STARTED = manager.getString("TNTTAG.STARTED");
+        TNTTAG_TAGGED = manager.getString("TNTTAG.TAGGED");
+        TNTTAG_WINNER = manager.getString("TNTTAG.WINNER");
+        TNTTAG_NO_ACTIVE_EVENT = manager.getString("TNTTAG.NO_ACTIVE_EVENT");
 
         // Staff
-        STAFF_VANISHED = manager.getMessage("STAFF.VANISHED");
-        STAFF_UNVANISHED = manager.getMessage("STAFF.UNVANISHED");
-        STAFF_FROZEN = manager.getMessage("STAFF.FROZEN");
-        STAFF_UNFROZEN = manager.getMessage("STAFF.UNFROZEN");
-        STAFF_MODE = manager.getMessage("STAFF.STAFF_MODE");
-        STAFF_MODE_OFF = manager.getMessage("STAFF.STAFF_MODE_OFF");
+        STAFF_VANISHED = manager.getString("STAFF.VANISHED");
+        STAFF_UNVANISHED = manager.getString("STAFF.UNVANISHED");
+        STAFF_FROZEN = manager.getString("STAFF.FROZEN");
+        STAFF_UNFROZEN = manager.getString("STAFF.UNFROZEN");
+        STAFF_MODE = manager.getString("STAFF.STAFF_MODE");
+        STAFF_MODE_OFF = manager.getString("STAFF.STAFF_MODE_OFF");
 
         // Statistics
-        STATISTICS_HEADER = manager.getMessage("STATISTICS.HEADER");
-        STATISTICS_KILLS = manager.getMessage("STATISTICS.KILLS");
-        STATISTICS_DEATHS = manager.getMessage("STATISTICS.DEATHS");
-        STATISTICS_KD_RATIO = manager.getMessage("STATISTICS.KD_RATIO");
-        STATISTICS_CREDITS = manager.getMessage("STATISTICS.CREDITS");
+        STATISTICS_HEADER = manager.getString("STATISTICS.HEADER");
+        STATISTICS_KILLS = manager.getString("STATISTICS.KILLS");
+        STATISTICS_DEATHS = manager.getString("STATISTICS.DEATHS");
+        STATISTICS_KD_RATIO = manager.getString("STATISTICS.KD_RATIO");
+        STATISTICS_CREDITS = manager.getString("STATISTICS.CREDITS");
 
         // Tier
-        TIER_CURRENT_TIER = manager.getMessage("TIER.CURRENT_TIER");
-        TIER_TIER_UP = manager.getMessage("TIER.TIER_UP");
-        TIER_NOT_ENOUGH_XP = manager.getMessage("TIER.NOT_ENOUGH_XP");
+        TIER_CURRENT_TIER = manager.getString("TIER.CURRENT_TIER");
+        TIER_TIER_UP = manager.getString("TIER.TIER_UP");
+        TIER_NOT_ENOUGH_XP = manager.getString("TIER.NOT_ENOUGH_XP");
 
         // Options
-        OPTIONS_OPENED = manager.getMessage("OPTIONS.OPENED");
-        OPTIONS_SETTING_CHANGED = manager.getMessage("OPTIONS.SETTING_CHANGED");
+        OPTIONS_OPENED = manager.getString("OPTIONS.OPENED");
+        OPTIONS_SETTING_CHANGED = manager.getString("OPTIONS.SETTING_CHANGED");
 
         // Killstreak
-        KILLSTREAK_KILLSTREAK = manager.getMessage("KILLSTREAK.KILLSTREAK");
-        KILLSTREAK_REWARD = manager.getMessage("KILLSTREAK.REWARD");
+        KILLSTREAK_KILLSTREAK = manager.getString("KILLSTREAK.KILLSTREAK");
+        KILLSTREAK_REWARD = manager.getString("KILLSTREAK.REWARD");
 
         // Map
-        MAP_VOTED = manager.getMessage("MAP.VOTED");
-        MAP_CURRENT_MAP = manager.getMessage("MAP.CURRENT_MAP");
-        MAP_CHANGED = manager.getMessage("MAP.CHANGED");
+        MAP_VOTED = manager.getString("MAP.VOTED");
+        MAP_CURRENT_MAP = manager.getString("MAP.CURRENT_MAP");
+        MAP_CHANGED = manager.getString("MAP.CHANGED");
 
         // Juggernaut
-        JUGGERNAUT_ACTIVATED = manager.getMessage("JUGGERNAUT.ACTIVATED");
-        JUGGERNAUT_DEACTIVATED = manager.getMessage("JUGGERNAUT.DEACTIVATED");
-        JUGGERNAUT_NOT_AVAILABLE = manager.getMessage("JUGGERNAUT.NOT_AVAILABLE");
+        JUGGERNAUT_ACTIVATED = manager.getString("JUGGERNAUT.ACTIVATED");
+        JUGGERNAUT_DEACTIVATED = manager.getString("JUGGERNAUT.DEACTIVATED");
+        JUGGERNAUT_NOT_AVAILABLE = manager.getString("JUGGERNAUT.NOT_AVAILABLE");
 
         // Market
-        MARKET_LISTED = manager.getMessage("MARKET.LISTED");
-        MARKET_PURCHASED = manager.getMessage("MARKET.PURCHASED");
-        MARKET_DELISTED = manager.getMessage("MARKET.DELISTED");
-        MARKET_NO_LISTINGS = manager.getMessage("MARKET.NO_LISTINGS");
+        MARKET_LISTED = manager.getString("MARKET.LISTED");
+        MARKET_PURCHASED = manager.getString("MARKET.PURCHASED");
+        MARKET_DELISTED = manager.getString("MARKET.DELISTED");
+        MARKET_NO_LISTINGS = manager.getString("MARKET.NO_LISTINGS");
+
+        TREASURE_CHEST_HOLOGRAM = manager.getStringList("TREASURE_CHEST.HOLOGRAM");
+        TREASURE_CHEST_BROADCAST = manager.getStringList("TREASURE_CHEST.BROADCAST");
+        TREASURE_CHEST_BUTTON_LORE = manager.getStringList("TREASURE_CHEST.BUTTON.LORE");
+        TREASURE_CHEST_CMD_GIVE_TARGET = manager.getStringList("TREASURE_CHEST.CMD.GIVE_TARGET");
+
+        TREASURE_CHEST_BUTTON_ADMIN = manager.getString("TREASURE_CHEST.BUTTON.LORE_ADMIN");
+        TREASURE_CHEST_BUTTON_NO_CHESTS = manager.getString("TREASURE_CHEST.BUTTON.LORE_NO_CHESTS");
+        TREASURE_CHEST_BUTTON_HAS_CHESTS = manager.getString("TREASURE_CHEST.BUTTON.LORE_HAS_CHESTS");
+        TREASURE_CHEST_HEADER = manager.getString("TREASURE_CHEST.HEADER");
+        TREASURE_CHEST_TITLE = manager.getString("TREASURE_CHEST.TITLE");
+        TREASURE_CHEST_OPENED_BY = manager.getString("TREASURE_CHEST.OPENED_BY");
+        TREASURE_CHEST_REWARDS_HEADER = manager.getString("TREASURE_CHEST.REWARDS_HEADER");
+        TREASURE_CHEST_FOOTER = manager.getString("TREASURE_CHEST.FOOTER");
+        TREASURE_CHEST_UNLOCKED_AT = manager.getString("TREASURE_CHEST.UNLOCKED_AT");
+        TREASURE_CHEST_ALREADY_USING = manager.getString("TREASURE_CHEST.ALREADY_USING");
+        TREASURE_CHEST_ALREADY_OPENED = manager.getString("TREASURE_CHEST.ALREADY_OPENED");
+        TREASURE_CHEST_ALL_OPENED = manager.getString("TREASURE_CHEST.ALL_OPENED");
+        TREASURE_CHEST_REWARD_HOLOGRAM = manager.getString("TREASURE_CHEST.REWARD_HOLOGRAM");
+        TREASURE_CHEST_IN_USE = manager.getString("TREASURE_CHEST.IN_USE");
+        TREASURE_CHEST_NO_CHESTS = manager.getString("TREASURE_CHEST.NO_CHESTS");
+        TREASURE_CHEST_ALREADY_OPENING = manager.getString("TREASURE_CHEST.ALREADY_OPENING");
+        TREASURE_CHEST_CHESTS_APPEARED = manager.getString("TREASURE_CHEST.CHESTS_APPEARED");
+        TREASURE_CHEST_WON_BROADCAST = manager.getString("TREASURE_CHEST.WON_BROADCAST");
+        TREASURE_CHEST_NO_REWARDS = manager.getString("TREASURE_CHEST.NO_REWARDS");
+        TREASURE_CHEST_CMD_END_CURRENT = manager.getString("TREASURE_CHEST.CMD.END_CURRENT");
+        TREASURE_CHEST_CMD_RELOAD = manager.getString("TREASURE_CHEST.CMD.RELOAD");
+        TREASURE_CHEST_CMD_NOT_FOUND = manager.getString("TREASURE_CHEST.CMD.NOT_FOUND");
+        TREASURE_CHEST_CMD_GIVE_SENDER = manager.getString("TREASURE_CHEST.CMD.GIVE_SENDER");
+        TREASURE_CHEST_CMD_TAKE_TARGET = manager.getString("TREASURE_CHEST.CMD.TAKE_TARGET");
+        TREASURE_CHEST_CMD_TAKE_SENDER = manager.getString("TREASURE_CHEST.CMD.TAKE_SENDER");
+        TREASURE_CHEST_CMD_SHOW = manager.getString("TREASURE_CHEST.CMD.SHOW");
+        TREASURE_CHEST_CMD_INVALID_MATERIAL = manager.getString("TREASURE_CHEST.CMD.INVALID_MATERIAL");
+        TREASURE_CHEST_CMD_INVALID_SLOT = manager.getString("TREASURE_CHEST.CMD.INVALID_SLOT");
+        TREASURE_CHEST_CMD_ALREADY_EXISTS = manager.getString("TREASURE_CHEST.CMD.ALREADY_EXISTS");
+        TREASURE_CHEST_CMD_CREATED = manager.getString("TREASURE_CHEST.CMD.CREATED");
+        TREASURE_CHEST_CMD_DELETED = manager.getString("TREASURE_CHEST.CMD.DELETED");
+        TREASURE_CHEST_CMD_SETUP_CENTRAL = manager.getString("TREASURE_CHEST.CMD.SETUP_CENTRAL");
+        TREASURE_CHEST_CMD_NEEDS_CENTRAL = manager.getString("TREASURE_CHEST.CMD.NEEDS_CENTRAL");
+        TREASURE_CHEST_CMD_INVALID_COUNT = manager.getString("TREASURE_CHEST.CMD.INVALID_COUNT");
+        TREASURE_CHEST_CMD_MAX_CHESTS = manager.getString("TREASURE_CHEST.CMD.MAX_CHESTS");
+        TREASURE_CHEST_CMD_INVALID_RADIUS = manager.getString("TREASURE_CHEST.CMD.INVALID_RADIUS");
+        TREASURE_CHEST_CMD_SKIPPED_OCCUPIED = manager.getString("TREASURE_CHEST.CMD.SKIPPED_OCCUPIED");
+        TREASURE_CHEST_CMD_SKIPPED_ADJACENT = manager.getString("TREASURE_CHEST.CMD.SKIPPED_ADJACENT");
+        TREASURE_CHEST_CMD_GENERATED = manager.getString("TREASURE_CHEST.CMD.GENERATED");
     }
 
     // Métodos para manejar placeholders
@@ -229,7 +321,7 @@ public class Lang {
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
             message = message.replace("{" + entry.getKey() + "}", entry.getValue());
         }
-        return message;
+        return CC.t(message);
     }
 
     public static String format(String message, String... placeholders) {
@@ -238,6 +330,6 @@ public class Lang {
                 message = message.replace("{" + placeholders[i] + "}", placeholders[i + 1]);
             }
         }
-        return message;
+        return CC.t(message);
     }
 }

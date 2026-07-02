@@ -5,6 +5,18 @@ icon:
   ==: org.bukkit.inventory.ItemStack
   type: INK_SACK
   damage: 6
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §6Barbarian§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §6Legendary'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b5000'
+    - '§b┃ §fPrimary Ability: §9Barbarian'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Although you may be seen as vulnerable without'
 - '&7armour, spawn swarms of silverfish to torture enemies'
@@ -19,13 +31,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 2
       DURABILITY: 10
-- ==: org.bukkit.inventory.ItemStack
-  type: INK_SACK
-  damage: 6
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §9Silverfish Swarm
 armor:
 - null
 - null

@@ -4,6 +4,18 @@ price: 4500
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: NETHER_STAR
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §bNinja§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §bUltimate'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4500'
+    - '§b┃ §fPrimary Ability: §bNinja'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Throw shurikens, blinding your enemies.'
 - '&7Gain +30 armor durability per kill!'
@@ -16,13 +28,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DAMAGE_ALL: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: NETHER_STAR
-  amount: 4
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §bShuriken
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: LEATHER_BOOTS

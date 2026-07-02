@@ -86,6 +86,7 @@ public abstract class Kit implements Listener {
             }
         }
 
+        profile.restoreExtraItems(player);
         PlayerUtil.giveSoup(player);
 
         for (PotionEffect potionEffect : this.getPotionEffects()) {

@@ -262,7 +262,7 @@ public class Sumo implements Event {
 		if (state == EventState.ROUND_STARTING) {
 			return "00:00";
 		} else if (state == EventState.ROUND_FIGHTING) {
-			return TimeUtil.millisToTimer(System.currentTimeMillis() - roundStart);
+			return Formatter.millisToTimer(System.currentTimeMillis() - roundStart);
 		} else {
 			return "Ending";
 		}

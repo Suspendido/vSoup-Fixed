@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: FIREWORK
+  meta:
+    ==: ItemMeta
+    meta-type: FIREWORK
+    display-name: §9Kangaroo§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §cKangaroo'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Similarly to wild life kangaroos, use your kangaroo boost ability'
 - '&7to jump over enemies and escape dangerous situations easily.'
@@ -11,12 +23,6 @@ enabled: true
 combatEquipments:
 - ==: org.bukkit.inventory.ItemStack
   type: DIAMOND_SWORD
-- ==: org.bukkit.inventory.ItemStack
-  type: FIREWORK
-  meta:
-    ==: ItemMeta
-    meta-type: FIREWORK
-    display-name: §cKangaroo Boost
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: IRON_BOOTS

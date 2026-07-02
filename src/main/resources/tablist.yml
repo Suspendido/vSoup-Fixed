@@ -10,7 +10,7 @@ tablist:
   enabled: true
   sorting-types:
     - GROUPS:owner,executive,manager,developer,admin,mod,trial-mod,helper,builder,youtuber,media,nexo,pulse,flux,core,default
-  tab-name-format: "%player_name%"
+  tab-name-format: "%rank_color%%player_name%"
   header:
     - '&b&lLunar Network &7┃ &f%online% &7/&f %max_online%'
   footer:

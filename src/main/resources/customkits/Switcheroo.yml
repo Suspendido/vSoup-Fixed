@@ -4,6 +4,18 @@ price: 4000
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: SNOW_BALL
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §9Switcheroo§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §9Rare'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4000'
+    - '§b┃ §fPrimary Ability: §9Switcheroo'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Your main ability is being extremely sneaky. Catch your enemies off'
 - '&7guard and swap locations with them to give yourself a positional advantage'
@@ -16,13 +28,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DAMAGE_ALL: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: SNOW_BALL
-  amount: 3
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §9Switcheroo
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: CHAINMAIL_BOOTS

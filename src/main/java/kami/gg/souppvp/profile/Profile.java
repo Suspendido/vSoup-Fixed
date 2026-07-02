@@ -6,14 +6,20 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.coinflip.CoinFlipState;
 import kami.gg.souppvp.events.Event;
 import kami.gg.souppvp.feats.storage.StorageType;
+import kami.gg.souppvp.killstreak.KillstreakReward;
+import kami.gg.souppvp.kit.Kit;
+import kami.gg.souppvp.kit.ability.KitAbility;
 import kami.gg.souppvp.kit.progress.KitProgress;
 import kami.gg.souppvp.tier.TierCategory;
 import kami.gg.souppvp.timer.type.CombatTimer;
+import kami.gg.souppvp.util.SpawnItems;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -55,7 +61,8 @@ public class Profile {
     private int eventsWon;
 
     private boolean juggernaut;
-    private final Map<String, KitProgress> kitProgress = new HashMap<>();
+    private transient Map<String, KitProgress> kitProgress;
+    private transient List<ItemStack> extraItems;
 
     public Profile(UUID uuid) {
         if (uuid == null) {
@@ -132,6 +139,8 @@ public class Profile {
         this.eventsWon = 0;
 
         this.juggernaut = false;
+        this.kitProgress = new HashMap<>();
+        this.extraItems = new ArrayList<>();
     }
 
     public void loadProfile() {
@@ -289,6 +298,8 @@ public class Profile {
         this.enableEasySoup = fromFile.getEnableEasySoup();
 
         this.eventsWon = fromFile.getEventsWon();
+        this.kitProgress = new HashMap<>();
+        this.extraItems = new ArrayList<>();
 
         this.loaded = true;
     }
@@ -316,7 +327,17 @@ public class Profile {
     }
 
     public KitProgress getKitProgress(String kitName) {
+        if (kitProgress == null) {
+            kitProgress = new HashMap<>();
+        }
         return kitProgress.computeIfAbsent(kitName.toLowerCase(), k -> new KitProgress());
+    }
+
+    public Map<String, KitProgress> getKitProgress() {
+        if (kitProgress == null) {
+            kitProgress = new HashMap<>();
+        }
+        return kitProgress;
     }
 
     public Event getActiveEvent() {
@@ -357,5 +378,78 @@ public class Profile {
         if (wagersWon + wagersLost == 0 || wagersWon == 0) return 0;
 
         return Double.parseDouble(new DecimalFormat("##").format(wagersWon * 100L / (wagersWon + wagersLost)));
+    }
+
+    public void saveExtraItems(Player player) {
+        Player playerObj = Bukkit.getPlayer(uuid);
+        if (playerObj == null) return;
+
+        Kit kit = SoupPvP.getInstance().getKitsHandler().getKitByName(currentKit);
+        if (kit == null) return;
+
+        List<ItemStack> itemsToSave = new ArrayList<>();
+        ItemStack[] inventory = playerObj.getInventory().getContents();
+
+        for (ItemStack item : inventory) {
+            if (item == null || item.getType() == Material.AIR) continue;
+
+            if (isSpawnItem(item)) continue;
+            if (isKitItem(item, kit)) continue;
+            if (isAbilityItem(item, kit)) continue;
+
+            // Skip normal mushroom soup but keep killstreak rewards
+            if (item.getType() == Material.MUSHROOM_SOUP && !isKillstreakReward(item)) continue;
+
+            itemsToSave.add(item.clone());
+        }
+
+        this.extraItems = itemsToSave;
+    }
+
+    public void restoreExtraItems(Player player) {
+        if (extraItems.isEmpty()) return;
+
+        Player playerObj = Bukkit.getPlayer(uuid);
+        if (playerObj == null) return;
+
+        for (ItemStack item : extraItems) {
+            if (item != null && item.getType() != Material.AIR) {
+                playerObj.getInventory().addItem(item.clone());
+            }
+        }
+
+        extraItems.clear();
+        playerObj.updateInventory();
+    }
+
+    private boolean isSpawnItem(ItemStack item) {
+        return item.isSimilar(SpawnItems.KITS_SELECTOR) ||
+               item.isSimilar(SpawnItems.HOST_EVENTS) ||
+               item.isSimilar(SpawnItems.SHOP) ||
+               item.isSimilar(SpawnItems.YOUR_STATISTICS) ||
+               item.isSimilar(SpawnItems.PERK_SELECTOR) ||
+               item.isSimilar(SpawnItems.PREVIOUS_KIT) ||
+               item.isSimilar(SpawnItems.YOUR_OPTIONS);
+    }
+
+    private boolean isKitItem(ItemStack item, Kit kit) {
+        for (ItemStack kitItem : kit.getCombatEquipments()) {
+            if (item.isSimilar(kitItem)) return true;
+        }
+        return false;
+    }
+
+    private boolean isAbilityItem(ItemStack item, Kit kit) {
+        KitAbility primary = kit.getPrimaryAbility();
+        KitAbility secondary = kit.getSecondaryAbility();
+
+        if (primary != null && item.isSimilar(primary.getItem())) return true;
+        return secondary != null && item.isSimilar(secondary.getItem());
+    }
+
+    private boolean isKillstreakReward(ItemStack item) {
+        return item.isSimilar(KillstreakReward.GOLDEN_APPLES) ||
+               item.isSimilar(KillstreakReward.FIRE_RESISTANCE_POTION) ||
+               item.isSimilar(KillstreakReward.GRANDMA_SOUP);
     }
 }

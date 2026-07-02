@@ -86,7 +86,11 @@ public class StaffManager {
                     .setSkullOwner(getStaffConfig().getString(path + "TEXTURE"))
                     .build();
 
-            staffItems.put(new Pair<>(name, list), new StaffItem(
+            // Translate name and lore for comparison
+            String translatedName = CC.t(name);
+            List<String> translatedLore = CC.t(list);
+
+            staffItems.put(new Pair<>(translatedName, translatedLore), new StaffItem(
                     this, key,
                     action.isEmpty() ? null : StaffItemAction.valueOf(action),
                     replace.isEmpty() ? null : replace,
@@ -217,11 +221,11 @@ public class StaffManager {
             ItemMeta meta = item.getItemMeta();
 
             if (meta.hasLore()) {
-                lore = CC.t(meta.getLore());
+                lore = meta.getLore();
             }
 
             if (meta.hasDisplayName()) {
-                name = CC.t(meta.getDisplayName());
+                name = meta.getDisplayName();
             }
         }
 

@@ -3,19 +3,15 @@ package kami.gg.souppvp.events.impl.tnttag.listener;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.events.Event;
 import kami.gg.souppvp.events.impl.tnttag.TNTTagGame;
+import kami.gg.souppvp.events.listener.EventListener;
 import kami.gg.souppvp.events.util.EventState;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.SpectatorUtil;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
-public class TNTTagListener implements Listener {
+public class TNTTagListener extends EventListener {
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
@@ -39,54 +35,29 @@ public class TNTTagListener implements Listener {
         game.applyTNT(victim);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-
+    @Override
+    protected Event getEvent(Player player) {
         Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
         Event activeEvent = profile.getActiveEvent();
-        if (!(activeEvent instanceof TNTTagGame game)) return;
-        EntityDamageEvent.DamageCause cause = event.getCause();
-        if (cause == EntityDamageEvent.DamageCause.VOID || cause == EntityDamageEvent.DamageCause.LAVA) {
-            event.setCancelled(true);
-            player.setFireTicks(0);
+        if (activeEvent instanceof TNTTagGame) return activeEvent;
+        return null;
+    }
 
-            if (!game.getEventPlayers().containsKey(player.getUniqueId())) {
-                player.teleport(SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn());
-                return;
-            }
+    @Override
+    protected boolean isPlaying(Player player, Event event) {
+        if (!(event instanceof TNTTagGame game)) return false;
+        return game.getEventPlayers().containsKey(player.getUniqueId());
+    }
 
-            SpectatorUtil.resetPlayer(player);
-            player.teleport(SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn());
+    @Override
+    protected void handleDeath(Player player, Event event) {
+        if (event instanceof TNTTagGame game) {
             game.handleDeath(player);
-            return;
         }
-
-        if (!game.getEventPlayers().containsKey(player.getUniqueId())) {
-            event.setCancelled(true);
-            return;
-        }
-
-        event.setDamage(0);
-        player.setHealth(20.0);
-        player.updateInventory();
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
-        Event activeEvent = profile.getActiveEvent();
-        if (!(activeEvent instanceof TNTTagGame game)) return;
-        if (!game.getEventPlayers().containsKey(player.getUniqueId())) event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(event.getPlayer().getUniqueId());
-        Event activeEvent = profile.getActiveEvent();
-        if (activeEvent != null) {
-            activeEvent.handleLeave(event.getPlayer());
-        }
+    @Override
+    protected Location getSpectatorSpawn() {
+        return SoupPvP.getInstance().getTntTagHandler().getSpectatorSpawn();
     }
 }

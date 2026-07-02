@@ -4,6 +4,18 @@ price: 3500
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: BOW
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §aArcher§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §aUncommon'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b3500'
+    - '§b┃ §fPrimary Ability: §5Archer'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Become robin hood and snipe enemies.'
 - '&7Longer distance = more damage.'
@@ -16,14 +28,6 @@ combatEquipments:
     meta-type: UNSPECIFIC
     enchants:
       DURABILITY: 2
-- ==: org.bukkit.inventory.ItemStack
-  type: BOW
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    enchants:
-      DURABILITY: 3
-      ARROW_INFINITE: 1
 - ==: org.bukkit.inventory.ItemStack
   type: ARROW
   amount: 64

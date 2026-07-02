@@ -3,7 +3,7 @@ package kami.gg.souppvp.listener.impl;
 import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.kit.Kit;
 import kami.gg.souppvp.profile.Profile;
-import kami.gg.souppvp.util.TasksUtility;
+import kami.gg.souppvp.util.TaskUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +27,7 @@ public class ShopItemsListener implements Listener {
             return;
         }
 
-        TasksUtility.runTaskLater(() -> {
+        TaskUtil.runLater(() -> {
             Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
             if (profile == null) return;
 

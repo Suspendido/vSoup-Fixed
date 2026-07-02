@@ -9,7 +9,6 @@ import kami.gg.souppvp.feats.nametag.NametagListener;
 import kami.gg.souppvp.feats.staff.listener.StaffListener;
 import kami.gg.souppvp.feats.tablist.TablistListener;
 import kami.gg.souppvp.juggernaut.JuggernautListener;
-import kami.gg.souppvp.killstreak.inherit.*;
 import kami.gg.souppvp.listener.impl.*;
 import kami.gg.souppvp.perk.inherit.*;
 import kami.gg.souppvp.tier.TiersListener;
@@ -72,40 +71,18 @@ public class ListenerManager {
                 new JuggernautListener(),
 
                 // Perks
-                new SoreLoserPerk(),
-                new MartydomPerk(),
-                new RelinquishPerk(),
-                new NourishmentPerk(),
-                new RefillerPerk(),
                 new StuntDevilPerk(),
                 new AquamanPerk(),
                 new DistortionPerk(),
-                new JammerPerk(),
-                new ReverseCopyCatPerk(),
-                new SteadyHandsPerk(),
                 new ArmorerPerk(),
                 new DeathDoUsApartPerk(),
-                new TauntPerk(),
-                new RevengePerk(),
                 new InfernoPerk(),
                 new CreditorPerk(),
                 new CanaPerk(),
                 new BonusHeartsPerk(),
                 new FireFighterPerk(),
                 new LifeSupportPerk(),
-                new JuggernautPerk(),
-
-                // KillStreaks - This might be optimized bc rn its so ass having this shit like that
-                new FiveKillstreak(),
-                new TenKillstreak(),
-                new FifteenKillstreak(),
-                new TwentyKillstreak(),
-                new TwentyFiveKillstreak(),
-                new ThirtyKillstreak(),
-                new ThirtyFiveKillstreak(),
-                new FortyKillstreak(),
-                new FortyFiveKillstreak(),
-                new FiftyKillstreak()
+                new JuggernautPerk()
 
         ));
 

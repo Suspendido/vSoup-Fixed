@@ -4,6 +4,18 @@ price: 4500
 icon:
   ==: org.bukkit.inventory.ItemStack
   type: WEB
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: §bSpiderman§b§c§d§e
+    lore:
+    - '§b┃ §fRarity: §bUltimate'
+    - '§b┃ §fStatus: §aEnabled'
+    - ''
+    - '§bKit Properties:'
+    - '§b┃ §fPrice: §b4500'
+    - '§b┃ §fPrimary Ability: §dSpiderman'
+    - '§b┃ §fSecondary Ability: §cNone'
 description:
 - '&7Be a superhero and fight criminals like your enemies.'
 - '&7Using your web shooter, trap and slow down enemies.'
@@ -17,12 +29,6 @@ combatEquipments:
     enchants:
       DAMAGE_ALL: 1
       DURABILITY: 1
-- ==: org.bukkit.inventory.ItemStack
-  type: WEB
-  meta:
-    ==: ItemMeta
-    meta-type: UNSPECIFIC
-    display-name: §dWeb Shooter
 armor:
 - ==: org.bukkit.inventory.ItemStack
   type: LEATHER_BOOTS

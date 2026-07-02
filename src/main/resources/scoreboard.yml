@@ -57,7 +57,7 @@ STATS:
 SPAWN:
   ENABLED: true
   FORMAT:
-    - "&fTier Level: &b%tier%✫"
+    - "&fTier Level: &b%tier%"
     - "&fCurrent Kit: %kit_color%%kit%"
     - ""
 

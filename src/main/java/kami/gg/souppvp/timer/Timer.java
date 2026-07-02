@@ -1,5 +1,6 @@
 package kami.gg.souppvp.timer;
 
+import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.DurationFormatter;
 import lombok.Getter;
@@ -56,11 +57,14 @@ public class Timer {
         timerCache.entrySet().removeIf(entry -> {
             if (entry.getValue() - System.currentTimeMillis() < 0L) {
                 UUID uuid = entry.getKey();
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null) {
-                    player.sendMessage(CC.t("&eYou may now use &d" + name + "&e!"));
-                    player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.0F);
-                }
+                // Schedule sync task for player operations
+                Bukkit.getScheduler().runTask(SoupPvP.getInstance(), () -> {
+                    Player player = Bukkit.getPlayer(uuid);
+                    if (player != null) {
+                        player.sendMessage(CC.t("&eYou may now use &d" + name + "&e!"));
+                        player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1.0F, 1.0F);
+                    }
+                });
                 return true;
             }
             return false;
