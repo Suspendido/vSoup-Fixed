@@ -466,7 +466,6 @@ public class TreasureChestCommand extends Command {
             Hologram existingHologram = DHAPI.getHologram("treasure_chest_central_" + treasureChest.getId());
             if (existingHologram != null) {
                 existingHologram.delete();
-                existingHologram.destroy();
             }
 
             DHAPI.createHologram(
