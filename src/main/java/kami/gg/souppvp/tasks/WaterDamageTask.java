@@ -8,6 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class WaterDamageTask {
 
     private final Perk canaPerk;
@@ -15,7 +19,9 @@ public class WaterDamageTask {
     public WaterDamageTask() {
         this.canaPerk = SoupPvP.getInstance().getPerksHandler().getPerkByName("Cana");
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(SoupPvP.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(SoupPvP.getInstance(), () -> {
+            List<UUID> playersToDamage = new ArrayList<>();
+
             for (Player player : Bukkit.getOnlinePlayers()) {
                 Profile profile = SoupPvP.getInstance().getProfilesHandler().getProfileByUUID(player.getUniqueId());
                 if (profile == null) continue;
@@ -36,13 +42,25 @@ public class WaterDamageTask {
                 }
 
                 Kit currentKit = SoupPvP.getInstance().getKitsHandler().getKitByName(profile.getCurrentKit());
-                boolean hasFiremanAbility = currentKit != null && 
+                boolean hasFiremanAbility = currentKit != null &&
                     ((currentKit.getPrimaryAbility() != null && currentKit.getPrimaryAbility().getName().equals("Fireman")) ||
                      (currentKit.getSecondaryAbility() != null && currentKit.getSecondaryAbility().getName().equals("Fireman")));
 
                 if (hasCana || hasFiremanAbility) {
-                    player.damage(2);
+                    playersToDamage.add(player.getUniqueId());
                 }
+            }
+
+            // Apply damage on main thread
+            if (!playersToDamage.isEmpty()) {
+                Bukkit.getScheduler().runTask(SoupPvP.getInstance(), () -> {
+                    for (UUID uuid : playersToDamage) {
+                        Player player = Bukkit.getPlayer(uuid);
+                        if (player != null && player.isOnline()) {
+                            player.damage(2);
+                        }
+                    }
+                });
             }
 
         }, 0L, 5L);
