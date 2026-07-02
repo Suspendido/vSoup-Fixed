@@ -13,6 +13,7 @@ import kami.gg.souppvp.events.EventManager;
 import kami.gg.souppvp.events.impl.sumo.SumoHandler;
 import kami.gg.souppvp.events.impl.tnttag.TNTTagHandler;
 import kami.gg.souppvp.feats.actionbar.ActionBarManager;
+import kami.gg.souppvp.feats.freekits.FreeKitsTask;
 import kami.gg.souppvp.feats.hooks.placeholder.PlaceholderHook;
 import kami.gg.souppvp.feats.quest.QuestManager;
 import kami.gg.souppvp.feats.soupsays.SoupSaysManager;
@@ -183,6 +184,7 @@ public class SoupPvP extends JavaPlugin {
         leaderboardManager.updateAllLeaderboards();
         Bukkit.getScheduler().runTaskTimerAsynchronously(SoupPvP.getInstance(), leaderboardManager::updateAllLeaderboards, leaderboardManager.getUpdateInterval(), leaderboardManager.getUpdateInterval());
         new CommandManager(this);
+        new FreeKitsTask();
 
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
