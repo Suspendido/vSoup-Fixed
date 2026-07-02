@@ -75,3 +75,17 @@ TREASURE_CHEST:
     SKIPPED_OCCUPIED: "&cSkipped chest at position {position} - location already occupied by a chest!"
     SKIPPED_ADJACENT: "&cSkipped chest at position {position} - too close to another chest!"
     GENERATED: "&aGenerated {count} chests with radius {radius} around central location for {display_name}"
+
+FREE_KITS:
+  ACTIVATED:
+    - ""
+    - "&6&lFREE KITS FRIDAY"
+    - "&aAll kits are now free for everyone!"
+    - "&7Enjoy playing with any kit you want!"
+    - ""
+  DEACTIVATED:
+    - ""
+    - "&6&lFREE KITS ENDED"
+    - "&cFree kits mode has ended."
+    - "&7Kits are now back to their normal prices."
+    - ""

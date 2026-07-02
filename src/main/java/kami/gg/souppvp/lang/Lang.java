@@ -160,6 +160,10 @@ public class Lang {
     public static String TREASURE_CHEST_CMD_SKIPPED_ADJACENT;
     public static String TREASURE_CHEST_CMD_GENERATED;
 
+    // Free Kits
+    public static List<String> FREE_KITS_ACTIVATED;
+    public static List<String> FREE_KITS_DEACTIVATED;
+
     public static void load(LangManager manager) {
         // General
         NO_PERMISSION = manager.getString("GENERAL.NO_PERMISSION");
@@ -314,6 +318,10 @@ public class Lang {
         TREASURE_CHEST_CMD_SKIPPED_OCCUPIED = manager.getString("TREASURE_CHEST.CMD.SKIPPED_OCCUPIED");
         TREASURE_CHEST_CMD_SKIPPED_ADJACENT = manager.getString("TREASURE_CHEST.CMD.SKIPPED_ADJACENT");
         TREASURE_CHEST_CMD_GENERATED = manager.getString("TREASURE_CHEST.CMD.GENERATED");
+
+        // Free Kits
+        FREE_KITS_ACTIVATED = manager.getStringList("FREE_KITS.ACTIVATED");
+        FREE_KITS_DEACTIVATED = manager.getStringList("FREE_KITS.DEACTIVATED");
     }
 
     // Métodos para manejar placeholders
