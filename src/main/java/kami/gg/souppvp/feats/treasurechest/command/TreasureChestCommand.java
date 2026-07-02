@@ -6,7 +6,6 @@ import kami.gg.souppvp.SoupPvP;
 import kami.gg.souppvp.feats.treasurechest.TreasureChest;
 import kami.gg.souppvp.feats.treasurechest.TreasureChestHandler;
 import kami.gg.souppvp.lang.Lang;
-import kami.gg.souppvp.util.CC;
 import kami.gg.souppvp.util.command.Argument;
 import kami.gg.souppvp.util.command.Command;
 import kami.gg.souppvp.util.command.CommandManager;
